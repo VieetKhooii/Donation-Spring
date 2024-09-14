@@ -23,4 +23,7 @@ public class ImageOfDonation {
     @ManyToOne
     @JoinColumn(name = "donation_post_id")
     private DonationPost donationPost;
+
+    @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean isDeleted = false;
 }

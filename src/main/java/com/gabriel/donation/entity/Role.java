@@ -25,4 +25,7 @@ public class Role {
 
     @OneToMany(mappedBy = "role")
     private List<User> users = new ArrayList<>();
+
+    @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean isDeleted = false;
 }
