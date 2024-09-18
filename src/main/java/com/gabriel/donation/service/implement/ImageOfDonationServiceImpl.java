@@ -19,8 +19,6 @@ public class ImageOfDonationServiceImpl implements ImageOfDonationService {
     ImageOfDonationRepo imageOfDonationRepo;
     @Autowired
     DonationPostRepo donationPostRepo;
-    @Autowired
-    private ImageOfDonationMapper imageOfDonationMapper;
 
     @Override
     public List<ImageOfDonationDTO> getAll()
@@ -49,7 +47,7 @@ public class ImageOfDonationServiceImpl implements ImageOfDonationService {
         imageOfDonation.setDonationPost(donatepost1);
         imageOfDonation.setDeleted(imageOfDonationDTO.isDeleted());
         ImageOfDonation updated=imageOfDonationRepo.save(imageOfDonation);
-        return imageOfDonationMapper.INSTANCE.toDto(updated);
+        return ImageOfDonationMapper.INSTANCE.toDto(updated);
     }
 
     @Override

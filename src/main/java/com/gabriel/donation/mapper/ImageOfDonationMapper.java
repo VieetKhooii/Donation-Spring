@@ -14,10 +14,11 @@ public interface ImageOfDonationMapper {
 
     //               dto's id    entity's id
     @Mapping(source = "imageOfDonationId", target = "id")
+    @Mapping(source = "donationPostId", target = "donationPost.id")
     ImageOfDonation toEntity(ImageOfDonationDTO imageOfDonationDTO);
 
     @Mapping(source = "id", target = "imageOfDonationId")
-    @Mapping(source = "donation_post.id", target = "donation_postId")
+    @Mapping(source = "donationPost.id", target = "donationPostId")
     // Fields from entity that are Object type (Foreign key) must have ".id" (ex: role.id)
     // so that DTO can understand and store it
     ImageOfDonationDTO toDto(ImageOfDonation imageOfDonation);
