@@ -6,6 +6,9 @@ import com.gabriel.donation.mapper.RoleMapper;
 import com.gabriel.donation.repository.RoleRepo;
 import com.gabriel.donation.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,12 +20,18 @@ public class RoleServiceImpl implements RoleService {
     RoleRepo roleRepo;
 
     @Override
-    public List<RoleDTO> getAll()
+    public Page<RoleDTO> getAll(PageRequest pageRequest)
     {
-        List<Role> roles=roleRepo.findAll();
-        return  roles.stream()
+        List<Role> roles=roleRepo.findAll(pageRequest).getContent();
+        List<RoleDTO> roleDTOS = roles
+                .stream()
                 .map(RoleMapper.INSTANCE::toDto)
                 .toList();
+        return new PageImpl<RoleDTO>(
+                roleDTOS,
+                roleRepo.findAll(pageRequest).getPageable(),
+                roleRepo.findAll(pageRequest).getTotalElements()
+        );
     }
 
     @Override
@@ -50,5 +59,12 @@ public class RoleServiceImpl implements RoleService {
         if(roleRepo.existsById(id))
             roleRepo.deleteById(id);
     }
+
+    @Override
+    public RoleDTO getRoleById(int id)
+    {
+        return RoleMapper.INSTANCE.toDto(roleRepo.findById(id).get());
+    }
+
 
 }

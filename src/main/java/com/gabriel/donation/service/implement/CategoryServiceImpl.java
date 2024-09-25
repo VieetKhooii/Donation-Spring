@@ -51,4 +51,10 @@ public class CategoryServiceImpl implements CategoryService {
             cateRepo.deleteById(id);
     }
 
+    @Override
+    public CategoryDTO getCategoryById(int id)
+    {
+        return CategoryMapper.INSTANCE.toDto(cateRepo.findById(id).get());
+    }
+
 }

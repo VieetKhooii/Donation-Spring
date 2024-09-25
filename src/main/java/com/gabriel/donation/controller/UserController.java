@@ -8,15 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/user")
+@Controller
+//@RequestMapping("/api/user")
 @Mapper
 public class UserController {
 
@@ -24,9 +23,10 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/admin/get")
-    public ResponseEntity<?> getAllUsers(
+    public String getAllUsers(
             @RequestParam("page") int page,
-            @RequestParam("limit") int limit
+            @RequestParam("limit") int limit,
+            Model model
     ) {
         PageRequest pageRequest = PageRequest.of(
                 page, limit
@@ -34,13 +34,13 @@ public class UserController {
         Page<UserDTO> list = userService.getUsersForAdmin(pageRequest);
         int totalPages = list.getTotalPages();
         List<UserDTO> users = list.getContent();
-        return ResponseEntity.ok(
-                ResponseData.builder()
-                        .statusCode(200)
-                        .message("Retrieving users for admin successfully")
-                        .data(users)
-                        .totalPages(totalPages)
-                        .build()
-        );
+        model.addAttribute("users", users);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        return "admin/user";
+
     }
+
+
+
 }

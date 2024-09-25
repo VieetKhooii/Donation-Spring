@@ -1,15 +1,20 @@
 package com.gabriel.donation.service.implement;
 
+import com.gabriel.donation.dto.PaymentDTO;
 import com.gabriel.donation.dto.UserDonatedDTO;
 import com.gabriel.donation.entity.DonationPost;
 import com.gabriel.donation.entity.User;
 import com.gabriel.donation.entity.UserDonated;
+import com.gabriel.donation.mapper.PaymentMapper;
 import com.gabriel.donation.mapper.UserDonatedMapper;
 import com.gabriel.donation.repository.DonationPostRepo;
 import com.gabriel.donation.repository.UserDonatedRepo;
 import com.gabriel.donation.repository.UserRepo;
 import com.gabriel.donation.service.UserDonatedService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,12 +30,18 @@ public class UserDonatedServiceImpl implements UserDonatedService {
     DonationPostRepo donationPostRepo;
 
     @Override
-    public List<UserDonatedDTO> getAll()
+    public Page<UserDonatedDTO> getAll(PageRequest pageRequest)
     {
         List<UserDonated> UserDonatedList = userDonatedRepo.findAll();
-        return  UserDonatedList.stream()
+        List<UserDonatedDTO> userDonatedDTOS = UserDonatedList
+                .stream()
                 .map(UserDonatedMapper.INSTANCE::toDto)
                 .toList();
+        return new PageImpl<UserDonatedDTO>(
+                userDonatedDTOS,
+                userDonatedRepo.findAll(pageRequest).getPageable(),
+                userDonatedRepo.findAll(pageRequest).getTotalElements()
+        );
     }
 
     @Override
@@ -64,4 +75,11 @@ public class UserDonatedServiceImpl implements UserDonatedService {
         if(userDonatedRepo.existsById(id))
             userDonatedRepo.deleteById(id);
     }
+
+    @Override
+    public UserDonatedDTO getUserDonatedById(int id)
+    {
+        return UserDonatedMapper.INSTANCE.toDto(userDonatedRepo.findById(id).get());
+    }
+
 }
