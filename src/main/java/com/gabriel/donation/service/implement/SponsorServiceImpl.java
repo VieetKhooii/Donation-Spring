@@ -6,6 +6,9 @@ import com.gabriel.donation.mapper.SponsorMapper;
 import com.gabriel.donation.repository.SponsorRepo;
 import com.gabriel.donation.service.SponsorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,12 +20,18 @@ public class SponsorServiceImpl implements SponsorService {
     SponsorRepo sponsorRepo;
 
     @Override
-    public List<SponsorDTO> getAll()
+    public Page<SponsorDTO> getAll(PageRequest pageRequest)
     {
-        List<Sponsor> sponsors = sponsorRepo.findAll();
-        return  sponsors.stream()
+        List<Sponsor> sponsors = sponsorRepo.findAll(pageRequest).getContent();
+        List<SponsorDTO> sponsorDTOS = sponsors
+                .stream()
                 .map(SponsorMapper.INSTANCE::toDto)
                 .toList();
+        return new PageImpl<SponsorDTO>(
+                sponsorDTOS,
+                sponsorRepo.findAll(pageRequest).getPageable(),
+                sponsorRepo.findAll(pageRequest).getTotalElements()
+        );
     }
 
     @Override
@@ -50,6 +59,12 @@ public class SponsorServiceImpl implements SponsorService {
     {
         if(sponsorRepo.existsById(id))
             sponsorRepo.deleteById(id);
+    }
+
+    @Override
+    public SponsorDTO getSponsorById(int id)
+    {
+        return SponsorMapper.INSTANCE.toDto(sponsorRepo.findById(id).get());
     }
 
 }

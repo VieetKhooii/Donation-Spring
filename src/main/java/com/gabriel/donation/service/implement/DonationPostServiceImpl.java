@@ -10,6 +10,9 @@ import com.gabriel.donation.repository.DonationPostRepo;
 import com.gabriel.donation.repository.SponsorRepo;
 import com.gabriel.donation.service.DonationPostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,12 +28,18 @@ public class DonationPostServiceImpl implements DonationPostService {
     CategoryRepo categoryRepo;
 
     @Override
-    public List<DonationPostDTO> getAll()
+    public Page<DonationPostDTO> getAll(PageRequest pageRequest)
     {
-        List<DonationPost> DonationPosts = donationPostRepo.findAll();
-        return DonationPosts.stream()
+        List<DonationPost> DonationPosts = donationPostRepo.findAll(pageRequest).getContent();
+        List<DonationPostDTO> donationPostDTOS = DonationPosts
+                .stream()
                 .map(DonationPostMapper.INSTANCE::toDto)
                 .toList();
+        return new PageImpl<DonationPostDTO>(
+                donationPostDTOS,
+                donationPostRepo.findAll(pageRequest).getPageable(),
+                donationPostRepo.findAll(pageRequest).getTotalElements()
+        );
     }
 
     @Override
@@ -67,5 +76,11 @@ public class DonationPostServiceImpl implements DonationPostService {
     {
         if(donationPostRepo.existsById(id))
             donationPostRepo.deleteById(id);
+    }
+
+    @Override
+    public DonationPostDTO getDonationPostById(int id)
+    {
+        return DonationPostMapper.INSTANCE.toDto(donationPostRepo.findById(id).get());
     }
 }

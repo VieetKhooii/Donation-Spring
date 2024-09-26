@@ -12,4 +12,6 @@ public interface CategoryService {
     CategoryDTO updateCategory(CategoryDTO categoryDTO, int id);
 
     void deleteCategory(int id);
+
+    CategoryDTO getCategoryById(int id);
 }

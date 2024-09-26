@@ -8,6 +8,9 @@ import com.gabriel.donation.repository.DonationPostRepo;
 import com.gabriel.donation.repository.ImageOfDonationRepo;
 import com.gabriel.donation.service.ImageOfDonationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,12 +24,18 @@ public class ImageOfDonationServiceImpl implements ImageOfDonationService {
     DonationPostRepo donationPostRepo;
 
     @Override
-    public List<ImageOfDonationDTO> getAll()
+    public Page<ImageOfDonationDTO> getAll(PageRequest pageRequest)
     {
         List<ImageOfDonation> imageOfDonations = imageOfDonationRepo.findAll();
-        return  imageOfDonations.stream()
+        List<ImageOfDonationDTO> imageOfDonationDTOS = imageOfDonations
+                .stream()
                 .map(ImageOfDonationMapper.INSTANCE::toDto)
                 .toList();
+        return new PageImpl<ImageOfDonationDTO>(
+                imageOfDonationDTOS,
+                imageOfDonationRepo.findAll(pageRequest).getPageable(),
+                imageOfDonationRepo.findAll(pageRequest).getTotalElements()
+        );
     }
 
     @Override
@@ -56,4 +65,11 @@ public class ImageOfDonationServiceImpl implements ImageOfDonationService {
         if(imageOfDonationRepo.existsById(id))
             imageOfDonationRepo.deleteById(id);
     }
+
+    @Override
+    public ImageOfDonationDTO getImageOfDonationById(int id)
+    {
+        return ImageOfDonationMapper.INSTANCE.toDto(imageOfDonationRepo.findById(id).get());
+    }
+
 }

@@ -8,6 +8,9 @@ import com.gabriel.donation.repository.PaymentRepo;
 import com.gabriel.donation.repository.UserRepo;
 import com.gabriel.donation.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,12 +24,18 @@ public class PaymentServiceImpl implements PaymentService {
     UserRepo userRepo;
 
     @Override
-    public List<PaymentDTO> getAll()
+    public Page<PaymentDTO> getAll(PageRequest pageRequest)
     {
         List<Payment> payments = paymentRepo.findAll();
-        return  payments.stream()
+        List<PaymentDTO> paymentDTOS = payments
+                .stream()
                 .map(PaymentMapper.INSTANCE::toDto)
                 .toList();
+        return new PageImpl<PaymentDTO>(
+                paymentDTOS,
+                paymentRepo.findAll(pageRequest).getPageable(),
+                paymentRepo.findAll(pageRequest).getTotalElements()
+        );
     }
 
     @Override
@@ -55,6 +64,12 @@ public class PaymentServiceImpl implements PaymentService {
     {
         if(paymentRepo.existsById(id))
             paymentRepo.deleteById(id);
+    }
+
+    @Override
+    public PaymentDTO getPaymentById(int id)
+    {
+        return PaymentMapper.INSTANCE.toDto(paymentRepo.findById(id).get());
     }
 
 }
