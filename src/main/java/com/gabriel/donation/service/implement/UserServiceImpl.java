@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -68,5 +69,17 @@ public class UserServiceImpl implements UserService {
     {
         if(userRepo.existsById(id))
             userRepo.deleteById(id);
+    }
+
+    @Override
+    public UserDTO findById(int id) {
+        return UserMapper.INSTANCE.toDto(userRepo.findById(id).get());
+    }
+
+    @Override
+    public UserDTO findByPhoneAndPassword(String phone){
+        Optional<User> userOptional = userRepo.findByPhone(phone);
+        User user = userOptional.get();
+        return UserMapper.INSTANCE.toDto(user);
     }
 }

@@ -2,8 +2,11 @@ package com.gabriel.donation.controller;
 
 import com.gabriel.donation.dto.DonationPostDTO;
 import com.gabriel.donation.dto.PaymentDTO;
+import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.PaymentService;
+import com.gabriel.donation.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,6 +39,8 @@ public class PaymentController {
 
     @Autowired
     PaymentService paymentService;
+    @Autowired
+    UserService userService;
 
     @GetMapping("/admin/get")
     public String getAllPayment(
@@ -182,4 +187,17 @@ public class PaymentController {
         return "";
     }
 
+    @PostMapping("/deposit")
+    public String deposit(
+            @RequestBody PaymentDTO paymentDTO, HttpSession session
+    ){
+        int userId = (int) session.getAttribute("userId");
+        paymentDTO.setUserId(userId);
+        paymentService.addPayment(paymentDTO);
+
+        UserDTO userDTO = userService.findById(userId);
+        userDTO.setBalance(userDTO.getBalance()+paymentDTO.getAmount());
+        userService.updateUser(userDTO, userId);
+        return "";
+    }
 }

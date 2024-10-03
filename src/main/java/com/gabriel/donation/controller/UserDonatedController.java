@@ -2,9 +2,12 @@ package com.gabriel.donation.controller;
 
 import com.gabriel.donation.dto.DonationPostDTO;
 import com.gabriel.donation.dto.PaymentDTO;
+import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.dto.UserDonatedDTO;
 import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.UserDonatedService;
+import com.gabriel.donation.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,6 +41,12 @@ public class UserDonatedController {
     @Autowired
     UserDonatedService userDonatedService;
 
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    DonationPostService donationPostService;
+
     @GetMapping("/admin/get")
     public String getAllUserDonated(
             @RequestParam("page") int page,
@@ -70,11 +79,11 @@ public class UserDonatedController {
         );
         Page<UserDonatedDTO> list = userDonatedService.getAll(pageRequest);
         int totalPages = list.getTotalPages();
-        List<UserDonatedDTO> userdonated = list.getContent()
+        List<UserDonatedDTO> userDonated = list.getContent()
                 .stream()
                 .filter(userDonatedDTO -> userDonatedDTO.getUserId()==id)
                 .toList();
-        model.addAttribute("userdonated", userdonated);
+        model.addAttribute("userdonated", userDonated);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
         return "admin/UserDonated";
@@ -205,5 +214,24 @@ public class UserDonatedController {
         model.addAttribute("currentPage", page);
         return "";
 
+    }
+
+    @PostMapping("donate")
+    public String donate(
+            @RequestBody UserDonatedDTO userDonatedDTO, HttpSession session
+    ){
+        int userId = (int) session.getAttribute("userId");
+        userDonatedDTO.setUserId(userId);
+        userDonatedService.addUserDonated(userDonatedDTO);
+
+        UserDTO userDTO = userService.findById(userId);
+        userDTO.setBalance(userDTO.getBalance() - userDonatedDTO.getAmount());
+        userService.updateUser(userDTO, userId);
+
+        DonationPostDTO donationPostDTO = donationPostService.findById(userDonatedDTO.getDonationPostId());
+        donationPostDTO.setCurrentAmount(donationPostDTO.getCurrentAmount() + userDonatedDTO.getAmount());
+        donationPostDTO.setNumberOfDonation(donationPostDTO.getNumberOfDonation() + 1);
+        donationPostService.updateDonationPost(donationPostDTO, userDonatedDTO.getDonationPostId());
+        return "";
     }
 }

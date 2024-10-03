@@ -16,4 +16,6 @@ public interface DonationPostService {
     void deleteDonationPost(int id);
 
     DonationPostDTO getDonationPostById(int id);
+
+    DonationPostDTO findById(int id);
 }

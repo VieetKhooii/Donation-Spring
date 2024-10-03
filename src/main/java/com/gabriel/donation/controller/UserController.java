@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 //@RequestMapping("/api/user")
 @Mapper
 public class UserController {
@@ -23,7 +23,7 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/admin/get")
-    public String getAllUsers(
+    public ResponseEntity<?> getAllUsers(
             @RequestParam("page") int page,
             @RequestParam("limit") int limit,
             Model model
@@ -34,10 +34,11 @@ public class UserController {
         Page<UserDTO> list = userService.getUsersForAdmin(pageRequest);
         int totalPages = list.getTotalPages();
         List<UserDTO> users = list.getContent();
-        model.addAttribute("users", users);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("currentPage", page);
-        return "admin/user";
+//        model.addAttribute("users", users);
+//        model.addAttribute("totalPages", totalPages);
+//        model.addAttribute("currentPage", page);
+//        return "admin/user";
+        return ResponseEntity.ok(users);
 
     }
 
