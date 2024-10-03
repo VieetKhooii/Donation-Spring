@@ -19,7 +19,8 @@ public class Payment {
     @Column(nullable = false)
     private long amount;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
+
     private Date transaction_date;
 
     @ManyToOne

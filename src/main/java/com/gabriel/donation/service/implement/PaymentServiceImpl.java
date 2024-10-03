@@ -41,8 +41,10 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDTO addPayment(PaymentDTO paymentDTO)
     {
+        System.out.println("Transaction Date in DTO: " + paymentDTO.getTransactionDate());
         Payment payment = PaymentMapper.INSTANCE.toEntity(paymentDTO);
-        Payment savedPayment= paymentRepo.save(payment);
+        System.out.println("Transaction Date in Entity: " + payment.getTransaction_date());
+        Payment savedPayment = paymentRepo.save(payment);
         return PaymentMapper.INSTANCE.toDto(savedPayment);
     }
 

@@ -14,6 +14,8 @@ public interface PaymentMapper {
 
     //               dto's id    entity's id
     @Mapping(source = "paymentId", target = "id")
+    @Mapping(source = "userId", target = "user.id")
+    @Mapping(source = "transactionDate", target = "transaction_date")
     Payment toEntity(PaymentDTO paymentDTO);
 
     @Mapping(source = "id", target = "paymentId")

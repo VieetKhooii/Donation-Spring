@@ -83,4 +83,9 @@ public class DonationPostServiceImpl implements DonationPostService {
     {
         return DonationPostMapper.INSTANCE.toDto(donationPostRepo.findById(id).get());
     }
+
+    @Override
+    public DonationPostDTO findById(int id){
+        return  DonationPostMapper.INSTANCE.toDto(donationPostRepo.findById(id).get());
+    }
 }
