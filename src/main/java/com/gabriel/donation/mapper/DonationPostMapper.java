@@ -17,7 +17,6 @@ public interface DonationPostMapper {
     DonationPost toEntity(DonationPostDTO donationPostDTO);
 
     @Mapping(source = "id", target = "donationPostId")
-    @Mapping(source = "sponsor.id", target = "sponsorId")
     @Mapping(source = "category.id", target = "categoryId")
     // Fields from entity that are Object type (Foreign key) must have ".id" (ex: role.id)
     // so that DTO can understand and store it

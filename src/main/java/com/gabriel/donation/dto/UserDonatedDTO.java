@@ -1,6 +1,7 @@
 package com.gabriel.donation.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gabriel.donation.payload.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,9 @@ public class UserDonatedDTO {
 
     @JsonProperty("donate_date")
     private Date donateDate;
+
+    @JsonProperty("payment_method")
+    private PaymentMethod paymentMethod;
 
     @JsonProperty("is_deleted")
     private boolean isDeleted;

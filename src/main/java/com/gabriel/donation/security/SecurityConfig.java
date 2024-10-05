@@ -49,9 +49,12 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("api/auth/**").permitAll()
+                        auth
+//                                .anyRequest().permitAll()
+                                .requestMatchers("api/auth/**", "login").permitAll()
                                 .anyRequest().authenticated())
-                .httpBasic(withDefaults());
+                .httpBasic(withDefaults()
+                );
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

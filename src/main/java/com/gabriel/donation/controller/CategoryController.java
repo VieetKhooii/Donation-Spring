@@ -5,6 +5,7 @@ import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.service.CategoryService;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,20 +16,10 @@ import java.util.List;
 @RequestMapping("/api/category")
 @Mapper
 public class CategoryController {
-    /*
-    * Các api cần làm:
-    *   - Admin:
-    *       + Lấy toàn bộ category [/admin/get] (có phân trang)
-    *       + Thêm [/admin/add]
-    *       + Sửa [/admin/edit]
-    *       + Xóa [/admin/hide]
-    *   - User:
-    *       + Lấy toàn bộ category [/get]
-    * */
-
     @Autowired
     CategoryService categoryService;
     @GetMapping("/admin/get")
+    @Cacheable("categoriesAdmin")
     public String getAllCategories(Model model) {
         List<CategoryDTO> categories = categoryService.getAll();
         model.addAttribute("categories", categories);
@@ -79,8 +70,10 @@ public class CategoryController {
         return "redirect:/admin/get";
     }
 
+
     //User
     @GetMapping("/get")
+    @Cacheable("categoriesUser")
     public String getAllCategoriesForUser(Model model) {
         List<CategoryDTO> categories = categoryService.getAll();
         model.addAttribute("categories", categories);

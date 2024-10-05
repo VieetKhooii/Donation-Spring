@@ -7,6 +7,7 @@ import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.UserService;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,7 @@ public class DonationPostController {
     DonationPostService donationPostService;
 
     @GetMapping("/admin/get")
+    @Cacheable("donationPostAdmin")
     public String getAllDonationPost(
             @RequestParam("page") int page,
             @RequestParam("limit") int limit,
@@ -53,30 +55,6 @@ public class DonationPostController {
         model.addAttribute("currentPage", page);
         return "admin/DonationPost";
 
-    }
-
-    //lọc theo sponsor
-    @GetMapping("/admin/getBySponsorID")
-    public String getAllDonationPostBySponsor(
-            @RequestParam("sponsor_id") int id,
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit,
-            Model model) {
-        PageRequest pageRequest = PageRequest.of(
-                page, limit
-        );
-        Page<DonationPostDTO> list = donationPostService.getAll(pageRequest);
-
-        List<DonationPostDTO> donations = list.getContent()
-                .stream()
-                .filter(donationPostDTO -> donationPostDTO.getSponsorId() ==id )
-                .toList();
-        int totalPages = list.getTotalPages();
-        model.addAttribute("donationPost", donations);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("currentPage", page);
-
-        return "";
     }
 
     @GetMapping("/admin/add")
@@ -126,6 +104,7 @@ public class DonationPostController {
     // User
 
     @GetMapping("/get")
+    @Cacheable("donationPostUsers")
     public String getAllDonationPostForUser(
             @RequestParam("page") int page,
             @RequestParam("limit") int limit,

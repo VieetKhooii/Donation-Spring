@@ -28,16 +28,16 @@
     <div class="container-fluid vh-100 bg-dark d-flex justify-content-center align-items-center">
         <div class="text-center form-login p-sm-3">
             <h2 class="text-black p-3 r-sm-3">Đăng nhập</h2>
-            <form action="" class="needs-validation" novalidate>
+            <form action="/api/auth/login" class="needs-validation" method="post" novalidate>
                     <div class="form-group">
                         <div class="form-floating m-3">
-                            <input type="text" class="form-control" placeholder="email/sđt" name="tk" required>
+                            <input type="text" class="form-control" placeholder="email/sđt" name="phone" id="phone" required>
                             <label >SĐT/Email</label>
                             <div class="valid-feedback">Thành công !</div>
                             <div class="invalid-feedback">Vui lòng không để trống</div>
                         </div>
                         <div class="form-floating m-3">
-                            <input type="password" id="password" class="form-control" placeholder="password" name="pwd" required>
+                            <input type="password" id="password" class="form-control" placeholder="password" name="password" required>
                             <label>Password</label>
                             <div class="valid-feedback">Thành công !</div>
                             <div class="invalid-feedback">Vui lòng không để trống</div>

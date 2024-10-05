@@ -33,9 +33,9 @@ public class UserDonatedController {
      *       + Sửa [/admin/edit]
      *       + Xóa [/admin/hide]
      *   - User:
-     *       + Xem toàn bộ user donated (xem lịch sử quyên góp) [/get]
-     *       + Xem toàn bộ user donated theo ngày
-     *       + Lấy toàn bộ user donated theo donation post id của bản thân
+     *       + Quyên góp:
+     *              - Tạo mới đối tượng khi user quyên góp
+     *              - Nếu số tiền quyên góp lớn hơn số dư thì không cho giao dịch
      * */
 
     @Autowired
@@ -221,17 +221,11 @@ public class UserDonatedController {
             @RequestBody UserDonatedDTO userDonatedDTO, HttpSession session
     ){
         int userId = (int) session.getAttribute("userId");
-        userDonatedDTO.setUserId(userId);
-        userDonatedService.addUserDonated(userDonatedDTO);
-
         UserDTO userDTO = userService.findById(userId);
         userDTO.setBalance(userDTO.getBalance() - userDonatedDTO.getAmount());
         userService.updateUser(userDTO, userId);
 
-        DonationPostDTO donationPostDTO = donationPostService.findById(userDonatedDTO.getDonationPostId());
-        donationPostDTO.setCurrentAmount(donationPostDTO.getCurrentAmount() + userDonatedDTO.getAmount());
-        donationPostDTO.setNumberOfDonation(donationPostDTO.getNumberOfDonation() + 1);
-        donationPostService.updateDonationPost(donationPostDTO, userDonatedDTO.getDonationPostId());
+        userDonatedService.processDonation(userDonatedDTO, userId);
         return "";
     }
 }

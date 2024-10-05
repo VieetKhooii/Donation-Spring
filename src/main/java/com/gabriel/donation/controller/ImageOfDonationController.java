@@ -6,6 +6,7 @@ import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.ImageOfDonationService;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -18,19 +19,12 @@ import java.util.List;
 @RequestMapping("/api/image_of_donation")
 @Mapper
 public class ImageOfDonationController {
-    /*
-     * Các api cần làm:
-     *   - Admin:
-     *       + Lấy toàn bộ image theo donation post id [/admin/get?donation_post_id={id}] (có phân trang)
-     *       + Thêm [/admin/add]
-     *       + Sửa [/admin/edit]
-     *       + Xóa [/admin/hide]
-     * */
 
     @Autowired
     ImageOfDonationService imageOfDonationService;
 
     @GetMapping("/admin/get/{id}")
+    @Cacheable("imageOfDonationPostAdmin")
     public String getAllImageOfDonationPost(
             @PathVariable("id") int id,
             @RequestParam("page") int page,

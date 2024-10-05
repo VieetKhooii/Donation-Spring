@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Order</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="mb-4">Submit Your Donation</h2>
+  <form th:action="@{/submitOrder}" method="post">
+    <div class="form-group">
+      <label for="amount">Amount</label>
+      <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter donation amount" required>
+    </div>
+
+    <div class="form-group">
+      <label for="orderInfo">Order Information</label>
+      <input type="text" class="form-control" id="orderInfo" name="orderInfo" placeholder="Enter order info (optional)">
+    </div>
+
+    <div class="form-group">
+      <label for="receiver">Receiver Account</label>
+      <input type="text" class="form-control" id="receiver" name="receiver" placeholder="Enter receiver's account" required>
+    </div>
+
+    <!-- Hidden fields for UserDonatedDTO -->
+    <input type="hidden" th:name="userDonatedDTO.userId" value="1">
+    <input type="hidden" th:name="userDonatedDTO.donationPostId" value="1">
+    <input type="hidden" th:name="userDonatedDTO.amount" value="0">
+    <input type="hidden" th:name="userDonatedDTO.anonymous" value="false">
+    <input type="hidden" th:name="userDonatedDTO.donateDate" value="${#dates.format(new java.util.Date(), 'yyyy-MM-dd')}">
+    <input type="hidden" th:name="userDonatedDTO.isDeleted" value="false">
+
+    <button type="submit" class="btn btn-primary">Submit Order</button>
+  </form>
+</div>
+
+<!-- Optional JavaScript -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -16,4 +16,6 @@ public interface UserDonatedService {
     void deleteUserDonated(int id);
 
     UserDonatedDTO getUserDonatedById(int id);
+
+    public void processDonation(UserDonatedDTO userDonatedDTO, int donatePersonId);
 }

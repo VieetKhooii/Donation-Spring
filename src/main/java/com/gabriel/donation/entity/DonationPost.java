@@ -38,10 +38,6 @@ public class DonationPost {
     private String story;
 
     @ManyToOne
-    @JoinColumn(name = "sponsor_id")
-    private Sponsor sponsor;
-
-    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 

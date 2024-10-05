@@ -55,7 +55,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setAmount(paymentDTO.getAmount());
         payment.setTransaction_date(paymentDTO.getTransactionDate());
         payment.setDeleted(paymentDTO.isDeleted());
-        User use1=userRepo.findById(paymentDTO.getUserId()).get();
+        User use1=userRepo.findById(paymentDTO.getUserId());
         payment.setUser(use1);
         Payment updatedPayment= paymentRepo.save(payment);
         return PaymentMapper.INSTANCE.toDto(updatedPayment);

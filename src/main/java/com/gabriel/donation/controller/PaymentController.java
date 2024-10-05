@@ -9,6 +9,7 @@ import com.gabriel.donation.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -23,19 +24,6 @@ import java.util.List;
 @RequestMapping("/api/payment")
 @Mapper
 public class PaymentController {
-    /*
-     * Các api cần làm:
-     *   - Admin:
-     *       + Lấy toàn bộ payment [/admin/get] (có phân trang)
-     *       + Lấy toàn bộ payment của 1 user [/admin/get?user_id={id}] (có phân trang)
-     *       + Lấy toàn bộ payment của 1 user theo ngày [/admin/get?user_id={id}&transaction_date={}] (có phân trang)
-     *       + Sửa [/admin/edit]
-     *       + Xóa [/admin/hide]
-     *   - User:
-     *       + Xem toàn bộ payment (xem lịch sử nạp tiền) [/get]
-     *       + Xem toàn bộ payment theo ngày
-     *       + Lấy toàn bộ payment theo donation post id của bản thân [/get?donation_post_id={id}]
-     * */
 
     @Autowired
     PaymentService paymentService;
@@ -43,6 +31,7 @@ public class PaymentController {
     UserService userService;
 
     @GetMapping("/admin/get")
+    @Cacheable("paymentsAdmin")
     public String getAllPayment(
             @RequestParam("page") int page,
             @RequestParam("limit") int limit,
@@ -63,6 +52,7 @@ public class PaymentController {
 
     //lọc theo user
     @GetMapping("/admin/getByUserID")
+    @Cacheable("paymentByUserIdAdmin")
     public String getAllPaymentByUserId(
             @RequestParam("user_id") int id,
             @RequestParam("page") int page,
@@ -87,6 +77,7 @@ public class PaymentController {
 
     //lọc theo user và transaction date
     @GetMapping("/admin/getByUserIDAndDate")
+
     public String getAllPaymentByUserAndDate(
             @RequestParam("user_id") int id,
             @RequestParam("transaction_date") LocalDate transaction_date,

@@ -16,6 +16,7 @@ public interface UserMapper {
 
     @Mapping(source = "id", target = "userId")
     @Mapping(source = "role.id", target = "roleId")
+    @Mapping(source = "password", ignore = true, target = "password")
     // Fields from entity that are Object type (Foreign key) must have ".id" (ex: role.id)
     // so that DTO can understand and store it
     UserDTO toDto(User user);

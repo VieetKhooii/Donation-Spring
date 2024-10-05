@@ -1,5 +1,6 @@
 package com.gabriel.donation.entity;
 
+import com.gabriel.donation.payload.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,6 +33,10 @@ public class UserDonated {
 
     @Column(nullable = false)
     private Date donateDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentMethod paymentMethod;
 
     @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean isDeleted = false;

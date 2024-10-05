@@ -3,11 +3,9 @@ package com.gabriel.donation.service.implement;
 import com.gabriel.donation.dto.DonationPostDTO;
 import com.gabriel.donation.entity.Category;
 import com.gabriel.donation.entity.DonationPost;
-import com.gabriel.donation.entity.Sponsor;
 import com.gabriel.donation.mapper.DonationPostMapper;
 import com.gabriel.donation.repository.CategoryRepo;
 import com.gabriel.donation.repository.DonationPostRepo;
-import com.gabriel.donation.repository.SponsorRepo;
 import com.gabriel.donation.service.DonationPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,8 +20,6 @@ public class DonationPostServiceImpl implements DonationPostService {
 
     @Autowired
     DonationPostRepo donationPostRepo;
-    @Autowired
-    SponsorRepo sponsorRepo;
     @Autowired
     CategoryRepo categoryRepo;
 
@@ -62,9 +58,9 @@ public class DonationPostServiceImpl implements DonationPostService {
         donationPost.setStory(donationPostDTO.getStory());
         donationPost.setTitle(donationPostDTO.getTitle());
         donationPost.setNumberOfDonation(donationPostDTO.getNumberOfDonation());
-        Sponsor sponsor1=sponsorRepo.findById(donationPostDTO.getSponsorId()).get();
+//        Sponsor sponsor1=sponsorRepo.findById(donationPostDTO.getSponsorId()).get();
         Category category1=categoryRepo.findById(donationPostDTO.getCategoryId()).get();
-        donationPost.setSponsor(sponsor1);
+//        donationPost.setSponsor(sponsor1);
         donationPost.setCategory(category1);
 
         DonationPost updatedDonationPost=donationPostRepo.save(donationPost);
