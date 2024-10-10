@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Oops! You’re Unauthorized!</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #ffeeba; /* Màu nền tươi sáng, vui nhộn */
+    }
+    .error-container {
+      margin-top: 100px;
+    }
+    .card {
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .card-header {
+      background-color: #ffc107; /* Màu vàng tươi */
+    }
+    .btn-fun {
+      background-color: #007bff;
+      border-color: #007bff;
+      color: white;
+    }
+    .btn-fun:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+<div class="container text-center error-container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-lg">
+        <div class="card-header">
+          <h4>Whoops! 😅 You’re Not Supposed to be Here!</h4>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Error 401 - Unauthorized</h5>
+          <p class="card-text">Looks like you wandered into a restricted area. 🕵️‍♂️ Don't worry, it happens to the best of us!</p>
+          <p class="card-text">Why not head back to the <a href="/" class="text-primary">home page</a> and try again? Or maybe <a href="/login" class="text-warning">log in</a> if you haven’t already!</p>
+          <img src="https://cdn-icons-png.flaticon.com/512/4052/4052992.png" alt="Unauthorized image" width="100" class="mb-3">
+          <div>
+            <a href="/" class="btn btn-fun">Take Me Home</a>
+            <a href="/login" class="btn btn-warning">Log In</a>
+          </div>
+        </div>
+        <div class="card-footer text-muted">
+          <small>Don’t worry, everything’s under control! 😉</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

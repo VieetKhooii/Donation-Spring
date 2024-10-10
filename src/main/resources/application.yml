@@ -21,6 +21,9 @@ spring:
       host: localhost
       port: 6379
 
+  thymeleaf:
+    cache: false
+
 #  vnp:
 #    vnp_TmnCode: NEOBKC89
 #    access:

@@ -42,19 +42,20 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exception ->
-                        exception.authenticationEntryPoint(new HttpStatusEntryPoint(
-                                HttpStatus.UNAUTHORIZED
-                        )))
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth
-//                                .anyRequest().permitAll()
-                                .requestMatchers("api/auth/**", "login").permitAll()
-                                .anyRequest().authenticated())
-                .httpBasic(withDefaults()
-                );
+//                                .anyRequest().permitAll())
+                            .requestMatchers("api/auth/**", "login", "error/**", "/").permitAll()
+                            .requestMatchers("/css/**", "/images/**").permitAll()
+                            .anyRequest().authenticated())
+                .httpBasic(withDefaults())
+
+                .exceptionHandling(exception ->
+                        exception.authenticationEntryPoint((request, response, authException) ->
+                                response.sendRedirect("/error/401")))
+                
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
