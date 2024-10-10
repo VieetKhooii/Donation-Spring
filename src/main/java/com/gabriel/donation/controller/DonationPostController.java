@@ -14,7 +14,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/api/donation_post")
@@ -106,21 +114,39 @@ public class DonationPostController {
     @GetMapping("/get")
     @Cacheable("donationPostUsers")
     public String getAllDonationPostForUser(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "3") int limit,
             Model model) {
-        PageRequest pageRequest = PageRequest.of(
-                page, limit
-        );
+        PageRequest pageRequest = PageRequest.of(page, limit);
         Page<DonationPostDTO> list = donationPostService.getAll(pageRequest);
-        int totalPages = list.getTotalPages();
-        List<DonationPostDTO> donations = list.getContent();
-        model.addAttribute("donationPost", donations);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("currentPage", page);
+        List<Long> dateDifferences = new ArrayList<>();
 
-        return "";
+        for (DonationPostDTO donationPostDTO : list.getContent())
+        {
+            Date startDate = donationPostDTO.getStartDate();
+            Date endDate = donationPostDTO.getEndDate();
+
+            LocalDate startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+            long daysBetween = ChronoUnit.DAYS.between(startLocalDate, endLocalDate);
+            dateDifferences.add(daysBetween);
+        }
+
+        model.addAttribute("lstDonationPost", list.getContent());
+        model.addAttribute("totalPages", list.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("dateDifferences", dateDifferences);
+        return "home";
     }
+    @GetMapping("/getDonationPostByID")
+    public String getDonationPostByID(@RequestParam("donationPostId") int id,  Model model)
+    {
+        DonationPostDTO donationPostDTO = donationPostService.getDonationPostById(id);
+        model.addAttribute("donationPosts", donationPostDTO);
+        return "donationPostDetail";
+    }
+
 
     //lọc theo category id
     @GetMapping("/getByCategoryID")

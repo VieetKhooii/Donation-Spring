@@ -1,12 +1,19 @@
 package com.gabriel.donation.service.implement;
 
 import com.gabriel.donation.dto.DonationPostDTO;
+import com.gabriel.donation.dto.ImageOfDonationDTO;
 import com.gabriel.donation.entity.Category;
 import com.gabriel.donation.entity.DonationPost;
+import com.gabriel.donation.entity.ImageOfDonation;
+import com.gabriel.donation.entity.Sponsor;
 import com.gabriel.donation.mapper.DonationPostMapper;
+import com.gabriel.donation.mapper.ImageOfDonationMapper;
 import com.gabriel.donation.repository.CategoryRepo;
 import com.gabriel.donation.repository.DonationPostRepo;
+import com.gabriel.donation.repository.ImageOfDonationRepo;
+import com.gabriel.donation.repository.SponsorRepo;
 import com.gabriel.donation.service.DonationPostService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,6 +28,10 @@ public class DonationPostServiceImpl implements DonationPostService {
     @Autowired
     DonationPostRepo donationPostRepo;
     @Autowired
+    ImageOfDonationRepo imageOfDonationRepo;
+    @Autowired
+    SponsorRepo sponsorRepo;
+    @Autowired
     CategoryRepo categoryRepo;
 
     @Override
@@ -29,8 +40,20 @@ public class DonationPostServiceImpl implements DonationPostService {
         List<DonationPost> DonationPosts = donationPostRepo.findAll(pageRequest).getContent();
         List<DonationPostDTO> donationPostDTOS = DonationPosts
                 .stream()
-                .map(DonationPostMapper.INSTANCE::toDto)
+                .filter(donationPost -> !donationPost.isDeleted()  )
+                .map(post ->{
+                    List<ImageOfDonation> ImagesOfDonationPosts = imageOfDonationRepo.findByDonationPostId(post.getId());
+                    DonationPostDTO donationPostDTO = DonationPostMapper.INSTANCE.toDto(post);
+                    List<ImageOfDonationDTO> imageOfDonationDTOS = ImagesOfDonationPosts
+                            .stream()
+                            .map(ImageOfDonationMapper.INSTANCE::toDto)
+                            .toList();
+                    donationPostDTO.setLstImages(imageOfDonationDTOS);
+                        return donationPostDTO;
+                })
                 .toList();
+
+
         return new PageImpl<DonationPostDTO>(
                 donationPostDTOS,
                 donationPostRepo.findAll(pageRequest).getPageable(),
@@ -77,7 +100,19 @@ public class DonationPostServiceImpl implements DonationPostService {
     @Override
     public DonationPostDTO getDonationPostById(int id)
     {
-        return DonationPostMapper.INSTANCE.toDto(donationPostRepo.findById(id).get());
+        return donationPostRepo.findById(id)
+                .map( post ->
+                        {
+                            List<ImageOfDonation> ImagesOfDonationPosts = imageOfDonationRepo.findByDonationPostId(post.getId());
+                            DonationPostDTO donationPostDTO = DonationPostMapper.INSTANCE.toDto(post);
+                            List<ImageOfDonationDTO> imageOfDonationDTOS = ImagesOfDonationPosts
+                                    .stream()
+                                    .map(ImageOfDonationMapper.INSTANCE::toDto)
+                                    .toList();
+                            donationPostDTO.setLstImages(imageOfDonationDTOS);
+                            return donationPostDTO;
+                        })
+                .orElseThrow(() -> new EntityNotFoundException("Donation post not found with id: " + id));
     }
 
     @Override

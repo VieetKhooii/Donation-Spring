@@ -39,4 +39,6 @@ public class DonationPostDTO {
     private int categoryId;
     @JsonProperty("is_deleted")
     private boolean isDeleted;
+    @JsonProperty("images")
+    private List<ImageOfDonationDTO> lstImages = new ArrayList<>();
 }
