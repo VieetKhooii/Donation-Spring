@@ -2,27 +2,56 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Hoàn cảnh quyên góp</title>
-    <link rel="stylesheet" href="path/to/your/css/styles.css"> <!-- Thay đổi đường dẫn tới file CSS -->
 </head>
 <body>
+
 <div th:fragment="hoanCanh">
     <div class="container mt-3">
         <div class="d-flex justify-content-center align-items-center">
             <h2 class="color-pink">Các hoàn cảnh Quyên góp</h2>
         </div>
-        <div class="row">
-            <div class="col-md-4" th:each="donationPost : ${lstDonationPost}"> <!-- Sử dụng đúng key -->
-                <div class="custom-div mb-3">
-                    <img class="w-100 rounded-top" alt="images" th:src="@{${donationPost.imageUrl}}"> <!-- Giả sử có thuộc tính imageUrl trong DTO -->
-                    <h4 class="px-3 pt-2 fs-5" th:text="${donationPost.title}"></h4>
-                    <p class="px-3 fs-6" th:text="${donationPost.story}"></p>
-                    <div class="d-flex justify-content-end">
-                        <button class="custom-button btn-infor mr-2">Quyên góp</button>
+        <div id="items-container mt-5" class="row mx-5">
+            <div class="col-md-4" th:each="donationPost, iterStat  : ${lstDonationPost}">
+                <div th:if="${!donationPost.isDeleted}">
+                    <div class="custom-div mb-3">
+                        <div th:each="image : ${donationPost.lstImages}">
+                            <img class="img-fluid rounded-top"
+                                 style="max-width:100%; height: 188px; width: 100%; object-fit: cover;"
+                                 alt="images"
+                                 th:src="@{/images/{imageUrl}(imageUrl=${image.url})}"
+                            >
+                        </div>
+
+                        <div class=" custom-H4">
+                            <h4 class="px-3 pt-2 fs-5" th:text="${donationPost.title}"></h4>
+                        </div>
+                        <div class="pt-2 px-3 d-flex  justify-content-end ">
+                            <p th:text="'Còn lại' +' '+ ${dateDifferences[iterStat.index]} +' '+ 'ngày'"></p>
+                        </div>
+
+                        <div class="px-3 pt-1 fs-6 progress-container" >
+                            <div class="progress-text">
+                                <h4 id="current-Amount" class="current-Amount d-inline-block" th:text="${donationPost.currentAmount} "></h4> /
+                                <p id="goal-Amount" class="goal-Amount d-inline-block" th:text="${donationPost.goalAmount} "></p>
+                            </div>
+                            <div class="progress-bar-background">
+                                <div class="progress-bar" id="progress-bar"></div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end pt-4">
+                            <a th:href="@{'/api/donation_post/getDonationPostByID'(donationPostId=${donationPost.donationPostId})}"
+                               class="custom-button btn-infor pt-1">Quyên góp</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div id="load-more-container" class="d-flex mt-5 justify-content-center align-items-center " >
+           <button class="custom-learnMore" onclick="loadMore()" th:if="${currentPage + 1 < totalPages }">  Xem thêm </button>
+        </div>
     </div>
 </div>
+
 </body>
 </html>

@@ -1,8 +1,10 @@
 package com.gabriel.donation.mapper;
 
 import com.gabriel.donation.dto.DonationPostDTO;
+import com.gabriel.donation.dto.ImageOfDonationDTO;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.entity.DonationPost;
+import com.gabriel.donation.entity.ImageOfDonation;
 import com.gabriel.donation.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,4 +24,5 @@ public interface DonationPostMapper {
     // Fields from entity that are Object type (Foreign key) must have ".id" (ex: role.id)
     // so that DTO can understand and store it
     DonationPostDTO toDto(DonationPost donationPost);
+    ImageOfDonationDTO toDto(ImageOfDonation imageOfDonation);
 }

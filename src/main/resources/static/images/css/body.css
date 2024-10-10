@@ -1,0 +1,108 @@
+   .slider {
+        z-index: 1;
+        position: relative;
+    }
+
+    .border-left {
+        border-left: 3px solid #d42988;
+        padding-left: 5px;
+    }
+
+    .nenTang {
+        width: 92%;
+        padding: 132px;
+        position: absolute;
+        bottom: 0;
+        transform: translate(3%, -23%);
+        border-top-left-radius: 20%;
+        border-top-right-radius: 20%;
+        z-index: 2;
+        background-color: white;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
+
+    .color-pink {
+        color: #d42988;
+    }
+
+    .custom-button {
+        border-radius: 10px;
+        width: 104px;
+        height: 42px;
+        margin-top: -15px;
+        margin-right: 5px;
+        text-decoration:none;
+        text-align:center;
+    }
+    .custom-button:hover{
+        background-color: #d42988;
+        color:white;
+    }
+    .btn-quyenGop {
+        background-color: #d42988;
+        color: white;
+        border: 1px solid transparent;
+    }
+
+    .btn-infor {
+        background-color: white;
+        color: #d42988;
+        border: 1px solid #d42988;
+    }
+
+    .height {
+        height: 600px;
+        position: relative;
+        top: 133px;
+    }
+
+    .custom-div {
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        height: 440px;
+        width: 350px;
+        margin:20px;
+    }
+    .custom-H4
+    {
+        display:-webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height:5em;
+        line-height: 3em/*khoảng cách các dòng*/;
+    }
+    .custom-learnMore{
+        width:120px;
+        height:39px;
+        border-radius: 10px;
+        background-color: white;
+        color: #d42988;
+        border: 1px solid #d42988;
+    }
+    .progress-bar-background {
+        width:100%;
+        height:10px;
+        background-color: #e0e0e0; /* Màu nền */
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    .progress-bar {
+        height:100%;
+        background-color: #ff1493;
+        width:0%;
+        border-radius:5px;
+        transition: width 0.3s ease
+    }
+   .div_quyenGop{
+        height:60px;
+        background-color: rgba(255, 192, 203, 0.5);
+   }
+   .btn_quyenGop{
+        width:214px;
+        height:40px;
+        border:none;
+        border-radius:10px;
+        color:white;
+        background-color:rgb(211, 42, 135);
+   }

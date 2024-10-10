@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>DonationPost</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/images/css/body.css}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .custom-donationPost{
+            padding-left:100px;
+            padding-right:110px;
+        }
+        .donationDetail_button{
+            width:322px;
+            height:46px;
+            border:none;
+            border-radius:10px;
+            background-color:rgb(211, 42, 135);
+            color:white;
+        }
+        .donationDetail_div{
+            width:433px;
+            height:482px;
+            border-radius:10px;
+            box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+            overflow: hidden;
+        }
+        .donationDetail_Infor{
+            width:407px;
+            height:238px;
+            border:none;
+            border-radius:10px;
+            background-color:rgb(229, 231, 235);
+        }
+        .donationDetail_amount
+        {
+            width:407px;
+            height:74px;
+        }
+        .progress-bar-background {
+            width:93%;
+            height:10px;
+            background-color: #e0e0e0; /* Màu nền */
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height:100%;
+            background-color: #ff1493;
+            width:0%;
+            border-radius:5px;
+            transition: width 0.3s ease
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="fragments/header :: header"></div>
+    <div class="container mt-5">
+        <div  th:each="donationPost : ${donationPosts}">
+            <div class="custom-donationPost">
+                <h3 th:text="${donationPost.title}"></h3>
+                <div th:each="image : ${donationPost.lstImages}">
+                    <p th:text="${image.description}"></p>
+                    <p th:text="${donationPost.startDate}"></p>
+                    <div class="row">
+                        <div class="col-sm-7 ">
+                            <div th:each="image : ${donationPost.lstImages}">
+                                <img class="img-fluid rounded-top"
+                                     style="max-width:100%; height: 378px; width: 698px; object-fit: cover;"
+                                     alt="images"
+                                     th:src="@{/images/{imageUrl}(imageUrl=${image.url})}"
+                                >
+                            </div>
+                            <div class="mt-5">
+                                <p th:text="${donationPost.story}"></p>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 donationDetail_div">
+                            <h4 class="my-3 " style="color:rgb(211, 42, 135)">Thông tin quyên góp :</h4>
+                            <div class="my-3 donationDetail_Infor">
+
+                            </div>
+                            <div class="donationDetail_amount mx-4 fs-6 progress-container">
+                                <div class="progress-text">
+                                    <h4 id="current-Amount" class="d-inline-block" th:text="${donationPost.currentAmount} "></h4> /
+                                    <p id="goal-Amount" class="d-inline-block" th:text="${donationPost.goalAmount} "></p>
+                                </div>
+                                <div class="progress-bar-background">
+                                    <div class="progress-bar" id="progress-bar"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center  align-items-end">
+                                <button class="donationDetail_button">Quyên góp</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+<script>
+
+    function updateProgressBar(currentAmount, goalAmount){
+        // tính phần trăm
+        var percentage = (currentAmount / goalAmount) * 100;
+        //cập nhật thanh hồng
+        var progressBar = document.getElementById("progress-bar");
+        progressBar.style.width = percentage +  "%";
+
+        document.getElementById("current-Amount").innerText = currentAmount.toLocaleString('vi-VN') + "đ";
+        document.getElementById("goal-Amount").innerText = goalAmount.toLocaleString('vi-VN') + "đ";
+    }
+    // Lấy giá trị từ các thẻ và loại bỏ các ký tự không phải số, rồi chuyển thành số nguyên
+    let currentAmount = parseInt(document.getElementById("current-Amount").innerText.replace(/\D/g, ''));
+    let goalAmount = parseInt(document.getElementById("goal-Amount").innerText.replace(/\D/g, ''));
+
+    // Gọi hàm để cập nhật thanh tiến trình
+    updateProgressBar(currentAmount, goalAmount);
+
+
+</script>
+</body>
+</html>
