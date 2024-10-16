@@ -4,6 +4,7 @@ import com.gabriel.donation.dto.DonationPostDTO;
 import com.gabriel.donation.dto.PaymentDTO;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.dto.UserDonatedDTO;
+import com.gabriel.donation.entity.User;
 import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.UserDonatedService;
 import com.gabriel.donation.service.UserService;
@@ -24,19 +25,6 @@ import java.util.List;
 @RequestMapping("/api/user_donated")
 @Mapper
 public class UserDonatedController {
-    /*
-     * Các api cần làm:
-     *   - Admin:
-     *       + Lấy toàn bộ user donated [/admin/get] (có phân trang)
-     *       + Lấy toàn bộ user donated của 1 user [/admin/get?user_id={id}] (có phân trang)
-     *       + Lấy toàn bộ user donated của 1 user theo ngày (có phân trang)
-     *       + Sửa [/admin/edit]
-     *       + Xóa [/admin/hide]
-     *   - User:
-     *       + Quyên góp:
-     *              - Tạo mới đối tượng khi user quyên góp
-     *              - Nếu số tiền quyên góp lớn hơn số dư thì không cho giao dịch
-     * */
 
     @Autowired
     UserDonatedService userDonatedService;
@@ -227,5 +215,18 @@ public class UserDonatedController {
 
         userDonatedService.processDonation(userDonatedDTO, userId);
         return "";
+    }
+
+    @GetMapping("enter-donation-information")
+    public String enterDonationInformation(
+            @RequestParam("donationPostId") String donationPostId,
+            @RequestParam("receiverId") int receiverId,
+            Model model
+    ){
+        UserDTO userDTO = userService.findById(receiverId);
+        String phone = userDTO.getPhone();
+        model.addAttribute("donationPostId", donationPostId);
+        model.addAttribute("receiverPhone", phone);
+        return "transaction/transaction-information";
     }
 }

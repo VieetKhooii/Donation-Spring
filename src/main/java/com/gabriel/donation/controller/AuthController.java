@@ -1,9 +1,14 @@
 package com.gabriel.donation.controller;
 
-import com.gabriel.donation.dto.AuthResponseDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gabriel.donation.dto.UserDTO;
+import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.security.JwtGenerator;
 import com.gabriel.donation.service.UserService;
+import com.gabriel.donation.utils.CookieUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +19,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Base64;
 
 @Controller
 @RequestMapping("/api/auth")
@@ -28,30 +38,57 @@ public class AuthController {
     private UserService userService;
     @Autowired
     private JwtGenerator jwtGenerator;
+    @Autowired
+    private CookieUtil cookieUtil;
 
     @PostMapping("login")
-    public String login(
-            @ModelAttribute UserDTO userDTO,
-            HttpSession session,
-            HttpServletResponse response){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDTO.getPhone(),
-                        userDTO.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtGenerator.generateToken(authentication);
+    public ResponseEntity<?> login(@RequestBody UserDTO userDTOInput, HttpSession session, HttpServletResponse response) {
+        if (userDTOInput.getPhone() == null || userDTOInput.getPhone().isEmpty() ||
+                userDTOInput.getPassword() == null || userDTOInput.getPassword().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Thông tin đăng nhập không được để trống!");
+        }
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(userDTOInput.getPhone(), userDTOInput.getPassword()));
 
-        UserDTO userDTO1 = userService.findByPhone(userDTO.getPhone());
-        session.setAttribute("userId", userDTO1.getUserId());
-        session.setAttribute("password", userDTO.getPassword());
+            if (authentication.isAuthenticated()) {
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                String token = jwtGenerator.generateToken(authentication);
+                UserDTO userDTO = userService.findByPhone(userDTOInput.getPhone());
+                ObjectMapper objectMapper = new ObjectMapper();
+                String userDTOJson = objectMapper.writeValueAsString(userDTO);
+                String encodedUserDTOJson = Base64.getEncoder().encodeToString(userDTOJson.getBytes());
 
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(60)
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        return "redirect:/home";
+                session.setAttribute("userId", userDTO.getUserId());
+                session.setAttribute("username", userDTO.getName());
+
+                ResponseCookie cookie = ResponseCookie.from(String.valueOf(CookieName.jwt), token)
+                        .httpOnly(true)
+                        .secure(true)
+                        .path("/")
+                        .maxAge(600)
+                        .build();
+                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+                System.out.println(userDTOJson);
+                ResponseCookie userInfoCookie = ResponseCookie.from(String.valueOf(CookieName.userInfo), encodedUserDTOJson)
+                        .httpOnly(true) // Có thể chỉnh sửa tùy nhu cầu
+                        .secure(true)
+                        .path("/")
+                        .maxAge(600)
+                        .build();
+                response.addHeader(HttpHeaders.SET_COOKIE, userInfoCookie.toString());
+
+                return ResponseEntity.ok("Đăng nhập thành công");
+            }
+        } catch (AuthenticationException e) {
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sai thông tin đăng nhập");
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Đã có lỗi xảy ra");
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Không có quyền truy cập");
     }
 
     @PostMapping("register")
@@ -60,5 +97,35 @@ public class AuthController {
         String message = userService.register(userDTO);
         model.addAttribute("message", message);
         return "";
+    }
+
+    @GetMapping("check-cookie")
+    public ResponseEntity<String> checkCookie(
+            HttpServletRequest request
+    ) {
+        try {
+            System.out.println("Cookie Checking");
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                String token = cookieUtil.getCookieValue(cookies, String.valueOf(CookieName.jwt));
+                if (token != null) {
+                    boolean check = jwtGenerator.validateToken(token);
+                    if (check) {
+                        String userInfoJson = cookieUtil.getCookieValue(cookies, String.valueOf(CookieName.userInfo));
+                        UserDTO userDTO = cookieUtil.decodeUserDTOInCookie(userInfoJson);
+                        System.out.println("Found username "+userDTO.getName());
+                        return new ResponseEntity<>(userDTO.getName(), HttpStatus.OK);
+                    }
+                    System.out.println("Validation jwt failed");
+                }
+                System.out.println("jwt not found");
+            }
+            System.out.println("Check cookie fail");
+            return new ResponseEntity<>("", HttpStatus.EXPECTATION_FAILED);
+        }
+        catch (Exception e){
+
+            return new ResponseEntity<>("", HttpStatus.BAD_GATEWAY);
+        }
     }
 }

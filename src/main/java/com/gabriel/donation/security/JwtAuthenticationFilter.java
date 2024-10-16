@@ -31,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = extractJwtFromCookie(request);
         String token = getJwtFromRequest(request);
         if(StringUtils.hasText(jwt) && tokenGenerator.validateToken(jwt)){
-            System.out.println("Authentication successful");
             String username = tokenGenerator.getUserNameFromJWT(jwt);
 
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);

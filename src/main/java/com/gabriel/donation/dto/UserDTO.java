@@ -13,7 +13,7 @@ import lombok.*;
 public class UserDTO {
     @JsonProperty("user_id")
     private int userId;
-    private String username;
+    private String name;
     private String phone;
     private String password;
     private long balance;

@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService {
         }
         try {
             User user = new User();
-            user.setName(userDTO.getUsername());
+            user.setName(userDTO.getName());
             user.setPhone(userDTO.getPhone());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 

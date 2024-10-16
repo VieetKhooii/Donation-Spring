@@ -10,7 +10,7 @@
         <div class="d-flex justify-content-center align-items-center">
             <h2 class="color-pink">Các hoàn cảnh Quyên góp</h2>
         </div>
-        <div id="items-container mt-5" class="row mx-5">
+        <div id="items-container" class="row mx-5">
             <div class="col-md-4" th:each="donationPost, iterStat  : ${lstDonationPost}">
                 <div th:if="${!donationPost.isDeleted}">
                     <div class="custom-div mb-3">

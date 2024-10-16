@@ -31,10 +31,57 @@
                     <li class="nav-item"><a class="nav-link" href="#">Tin Tức Cộng Đồng</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Đối Tác Đồng Hành</a></li>
                 </ul>
-                <ul class=" navbar-nav ms-3 border-start px-3">
-                        <li class="nav-item"><a href="/login" class="nav-link">Đăng nhập</a></li>
-                        <li class="nav-item"><a href="/login" class="nav-link">Đăng ký</a></li>
+                <ul class="navbar-nav ms-3 border-start px-3">
+                    <li id="loginNav" class="nav-item"><a href="/login" class="nav-link">Đăng nhập</a></li>
+                    <li id="registerNav" class="nav-item"><a href="/login" class="nav-link">Đăng ký</a></li>
+                    <li id="userNav" class="nav-item"><a href="/login" class="nav-link">Hello</a></li>
+                    <li id="logoutNav" class="nav-item"><a href="/login" class="nav-link">Đăng xuất</a></li>
                 </ul>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        fetch('/api/auth/check-cookie')
+                            .then(response => {
+                                // Ensure the response is okay (200-299 status)
+                                if (response.ok) {
+                                    return response.text();  // Parse the JSON response (since it returns true/false)
+                                } else {
+                                    throw new Error('Failed to validate JWT');
+                                }
+                            })
+                            .then(username => {
+                                if (username) {
+
+                                    // Hide the login/register links
+                                    document.getElementById("loginNav").classList.add("d-none");
+                                    document.getElementById("registerNav").classList.add("d-none");
+
+                                    // Show the username/logout links
+                                    document.getElementById("userNav").classList.remove("d-none");
+                                    document.getElementById("logoutNav").classList.remove("d-none");
+
+                                    document.getElementById("userNav").innerText += "\n" + username;
+                                } else {
+                                    // Show login/register in case user is not authenticated
+                                    document.getElementById("loginNav").classList.remove("d-none");
+                                    document.getElementById("registerNav").classList.remove("d-none");
+
+                                    // Hide username/logout in case user is not authenticated
+                                    document.getElementById("userNav").classList.add("d-none");
+                                    document.getElementById("logoutNav").classList.add("d-none");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error validating JWT:", error);
+                                // If there is an error, show the login/register and hide username/logout
+                                document.getElementById("loginNav").classList.remove("d-none");
+                                document.getElementById("registerNav").classList.remove("d-none");
+
+                                document.getElementById("userNav").classList.add("d-none");
+                                document.getElementById("logoutNav").classList.add("d-none");
+                            });
+                    });
+                </script>
             </div>
         </div>
     </nav>

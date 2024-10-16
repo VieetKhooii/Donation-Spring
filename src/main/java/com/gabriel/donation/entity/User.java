@@ -42,6 +42,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<UserDonated> userDonateds = new ArrayList<>();
 
+    @OneToMany(mappedBy = "receiver")
+    private List<DonationPost> donationPosts = new ArrayList<>();
+
     @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean isDeleted = false;
 
