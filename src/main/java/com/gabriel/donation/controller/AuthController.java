@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.security.JwtGenerator;
+import com.gabriel.donation.service.RoleService;
 import com.gabriel.donation.service.UserService;
 import com.gabriel.donation.utils.CookieUtil;
 import jakarta.servlet.http.Cookie;
@@ -40,6 +41,8 @@ public class AuthController {
     private JwtGenerator jwtGenerator;
     @Autowired
     private CookieUtil cookieUtil;
+    @Autowired
+    private RoleService roleService;
 
     @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody UserDTO userDTOInput, HttpSession session, HttpServletResponse response) {
@@ -78,8 +81,12 @@ public class AuthController {
                         .maxAge(600)
                         .build();
                 response.addHeader(HttpHeaders.SET_COOKIE, userInfoCookie.toString());
-
-                return ResponseEntity.ok("Đăng nhập thành công");
+                if (roleService.findRoleNameById(userDTO.getRoleId()).equalsIgnoreCase("USER")){
+                    return ResponseEntity.ok("user");
+                }
+                else {
+                    return ResponseEntity.ok("admin");
+                }
             }
         } catch (AuthenticationException e) {
 
@@ -92,11 +99,9 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public String register(@ModelAttribute UserDTO userDTO,
-                           Model model) {
+    public String register(@RequestBody UserDTO userDTO) {
         String message = userService.register(userDTO);
-        model.addAttribute("message", message);
-        return "";
+        return message;
     }
 
     @GetMapping("check-cookie")

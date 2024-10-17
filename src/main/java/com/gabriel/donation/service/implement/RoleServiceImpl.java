@@ -66,5 +66,10 @@ public class RoleServiceImpl implements RoleService {
         return RoleMapper.INSTANCE.toDto(roleRepo.findById(id).get());
     }
 
+    @Override
+    public String findRoleNameById(int id) {
+        return roleRepo.findById(id).get().getName();
+    }
+
 
 }

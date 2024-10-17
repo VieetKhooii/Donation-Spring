@@ -10,7 +10,7 @@
 </head>
 <body style="background: #ff4081">
 <div class="container mt-5">
-  <form id="donationForm" th:action="@{/submitOrder}" method="post" class="p-4 rounded shadow-sm bg-white" style="max-width: 500px; margin: auto; border: 2px solid #ff4081;">
+  <form id="donationForm" th:action="@{/api/user_donated/donate}" method="post" class="p-4 rounded shadow-sm bg-white" style="max-width: 500px; margin: auto; border: 2px solid #ff4081;">
     <h2 class="mb-4 text-center" style="color: #ff4081; font-weight: bold;">Gabriel Donation</h2>
 
     <div class="mb-3">
@@ -23,7 +23,7 @@
 
     <div class="mb-3">
       <label for="orderInfo" class="form-label" style="color: #ff4081;">Nội dung</label>
-      <input type="text" class="form-control" id="orderInfo" th:name="orderInfo" placeholder="Nhập nội dung chuyển tiền (không bắt buộc)">
+      <input type="text" class="form-control" id="orderInfo" th:name="orderInfo" value="Ủng hộ người cần được hỗ trợ" placeholder="Nhập nội dung chuyển tiền (không bắt buộc)">
     </div>
 
     <div class="mb-3">
@@ -71,6 +71,13 @@
     var form = document.getElementById('donationForm');
     form.action = action;
   }
+
+  document.getElementById('donationForm').addEventListener('submit', function(e) {
+    const orderInfoInput = document.getElementById('orderInfo');
+    if (orderInfoInput.value.trim() === "") {
+      orderInfoInput.value = " ";
+    }
+  });
 </script>
 </body>
 </html>
