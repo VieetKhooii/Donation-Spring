@@ -87,7 +87,7 @@ public class VNPayController {
     public String getMapping(
             HttpServletRequest request,
             Model model){
-        try {
+//        try {
             int paymentStatus =vnPayService.orderReturn(request);
 
             String orderInfo = request.getParameter("vnp_OrderInfo");
@@ -118,18 +118,18 @@ public class VNPayController {
                 String receiverPhone = (String) session.getAttribute("receiverAccount");
                 UserDonatedDTO userDonatedDTO = (UserDonatedDTO) session.getAttribute("userDonatedDTO");
 
-                UserDTO receiverDTO = userService.findByPhone(receiverPhone);
-                receiverDTO.setBalance(receiverDTO.getBalance()+userDonatedDTO.getAmount());
-                userService.updateUser(receiverDTO, receiverDTO.getUserId());
+//                UserDTO receiverDTO = userService.findByPhone(receiverPhone);
+//                receiverDTO.setBalance(receiverDTO.getBalance()+userDonatedDTO.getAmount());
+//                userService.updateUser(receiverDTO, receiverDTO.getUserId());
 
                 int donatePersonId = userDonatedDTO.getUserId();
                 userDonatedService.processDonation(userDonatedDTO, donatePersonId);
             }
 
             return paymentStatus == 1 ? "/transaction/order-success" : "/transaction/order-fail";
-        } catch (Exception e) {
-            System.out.println("helooooo");
-            return "/transaction/order-fail";
-        }
+//        } catch (Exception e) {
+//            System.out.println("helooooo");
+//            return "/transaction/order-fail";
+//        }
     }
 }

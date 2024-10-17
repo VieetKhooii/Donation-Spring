@@ -91,14 +91,24 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Không có quyền truy cập");
     }
 
-    @PostMapping("register")
-    public String register(@ModelAttribute UserDTO userDTO,
-                           Model model) {
-        String message = userService.register(userDTO);
-        model.addAttribute("message", message);
-        return "";
-    }
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody UserDTO userDTO) {
+        if (userService.exitsByPhone(userDTO.getPhone())) {
+            return new ResponseEntity<>("Info is taken!", HttpStatus.BAD_REQUEST);
+        }
+//        User user = new User();
+//        user.setEmail(userDTO.getEmail());
+//        user.setName(userDTO.getName());
+//        user.setPhone(userDTO.getPhone());
+//        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+//        RoleDTO roleDTO = roleService.findByName("USER");
+//        Role role = RoleMapper.INSTANCE.toEntity(roleDTO);
+//        user.setRole(role);
 
+//        UserDTO user1 = UserMapper.INSTANCE.toDto(user);
+        userService.addUser(userDTO);
+        return new ResponseEntity<>("User registered success", HttpStatus.OK);
+    }
     @GetMapping("check-cookie")
     public ResponseEntity<String> checkCookie(
             HttpServletRequest request

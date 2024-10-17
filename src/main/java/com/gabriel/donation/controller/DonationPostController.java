@@ -159,10 +159,10 @@ public class DonationPostController {
             Date startDate = donationPostDTO.getStartDate();
             Date endDate = donationPostDTO.getEndDate();
 
-            LocalDate startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
             LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-            long daysBetween = ChronoUnit.DAYS.between(startLocalDate, endLocalDate);
+            long daysBetween = ChronoUnit.DAYS.between(LocalDate.now(), endLocalDate);
             dateDifferences.add(daysBetween);
         }
         return dateDifferences;

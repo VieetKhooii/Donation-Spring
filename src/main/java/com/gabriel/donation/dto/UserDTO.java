@@ -16,6 +16,7 @@ public class UserDTO {
     private String name;
     private String phone;
     private String password;
+    private String email;
     private long balance;
     @JsonProperty("role_id")
     private int roleId;

@@ -81,6 +81,11 @@ public class UserServiceImpl implements UserService {
             userRepo.deleteById(id);
     }
 
+    @Override
+    public boolean exitsByPhone(String phone) {
+        return userRepo.existsByPhone(phone);
+    }
+
     @Cacheable(value = "usersCache", key = "'userList'", sync = true)
     @Override
     public List<UserDTO> getUsers() {
@@ -116,6 +121,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO findByEmail(String email) {
+        Optional<User> userOptional = userRepo.findByEmail(email);
+        User user = userOptional.get();
+        return UserMapper.INSTANCE.toDto(user);
+    }
+
+    @Override
     public String register(UserDTO userDTO) {
         if (userRepo.findByPhone(userDTO.getPhone()).isPresent()) {
             return "Số điện thoại đã tồn tại!";
@@ -135,4 +147,6 @@ public class UserServiceImpl implements UserService {
         }
         return "Đăng ký thành công!";
     }
+
+
 }
