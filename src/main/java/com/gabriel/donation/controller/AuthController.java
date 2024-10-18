@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.security.JwtGenerator;
+import com.gabriel.donation.service.RoleService;
 import com.gabriel.donation.service.UserService;
 import com.gabriel.donation.utils.CookieUtil;
 import jakarta.servlet.http.Cookie;
@@ -40,6 +41,8 @@ public class AuthController {
     private JwtGenerator jwtGenerator;
     @Autowired
     private CookieUtil cookieUtil;
+    @Autowired
+    private RoleService roleService;
 
     @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody UserDTO userDTOInput, HttpSession session, HttpServletResponse response) {
@@ -78,8 +81,12 @@ public class AuthController {
                         .maxAge(600)
                         .build();
                 response.addHeader(HttpHeaders.SET_COOKIE, userInfoCookie.toString());
-
-                return ResponseEntity.ok("Đăng nhập thành công");
+                if (roleService.findRoleNameById(userDTO.getRoleId()).equalsIgnoreCase("USER")){
+                    return ResponseEntity.ok("user");
+                }
+                else {
+                    return ResponseEntity.ok("admin");
+                }
             }
         } catch (AuthenticationException e) {
 
@@ -91,24 +98,19 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Không có quyền truy cập");
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserDTO userDTO) {
-        if (userService.exitsByPhone(userDTO.getPhone())) {
-            return new ResponseEntity<>("Info is taken!", HttpStatus.BAD_REQUEST);
+    @PostMapping("register")
+    public String register(
+            @RequestBody UserDTO userDTO,
+            Model model) {
+        if (userService.findByPhone(userDTO.getPhone()) != null) {
+            model.addAttribute("message","Số điện thoại đã tồn tại");
+            return "";
         }
-//        User user = new User();
-//        user.setEmail(userDTO.getEmail());
-//        user.setName(userDTO.getName());
-//        user.setPhone(userDTO.getPhone());
-//        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-//        RoleDTO roleDTO = roleService.findByName("USER");
-//        Role role = RoleMapper.INSTANCE.toEntity(roleDTO);
-//        user.setRole(role);
-
-//        UserDTO user1 = UserMapper.INSTANCE.toDto(user);
-        userService.addUser(userDTO);
-        return new ResponseEntity<>("User registered success", HttpStatus.OK);
+        String message = userService.register(userDTO);
+        return message;
     }
+  
+ 
     @GetMapping("check-cookie")
     public ResponseEntity<String> checkCookie(
             HttpServletRequest request

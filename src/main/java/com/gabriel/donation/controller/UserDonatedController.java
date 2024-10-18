@@ -1,13 +1,21 @@
 package com.gabriel.donation.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gabriel.donation.dto.DonationPostDTO;
 import com.gabriel.donation.dto.PaymentDTO;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.dto.UserDonatedDTO;
 import com.gabriel.donation.entity.User;
+import com.gabriel.donation.payload.CookieName;
+import com.gabriel.donation.payload.PaymentMethod;
 import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.UserDonatedService;
 import com.gabriel.donation.service.UserService;
+import com.gabriel.donation.utils.CookieUtil;
+import com.gabriel.donation.utils.DateTimeFormatter;
+import com.gabriel.donation.utils.UserDonatedUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -28,12 +37,16 @@ public class UserDonatedController {
 
     @Autowired
     UserDonatedService userDonatedService;
-
     @Autowired
     UserService userService;
-
     @Autowired
     DonationPostService donationPostService;
+    @Autowired
+    CookieUtil cookieUtil;
+    @Autowired
+    UserDonatedUtil userDonatedUtil;
+    @Autowired
+    DateTimeFormatter dateTimeFormatter;
 
     @GetMapping("/admin/get")
     public String getAllUserDonated(
@@ -206,15 +219,32 @@ public class UserDonatedController {
 
     @PostMapping("donate")
     public String donate(
-            @RequestBody UserDonatedDTO userDonatedDTO, HttpSession session
-    ){
-        int userId = (int) session.getAttribute("userId");
-        UserDTO userDTO = userService.findById(userId);
-        userDTO.setBalance(userDTO.getBalance() - userDonatedDTO.getAmount());
+            @RequestParam("amount") int amount,
+            @RequestParam("orderInfo") String orderInfo,
+            @RequestParam("receiver") String receiver,
+            @RequestParam("donationPostId") int donationPostId,
+            @RequestParam("anonymous") boolean anonymous,
+            HttpServletRequest request,
+            Model model
+    ) throws JsonProcessingException {
+        Cookie[] cookies = request.getCookies();
+        String userInfoJson = cookieUtil.getCookieValue(cookies, String.valueOf(CookieName.userInfo));
+        UserDTO userDTO = cookieUtil.decodeUserDTOInCookie(userInfoJson);
+        userDTO.setBalance(userDTO.getBalance() - amount);
+        int userId = userDTO.getUserId();
         userService.updateUser(userDTO, userId);
 
+        UserDonatedDTO userDonatedDTO = userDonatedUtil.setupUserDonatedForTransactions(amount, donationPostId, anonymous, PaymentMethod.GABRIEL_PAY, request);
+
         userDonatedService.processDonation(userDonatedDTO, userId);
-        return "";
+
+        String paymentTime = new Date().toString();
+
+        model.addAttribute("orderInfo", orderInfo);
+        model.addAttribute("totalPrice", userDonatedDTO.getAmount());
+        model.addAttribute("paymentTime", paymentTime);
+        model.addAttribute("transactionId", userDonatedDTO.getUserDonatedId());
+        return "/transaction/order-success";
     }
 
     @GetMapping("enter-donation-information")
