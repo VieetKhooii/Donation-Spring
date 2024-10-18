@@ -99,11 +99,18 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public String register(@RequestBody UserDTO userDTO) {
+    public String register(
+            @RequestBody UserDTO userDTO,
+            Model model) {
+        if (userService.findByPhone(userDTO.getPhone()) != null) {
+            model.addAttribute("message","Số điện thoại đã tồn tại");
+            return "";
+        }
         String message = userService.register(userDTO);
         return message;
     }
-
+  
+ 
     @GetMapping("check-cookie")
     public ResponseEntity<String> checkCookie(
             HttpServletRequest request

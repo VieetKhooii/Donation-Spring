@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -65,6 +66,12 @@ public class RoleServiceImpl implements RoleService {
     {
         return RoleMapper.INSTANCE.toDto(roleRepo.findById(id).get());
     }
+
+    @Override
+    public RoleDTO findByName(String name) {
+        Optional<Role> roleOptional = roleRepo.findByName(name);
+        Role role = roleOptional.get();
+        return RoleMapper.INSTANCE.toDto(role);
 
     @Override
     public String findRoleNameById(int id) {

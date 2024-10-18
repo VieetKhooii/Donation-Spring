@@ -12,7 +12,7 @@
         </div>
         <div id="items-container" class="row mx-5">
             <div class="col-md-4" th:each="donationPost, iterStat  : ${lstDonationPost}">
-                <div th:if="${!donationPost.isDeleted}">
+                <div th:if="${!donationPost.isDeleted} and (${dateDifferences[iterStat.index]>0})">
                     <div class="custom-div mb-3">
                         <div th:each="image : ${donationPost.lstImages}">
                             <img class="img-fluid rounded-top"
@@ -40,7 +40,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end pt-4">
-                            <a th:href="@{'/api/donation_post/getDonationPostByID'(donationPostId=${donationPost.donationPostId})}"
+                            <a th:if="${donationPost.currentAmount < donationPost.goalAmount }" th:href="@{'/api/donation_post/getDonationPostByID'(donationPostId=${donationPost.donationPostId})}"
                                class="custom-button btn-infor pt-1">Quyên góp</a>
                         </div>
                     </div>
