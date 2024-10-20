@@ -1,10 +1,7 @@
 package com.gabriel.donation.controller;
 
-import com.gabriel.donation.dto.DonationPostDTO;
-import com.gabriel.donation.dto.PaymentDTO;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.dto.UserDonatedDTO;
-import com.gabriel.donation.entity.User;
 import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.UserDonatedService;
 import com.gabriel.donation.service.UserService;
@@ -20,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/api/user_donated")
@@ -229,4 +228,45 @@ public class UserDonatedController {
         model.addAttribute("receiverPhone", phone);
         return "transaction/transaction-information";
     }
+
+    //Tìm list userdonate theo từng post(desc amount), userdonate nhiều nhất mỗi tháng(chỉ 1 người)
+    @GetMapping("thongke")
+    public String rankingUserDonatedByAmount(@RequestParam(name = "year", required = false, defaultValue = "2024") int year,
+            Model model){
+        //Tìm list userdonate theo từng post(desc amount)
+        List<UserDonatedDTO> userDonatedRankingList = userDonatedService.rankingUserDonatedByAmount();
+
+        // Nhóm theo donationPostId(key là donationPostId và value là list userDonated truyền dứi service lên)
+        Map<Integer, List<UserDonatedDTO>> groupedByDonationPost = userDonatedRankingList.stream()
+                .collect(Collectors.groupingBy(UserDonatedDTO::getDonationPostId));
+
+        model.addAttribute("groupedByDonationPost", groupedByDonationPost);
+
+        //Tìm userdonate nhiều nhất mỗi tháng(chỉ 1 người)
+        List <UserDonatedDTO> userDonatedRankingListByMonth= userDonatedService.rankingUserDonatedByMonth(year);
+        model.addAttribute("userDonatedRankingListByMonth", userDonatedRankingListByMonth);
+        model.addAttribute("selectedYear", year);
+        return "admin/thongke";
+    }
+
+    //Tìm post được quyên góp nhiều nhất mỗi tháng và post có số người quyên góp nhiều nhất mỗi tháng
+    @GetMapping("thongkePost")
+    public String rankingDonationPostAmountByMonth(@RequestParam(name = "year", required = false, defaultValue = "2024") int year,
+                                             Model model) {
+        List <UserDonatedDTO> donationPostAmountRankingListByMonth= userDonatedService.rankingDonationPostAmountByMonth(year);
+        model.addAttribute("donationPostAmountRankingListByMonth", donationPostAmountRankingListByMonth);
+        model.addAttribute("selectedYear", year);
+        return "admin/thongkePost";
+    }
+
+    //Tìm post được quyên góp nhiều nhất mỗi tháng và post có số người quyên góp nhiều nhất mỗi tháng
+    @GetMapping("thongkeUser")
+    public String countUserDonatedByPost(@RequestParam(name = "year", required = false, defaultValue = "2024") int year,
+                                                   Model model) {
+        List <UserDonatedDTO> ListcountUserDonatedByPost= userDonatedService.countUserDonatedByPost(year);
+        model.addAttribute("ListcountUserDonatedByPost", ListcountUserDonatedByPost);
+        model.addAttribute("selectedYear", year);
+        return "admin/thongkeUser";
+    }
+
 }
