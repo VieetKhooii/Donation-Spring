@@ -86,8 +86,13 @@
                     password: password
                 }),
                 success: function(response) {
-                    // Xử lý khi đăng nhập thành công
-                    window.location.href = "/api/donation_post/get"; // Điều hướng đến trang sau khi đăng nhập thành công
+                    if (response === "user") {
+                        // Điều hướng đến trang dành cho user
+                        window.location.href = "/api/donation_post/get";
+                    } else if (response === "admin") {
+                        // Điều hướng đến trang dành cho admin
+                        window.location.href = "/api/admin";
+                    }
                 },
                 error: function(xhr, status, error) {
                     var errorMessage = xhr.responseText || "Đã xảy ra lỗi. Vui lòng thử lại sau.";

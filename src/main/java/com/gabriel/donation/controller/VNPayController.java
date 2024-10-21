@@ -11,6 +11,8 @@ import com.gabriel.donation.service.UserDonatedService;
 import com.gabriel.donation.service.UserService;
 import com.gabriel.donation.service.VNPayService;
 import com.gabriel.donation.utils.CookieUtil;
+import com.gabriel.donation.utils.DateTimeFormatter;
+import com.gabriel.donation.utils.UserDonatedUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -39,43 +40,22 @@ public class VNPayController {
     private DonationPostService donationPostService;
     @Autowired
     private CookieUtil cookieUtil;
-
+    @Autowired
+    private UserDonatedUtil userDonatedUtil;
+    @Autowired
+    private DateTimeFormatter dateTimeFormatter;
     @PostMapping("/submitOrder")
     public String submitOrder(@RequestParam("amount") int orderTotal,
                               @RequestParam("orderInfo") String orderInfo,
                               @RequestParam("receiver") String receiver,
                               @RequestParam("donationPostId") int donationPostId,
                               @RequestParam("anonymous") boolean anonymous,
-                              HttpServletRequest request) throws JsonProcessingException {
+                              HttpServletRequest request) {
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        System.out.println("Anonymous: "+anonymous);
-        Cookie[] cookies = request.getCookies();
 
-        UserDonatedDTO userDonatedDTO = new UserDonatedDTO();
-        try {
-            String cookieValueEncoded = cookieUtil.getCookieValue(cookies, String.valueOf(CookieName.userInfo));
-            UserDTO userDTO = cookieUtil.decodeUserDTOInCookie(cookieValueEncoded);
-            userDonatedDTO.setUserId(userDTO.getUserId());
-            userDonatedDTO.setDonationPostId(donationPostId);
-            userDonatedDTO.setAmount(orderTotal);
-            userDonatedDTO.setAnonymous(anonymous);
-            userDonatedDTO.setDeleted(false);
-            userDonatedDTO.setPaymentMethod(PaymentMethod.VN_PAY);
-            userDonatedDTO.setDonateDate(new Date());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException("User must be logged in to submit an order.");
-        }
-
-        System.out.println("User ID: " + userDonatedDTO.getUserId());
-        System.out.println("Donation Post ID: " + userDonatedDTO.getDonationPostId());
-        System.out.println("Amount: " + userDonatedDTO.getAmount());
-        System.out.println("Anonymous: " + userDonatedDTO.isAnonymous());
-        System.out.println("Donate Date: " + userDonatedDTO.getDonateDate());
-        System.out.println("Is Deleted: " + userDonatedDTO.isDeleted());
+        UserDonatedDTO userDonatedDTO = userDonatedUtil.setupUserDonatedForTransactions(orderTotal, donationPostId, anonymous, PaymentMethod.VN_PAY, request);
 
         HttpSession session = request.getSession();
-
         session.setAttribute("receiverAccount", receiver);
         session.setAttribute("userDonatedDTO", userDonatedDTO);
 
@@ -95,13 +75,7 @@ public class VNPayController {
             String transactionId = request.getParameter("vnp_TransactionNo");
             String totalPrice = request.getParameter("vnp_Amount");
 
-            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-            LocalDateTime dateTime = LocalDateTime.parse(paymentTime, inputFormatter);
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            String formattedPaymentTime = dateTime.format(dateTimeFormatter);
-            Date formattedPaymentDate = new Date(Long.parseLong(paymentTime));
-
+            String formattedPaymentTime = dateTimeFormatter.formatDateTimeToString(paymentTime);
 
             long longParsePrice = Long.parseLong(totalPrice);
             NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
