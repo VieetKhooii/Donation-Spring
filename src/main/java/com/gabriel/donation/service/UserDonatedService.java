@@ -18,4 +18,12 @@ public interface UserDonatedService {
     UserDonatedDTO getUserDonatedById(int id);
 
     public void processDonation(UserDonatedDTO userDonatedDTO, int donatePersonId);
+
+    List<UserDonatedDTO> rankingUserDonatedByAmount();
+
+    List<UserDonatedDTO> rankingUserDonatedByMonth(int presentYear);
+
+    List<UserDonatedDTO> rankingDonationPostAmountByMonth(int presentYear);
+
+    List<UserDonatedDTO> countUserDonatedByPost(int presentYear);
 }
