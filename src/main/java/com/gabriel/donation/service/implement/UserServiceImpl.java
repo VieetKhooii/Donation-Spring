@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -122,8 +123,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findByEmail(String email) {
-        Optional<User> userOptional = userRepo.findByEmail(email);
-        User user = userOptional.get();
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
         return UserMapper.INSTANCE.toDto(user);
     }
 
@@ -146,6 +147,11 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
         return "Đăng ký thành công!";
+    }
+
+    @Override
+    public void updatePassword(String email, String password){
+        userRepo.updatePassword(email, password);
     }
 
 

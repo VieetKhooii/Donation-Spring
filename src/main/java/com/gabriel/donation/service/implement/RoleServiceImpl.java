@@ -2,7 +2,9 @@ package com.gabriel.donation.service.implement;
 
 import com.gabriel.donation.dto.RoleDTO;
 import com.gabriel.donation.entity.Role;
+import com.gabriel.donation.entity.User;
 import com.gabriel.donation.mapper.RoleMapper;
+import com.gabriel.donation.mapper.UserMapper;
 import com.gabriel.donation.repository.RoleRepo;
 import com.gabriel.donation.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;

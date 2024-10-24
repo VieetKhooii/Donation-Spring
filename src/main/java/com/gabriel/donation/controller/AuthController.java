@@ -1,8 +1,14 @@
 package com.gabriel.donation.controller;
 
+import com.gabriel.donation.dto.AuthResponseDTO;
+import com.gabriel.donation.dto.RoleDTO;
+import com.gabriel.donation.dto.UserDTO;
+import com.gabriel.donation.entity.Role;
+import com.gabriel.donation.entity.User;
+import com.gabriel.donation.mapper.RoleMapper;
+import com.gabriel.donation.mapper.UserMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.security.JwtGenerator;
 import com.gabriel.donation.service.RoleService;
@@ -22,6 +28,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -43,6 +50,8 @@ public class AuthController {
     private CookieUtil cookieUtil;
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody UserDTO userDTOInput, HttpSession session, HttpServletResponse response) {
