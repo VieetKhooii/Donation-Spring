@@ -31,7 +31,5 @@ public interface UserService {
 
     String register(UserDTO userDTO);
 
-    UserDTO findByEmail(String email);
-
     void updatePassword(String email, String password);
 }
