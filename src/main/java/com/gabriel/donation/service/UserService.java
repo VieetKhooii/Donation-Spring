@@ -17,6 +17,8 @@ public interface UserService {
 
     void deleteUser(int id);
 
+    boolean exitsByPhone(String phone);
+
     List<UserDTO> getUsers();
 
     Set<String> checkCache();
@@ -26,4 +28,8 @@ public interface UserService {
     UserDTO findByPhone(String phone);
 
     String register(UserDTO userDTO);
+
+    UserDTO findByEmail(String email);
+
+    void updatePassword(String email, String password);
 }

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -81,6 +82,11 @@ public class UserServiceImpl implements UserService {
             userRepo.deleteById(id);
     }
 
+    @Override
+    public boolean exitsByPhone(String phone) {
+        return userRepo.existsByPhone(phone);
+    }
+
     @Cacheable(value = "usersCache", key = "'userList'", sync = true)
     @Override
     public List<UserDTO> getUsers() {
@@ -116,6 +122,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO findByEmail(String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
+        return UserMapper.INSTANCE.toDto(user);
+    }
+
+    @Override
     public String register(UserDTO userDTO) {
         if (userRepo.findByPhone(userDTO.getPhone()).isPresent()) {
             return "Số điện thoại đã tồn tại!";
@@ -135,4 +148,11 @@ public class UserServiceImpl implements UserService {
         }
         return "Đăng ký thành công!";
     }
+
+    @Override
+    public void updatePassword(String email, String password){
+        userRepo.updatePassword(email, password);
+    }
+
+
 }

@@ -1,8 +1,14 @@
 package com.gabriel.donation.controller;
 
 import com.gabriel.donation.dto.AuthResponseDTO;
+import com.gabriel.donation.dto.RoleDTO;
 import com.gabriel.donation.dto.UserDTO;
+import com.gabriel.donation.entity.Role;
+import com.gabriel.donation.entity.User;
+import com.gabriel.donation.mapper.RoleMapper;
+import com.gabriel.donation.mapper.UserMapper;
 import com.gabriel.donation.security.JwtGenerator;
+import com.gabriel.donation.service.RoleService;
 import com.gabriel.donation.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -15,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +35,11 @@ public class AuthController {
     private UserService userService;
     @Autowired
     private JwtGenerator jwtGenerator;
+
+    @Autowired
+    private RoleService roleService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("login")
     public String login(
@@ -55,10 +67,20 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public String register(@ModelAttribute UserDTO userDTO,
-                           Model model) {
-        String message = userService.register(userDTO);
-        model.addAttribute("message", message);
-        return "";
+    public ResponseEntity<String> register(@RequestBody UserDTO userDTO) {
+        if (userService.exitsByPhone(userDTO.getPhone())) {
+            return new ResponseEntity<>("Info is taken!", HttpStatus.BAD_REQUEST);
+        }
+        User user = new User();
+        user.setName(userDTO.getUsername());
+        user.setPhone(userDTO.getPhone());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        RoleDTO roleDTO = roleService.findByName("USER");
+        Role role = RoleMapper.INSTANCE.toEntity(roleDTO);
+        user.setRole(role);
+
+        UserDTO user1 = UserMapper.INSTANCE.toDto(user);
+        userService.addUser(user1);
+        return new ResponseEntity<>("User registered success", HttpStatus.OK);
     }
 }

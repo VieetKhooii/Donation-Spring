@@ -2,7 +2,9 @@ package com.gabriel.donation.service.implement;
 
 import com.gabriel.donation.dto.RoleDTO;
 import com.gabriel.donation.entity.Role;
+import com.gabriel.donation.entity.User;
 import com.gabriel.donation.mapper.RoleMapper;
+import com.gabriel.donation.mapper.UserMapper;
 import com.gabriel.donation.repository.RoleRepo;
 import com.gabriel.donation.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -64,6 +67,13 @@ public class RoleServiceImpl implements RoleService {
     public RoleDTO getRoleById(int id)
     {
         return RoleMapper.INSTANCE.toDto(roleRepo.findById(id).get());
+    }
+
+    @Override
+    public RoleDTO findByName(String name) {
+        Optional<Role> roleOptional = roleRepo.findByName(name);
+        Role role = roleOptional.get();
+        return RoleMapper.INSTANCE.toDto(role);
     }
 
 

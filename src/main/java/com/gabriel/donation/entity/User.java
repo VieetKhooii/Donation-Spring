@@ -29,6 +29,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String email;
+
 //    @Column(nullable = false)
     private long balance;
 
@@ -49,6 +52,9 @@ public class User implements UserDetails {
     public String getUsername(){
         return phone;
     }
+
+    @OneToOne(mappedBy = "user")
+    private ForgotPassword forgotPassword;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

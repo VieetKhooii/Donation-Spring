@@ -5,13 +5,11 @@ import com.gabriel.donation.dto.ImageOfDonationDTO;
 import com.gabriel.donation.entity.Category;
 import com.gabriel.donation.entity.DonationPost;
 import com.gabriel.donation.entity.ImageOfDonation;
-import com.gabriel.donation.entity.Sponsor;
 import com.gabriel.donation.mapper.DonationPostMapper;
 import com.gabriel.donation.mapper.ImageOfDonationMapper;
 import com.gabriel.donation.repository.CategoryRepo;
 import com.gabriel.donation.repository.DonationPostRepo;
 import com.gabriel.donation.repository.ImageOfDonationRepo;
-import com.gabriel.donation.repository.SponsorRepo;
 import com.gabriel.donation.service.DonationPostService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +27,6 @@ public class DonationPostServiceImpl implements DonationPostService {
     DonationPostRepo donationPostRepo;
     @Autowired
     ImageOfDonationRepo imageOfDonationRepo;
-    @Autowired
-    SponsorRepo sponsorRepo;
     @Autowired
     CategoryRepo categoryRepo;
 
