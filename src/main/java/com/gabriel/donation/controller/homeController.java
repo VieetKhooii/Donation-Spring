@@ -8,7 +8,7 @@ public class homeController {
     @GetMapping("/")
     public String home()
     {
-        return "home";
+        return "redirect:/api/donation_post/get";
     }
 
 

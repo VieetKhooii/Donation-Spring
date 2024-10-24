@@ -34,12 +34,16 @@ public class DonationPost {
     @Column(nullable = false)
     private int numberOfDonation;
 
-    @Column(nullable = true)
+    @Column(nullable = true, length = 1000)
     private String story;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private User receiver;
 
     @OneToMany(mappedBy = "donationPost")
     private List<UserDonated> userDonateds = new ArrayList<>();

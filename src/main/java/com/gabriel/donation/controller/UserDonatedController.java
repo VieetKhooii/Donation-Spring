@@ -1,12 +1,21 @@
 package com.gabriel.donation.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gabriel.donation.dto.DonationPostDTO;
 import com.gabriel.donation.dto.PaymentDTO;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.dto.UserDonatedDTO;
+import com.gabriel.donation.entity.User;
+import com.gabriel.donation.payload.CookieName;
+import com.gabriel.donation.payload.PaymentMethod;
 import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.UserDonatedService;
 import com.gabriel.donation.service.UserService;
+import com.gabriel.donation.utils.CookieUtil;
+import com.gabriel.donation.utils.DateTimeFormatter;
+import com.gabriel.donation.utils.UserDonatedUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,34 +27,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/api/user_donated")
 @Mapper
 public class UserDonatedController {
-    /*
-     * Các api cần làm:
-     *   - Admin:
-     *       + Lấy toàn bộ user donated [/admin/get] (có phân trang)
-     *       + Lấy toàn bộ user donated của 1 user [/admin/get?user_id={id}] (có phân trang)
-     *       + Lấy toàn bộ user donated của 1 user theo ngày (có phân trang)
-     *       + Sửa [/admin/edit]
-     *       + Xóa [/admin/hide]
-     *   - User:
-     *       + Quyên góp:
-     *              - Tạo mới đối tượng khi user quyên góp
-     *              - Nếu số tiền quyên góp lớn hơn số dư thì không cho giao dịch
-     * */
 
     @Autowired
     UserDonatedService userDonatedService;
-
     @Autowired
     UserService userService;
-
     @Autowired
     DonationPostService donationPostService;
+    @Autowired
+    CookieUtil cookieUtil;
+    @Autowired
+    UserDonatedUtil userDonatedUtil;
+    @Autowired
+    DateTimeFormatter dateTimeFormatter;
 
     @GetMapping("/admin/get")
     public String getAllUserDonated(
@@ -218,14 +221,85 @@ public class UserDonatedController {
 
     @PostMapping("donate")
     public String donate(
-            @RequestBody UserDonatedDTO userDonatedDTO, HttpSession session
-    ){
-        int userId = (int) session.getAttribute("userId");
-        UserDTO userDTO = userService.findById(userId);
-        userDTO.setBalance(userDTO.getBalance() - userDonatedDTO.getAmount());
+            @RequestParam("amount") int amount,
+            @RequestParam("orderInfo") String orderInfo,
+            @RequestParam("receiver") String receiver,
+            @RequestParam("donationPostId") int donationPostId,
+            @RequestParam("anonymous") boolean anonymous,
+            HttpServletRequest request,
+            Model model
+    ) throws JsonProcessingException {
+        Cookie[] cookies = request.getCookies();
+        String userInfoJson = cookieUtil.getCookieValue(cookies, String.valueOf(CookieName.userInfo));
+        UserDTO userDTO = cookieUtil.decodeUserDTOInCookie(userInfoJson);
+        userDTO.setBalance(userDTO.getBalance() - amount);
+        int userId = userDTO.getUserId();
         userService.updateUser(userDTO, userId);
 
+        UserDonatedDTO userDonatedDTO = userDonatedUtil.setupUserDonatedForTransactions(amount, donationPostId, anonymous, PaymentMethod.GABRIEL_PAY, request);
+
         userDonatedService.processDonation(userDonatedDTO, userId);
-        return "";
+
+        String paymentTime = new Date().toString();
+
+        model.addAttribute("orderInfo", orderInfo);
+        model.addAttribute("totalPrice", userDonatedDTO.getAmount());
+        model.addAttribute("paymentTime", paymentTime);
+        model.addAttribute("transactionId", userDonatedDTO.getUserDonatedId());
+        return "/transaction/order-success";
     }
+
+    @GetMapping("enter-donation-information")
+    public String enterDonationInformation(
+            @RequestParam("donationPostId") String donationPostId,
+            @RequestParam("receiverId") int receiverId,
+            Model model
+    ){
+        UserDTO userDTO = userService.findById(receiverId);
+        String phone = userDTO.getPhone();
+        model.addAttribute("donationPostId", donationPostId);
+        model.addAttribute("receiverPhone", phone);
+        return "transaction/transaction-information";
+    }
+
+    //Tìm list userdonate theo từng post(desc amount), userdonate nhiều nhất mỗi tháng(chỉ 1 người)
+    @GetMapping("thongke")
+    public String rankingUserDonatedByAmount(@RequestParam(name = "year", required = false, defaultValue = "2024") int year,
+            Model model){
+        //Tìm list userdonate theo từng post(desc amount)
+        List<UserDonatedDTO> userDonatedRankingList = userDonatedService.rankingUserDonatedByAmount();
+
+        // Nhóm theo donationPostId(key là donationPostId và value là list userDonated truyền dứi service lên)
+        Map<Integer, List<UserDonatedDTO>> groupedByDonationPost = userDonatedRankingList.stream()
+                .collect(Collectors.groupingBy(UserDonatedDTO::getDonationPostId));
+
+        model.addAttribute("groupedByDonationPost", groupedByDonationPost);
+
+        //Tìm userdonate nhiều nhất mỗi tháng(chỉ 1 người)
+        List <UserDonatedDTO> userDonatedRankingListByMonth= userDonatedService.rankingUserDonatedByMonth(year);
+        model.addAttribute("userDonatedRankingListByMonth", userDonatedRankingListByMonth);
+        model.addAttribute("selectedYear", year);
+        return "admin/thongke";
+    }
+
+    //Tìm post được quyên góp nhiều nhất mỗi tháng và post có số người quyên góp nhiều nhất mỗi tháng
+    @GetMapping("thongkePost")
+    public String rankingDonationPostAmountByMonth(@RequestParam(name = "year", required = false, defaultValue = "2024") int year,
+                                             Model model) {
+        List <UserDonatedDTO> donationPostAmountRankingListByMonth= userDonatedService.rankingDonationPostAmountByMonth(year);
+        model.addAttribute("donationPostAmountRankingListByMonth", donationPostAmountRankingListByMonth);
+        model.addAttribute("selectedYear", year);
+        return "admin/thongkePost";
+    }
+
+    //Tìm post được quyên góp nhiều nhất mỗi tháng và post có số người quyên góp nhiều nhất mỗi tháng
+    @GetMapping("thongkeUser")
+    public String countUserDonatedByPost(@RequestParam(name = "year", required = false, defaultValue = "2024") int year,
+                                                   Model model) {
+        List <UserDonatedDTO> ListcountUserDonatedByPost= userDonatedService.countUserDonatedByPost(year);
+        model.addAttribute("ListcountUserDonatedByPost", ListcountUserDonatedByPost);
+        model.addAttribute("selectedYear", year);
+        return "admin/thongkeUser";
+    }
+
 }

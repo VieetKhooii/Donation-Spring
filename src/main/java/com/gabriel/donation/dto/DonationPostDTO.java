@@ -33,8 +33,8 @@ public class DonationPostDTO {
 
     private String story;
 
-    @JsonProperty("sponsor_id")
-    private int sponsorId;
+    @JsonProperty("receiver_id")
+    private int receiverId;
     @JsonProperty("category_id")
     private int categoryId;
     @JsonProperty("is_deleted")

@@ -74,6 +74,10 @@ public class RoleServiceImpl implements RoleService {
         Optional<Role> roleOptional = roleRepo.findByName(name);
         Role role = roleOptional.get();
         return RoleMapper.INSTANCE.toDto(role);
+
+    @Override
+    public String findRoleNameById(int id) {
+        return roleRepo.findById(id).get().getName();
     }
 
 

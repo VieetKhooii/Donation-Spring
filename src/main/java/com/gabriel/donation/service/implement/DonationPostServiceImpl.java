@@ -18,6 +18,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,10 +36,12 @@ public class DonationPostServiceImpl implements DonationPostService {
     @Override
     public Page<DonationPostDTO> getAll(PageRequest pageRequest)
     {
+
         List<DonationPost> DonationPosts = donationPostRepo.findAll(pageRequest).getContent();
         List<DonationPostDTO> donationPostDTOS = DonationPosts
                 .stream()
-                .filter(donationPost -> !donationPost.isDeleted()  )
+                .filter(donationPost -> donationPost.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now()))
+                .filter(donationPost -> !donationPost.isDeleted() )
                 .map(post ->{
                     List<ImageOfDonation> ImagesOfDonationPosts = imageOfDonationRepo.findByDonationPostId(post.getId());
                     DonationPostDTO donationPostDTO = DonationPostMapper.INSTANCE.toDto(post);

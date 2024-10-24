@@ -28,19 +28,6 @@ import java.util.stream.IntStream;
 @RequestMapping("/api/donation_post")
 @Mapper
 public class DonationPostController {
-    /*
-     * Các api cần làm:
-     *   - Admin:
-     *       + Lấy toàn bộ donation post [/admin/get] (có phân trang)
-     *       + Lấy toàn bộ donation post theo sponsor (có phân trang)
-     *       + Thêm [/admin/add]
-     *       + Sửa [/admin/edit]
-     *       + Xóa [/admin/hide]
-     *   - User:
-     *       + Lấy toàn bộ donation post [/get]
-     *       + Lấy toàn bộ donation post theo category [/get?category_id={id}]
-     * */
-
     //admin
     @Autowired
     DonationPostService donationPostService;
@@ -55,7 +42,7 @@ public class DonationPostController {
         PageRequest pageRequest = PageRequest.of(
                 page, limit
         );
-        Page<DonationPostDTO> list = donationPostService.getAll(pageRequest);
+        Page<DonationPostDTO> list = getDonationPostDTOPage(pageRequest);
         int totalPages = list.getTotalPages();
         List<DonationPostDTO> donations = list.getContent();
         model.addAttribute("donationPost", donations);
@@ -118,20 +105,10 @@ public class DonationPostController {
             @RequestParam(value = "limit", defaultValue = "3") int limit,
             Model model) {
         PageRequest pageRequest = PageRequest.of(page, limit);
-        Page<DonationPostDTO> list = donationPostService.getAll(pageRequest);
-        List<Long> dateDifferences = new ArrayList<>();
+        Page<DonationPostDTO> list = getDonationPostDTOPage(pageRequest);
+        List<Long> dateDifferences = getDateDifferences(list);
 
-        for (DonationPostDTO donationPostDTO : list.getContent())
-        {
-            Date startDate = donationPostDTO.getStartDate();
-            Date endDate = donationPostDTO.getEndDate();
-
-            LocalDate startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-            long daysBetween = ChronoUnit.DAYS.between(startLocalDate, endLocalDate);
-            dateDifferences.add(daysBetween);
-        }
+        System.out.println("Page: "+ page);
 
         model.addAttribute("lstDonationPost", list.getContent());
         model.addAttribute("totalPages", list.getTotalPages());
@@ -139,6 +116,7 @@ public class DonationPostController {
         model.addAttribute("dateDifferences", dateDifferences);
         return "home";
     }
+
     @GetMapping("/getDonationPostByID")
     public String getDonationPostByID(@RequestParam("donationPostId") int id,  Model model)
     {
@@ -158,7 +136,7 @@ public class DonationPostController {
         PageRequest pageRequest = PageRequest.of(
                 page, limit
         );
-        Page<DonationPostDTO> list = donationPostService.getAll(pageRequest);
+        Page<DonationPostDTO> list = getDonationPostDTOPage(pageRequest);
 
         List<DonationPostDTO> donations = list.getContent()
                 .stream()
@@ -170,5 +148,27 @@ public class DonationPostController {
         model.addAttribute("currentPage", page);
 
         return "";
+    }
+
+    // Extracted Methods
+    public List<Long> getDateDifferences(Page<DonationPostDTO> list) {
+        List<Long> dateDifferences = new ArrayList<>();
+
+        for (DonationPostDTO donationPostDTO : list.getContent())
+        {
+            Date startDate = donationPostDTO.getStartDate();
+            Date endDate = donationPostDTO.getEndDate();
+
+
+            LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+            long daysBetween = ChronoUnit.DAYS.between(LocalDate.now(), endLocalDate);
+            dateDifferences.add(daysBetween);
+        }
+        return dateDifferences;
+    }
+
+    public Page<DonationPostDTO> getDonationPostDTOPage(PageRequest pageRequest) {
+        return donationPostService.getAll(pageRequest);
     }
 }

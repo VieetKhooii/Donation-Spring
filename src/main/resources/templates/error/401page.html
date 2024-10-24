@@ -8,7 +8,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #ffeeba; /* Màu nền tươi sáng, vui nhộn */
+      background-color: #ffeeba;
     }
     .error-container {
       margin-top: 100px;
@@ -19,7 +19,7 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     .card-header {
-      background-color: #ffc107; /* Màu vàng tươi */
+      background-color: #ffc107;
     }
     .btn-fun {
       background-color: #007bff;
@@ -29,6 +29,9 @@
     .btn-fun:hover {
       background-color: #0056b3;
     }
+    .extra-content {
+      display: none; /* Ẩn nội dung ban đầu */
+    }
   </style>
 </head>
 <body>
@@ -37,20 +40,38 @@
     <div class="col-md-6">
       <div class="card shadow-lg">
         <div class="card-header">
-          <h4>Whoops! 😅 You’re Not Supposed to be Here!</h4>
+          <h4>Hửm!? 😅 Ai đó phải đăng nhập lại rồi!</h4>
         </div>
         <div class="card-body">
-          <h5 class="card-title">Error 401 - Unauthorized</h5>
-          <p class="card-text">Looks like you wandered into a restricted area. 🕵️‍♂️ Don't worry, it happens to the best of us!</p>
-          <p class="card-text">Why not head back to the <a href="/" class="text-primary">home page</a> and try again? Or maybe <a href="/login" class="text-warning">log in</a> if you haven’t already!</p>
+          <h5 class="card-title">401 - Unauthorized</h5>
+          <p class="card-text">Có lẽ là phiên đăng nhập của bạn đã hết hạn. 🕵️‍♂️ Không sao hết, bất cứ ai cũng sẽ gặp tình huống này 1 khoảng thời gian sau khi đăng nhập!</p>
+          <p class="card-text">Bạn có muốn trở về <a href="/" class="text-primary">trang chủ</a> không? Hoặc là <a href="/login" class="text-warning">đăng nhập</a> lại!</p>
           <img src="https://cdn-icons-png.flaticon.com/512/4052/4052992.png" alt="Unauthorized image" width="100" class="mb-3">
           <div>
-            <a href="/" class="btn btn-fun">Take Me Home</a>
-            <a href="/login" class="btn btn-warning">Log In</a>
+            <a href="/" class="btn btn-fun">Về trang chủ</a>
+            <a href="/login" class="btn btn-warning">Đăng nhập</a>
           </div>
         </div>
         <div class="card-footer text-muted">
-          <small>Don’t worry, everything’s under control! 😉</small>
+          <small>
+            Tựa như các cuộc cách mạng, khi phiên bản cũ trở nên "hết hạn",
+            thì một phiên bản mới tốt hơn sẽ thay thế để táo tạo sự kiểm soát và trật tự.
+          </small>
+          <br>
+          <!-- Đoạn nội dung thêm sẽ bị ẩn ban đầu -->
+          <div class="extra-content">
+            <div>.</div>
+            <br>
+            <div>.</div>
+            <br>
+            <div>.</div>
+            <br>
+            <small>
+              Ngạc nhiên thiệt! Bạn đã đọc tới tận dòng này luôn sao?!
+            </small>
+          </div>
+          <button id="showMoreBtn" class="btn btn-secondary mt-3">Xem thêm</button>
+          <button id="showLessBtn" class="btn btn-secondary mt-3" style="display: none;">Rút gọn</button>
         </div>
       </div>
     </div>
@@ -59,5 +80,23 @@
 
 <!-- Bootstrap JS and dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.getElementById("showMoreBtn").addEventListener("click", function() {
+    document.querySelector(".extra-content").style.display = "block"; // Hiển thị nội dung bị ẩn
+    this.style.display = "none"; // Ẩn nút 'Xem thêm'
+    document.getElementById("showLessBtn").style.display = "inline-block"; // Hiển thị nút 'Rút gọn'
+  });
+
+  document.getElementById("showLessBtn").addEventListener("click", function() {
+    document.querySelector(".extra-content").style.display = "none"; // Ẩn nội dung
+    this.style.display = "none"; // Ẩn nút 'Rút gọn'
+    document.getElementById("showMoreBtn").style.display = "inline-block"; // Hiển thị lại nút 'Xem thêm'
+  });
+
+  // window.onload = function() {
+  //   const newUrl = '/unauthorized-access'; // Đường dẫn hiển thị mong muốn
+  //   window.history.pushState({}, '', newUrl); // Thay đổi URL mà không tải lại trang
+  // };
+</script>
 </body>
 </html>

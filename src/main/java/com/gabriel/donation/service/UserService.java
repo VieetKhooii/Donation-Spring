@@ -27,6 +27,8 @@ public interface UserService {
 
     UserDTO findByPhone(String phone);
 
+    UserDTO findByEmail(String email);
+
     String register(UserDTO userDTO);
 
     UserDTO findByEmail(String email);
