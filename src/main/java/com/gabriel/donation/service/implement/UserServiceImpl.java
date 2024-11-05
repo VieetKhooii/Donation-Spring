@@ -117,8 +117,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findByPhone(String phone){
         Optional<User> userOptional = userRepo.findByPhone(phone);
-        User user = userOptional.get();
-        return UserMapper.INSTANCE.toDto(user);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return UserMapper.INSTANCE.toDto(user);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -131,6 +135,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public String register(UserDTO userDTO) {
         if (userRepo.findByPhone(userDTO.getPhone()).isPresent()) {
+            System.out.println("qiwfbiqwubfwiu");
+            System.out.println(userDTO.getEmail());
+            System.out.println(userDTO.getPhone());
             return "Số điện thoại đã tồn tại!";
         }
         try {
@@ -138,7 +145,7 @@ public class UserServiceImpl implements UserService {
             user.setName(userDTO.getName());
             user.setPhone(userDTO.getPhone());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-
+            user.setEmail(userDTO.getEmail());
             Role role = roleRepo.findByName("USER").get();
             user.setRole(role);
             userRepo.save(user);
