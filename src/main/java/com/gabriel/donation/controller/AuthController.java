@@ -1,6 +1,13 @@
 package com.gabriel.donation.controller;
 
+import com.gabriel.donation.dto.AuthResponseDTO;
+import com.gabriel.donation.dto.RoleDTO;
 import com.gabriel.donation.dto.UserDTO;
+import com.gabriel.donation.entity.Role;
+import com.gabriel.donation.entity.User;
+import com.gabriel.donation.mapper.RoleMapper;
+import com.gabriel.donation.mapper.UserMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.security.JwtGenerator;
@@ -111,8 +118,8 @@ public class AuthController {
         String message = userService.register(userDTO);
         return ResponseEntity.ok("success");
     }
-  
- 
+
+
     @GetMapping("check-cookie")
     public ResponseEntity<String> checkCookie(
             HttpServletRequest request
