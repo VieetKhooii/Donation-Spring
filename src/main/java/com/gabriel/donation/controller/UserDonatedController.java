@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -197,26 +199,21 @@ public class UserDonatedController {
 
     //lọc theo donation post id
     @GetMapping("/getByDonationPostId")
-    public String getAllUserDonatedByDonationPostId(
+    @ResponseBody
+    public Map<String, Object> getAllUserDonatedByDonationPostId(
             @RequestParam("donationpost_id") int id,
             @RequestParam("page") int page,
-            @RequestParam("limit") int limit,
-            Model model
+            @RequestParam("limit") int limit
     ) {
-        PageRequest pageRequest = PageRequest.of(
-                page, limit
-        );
-        Page<UserDonatedDTO> list = userDonatedService.getAll(pageRequest);
-        int totalPages = list.getTotalPages();
-        List<UserDonatedDTO> userdonated = list.getContent()
-                .stream()
-                .filter(userDonatedDTO -> userDonatedDTO.getDonationPostId()==id)
-                .toList();
-        model.addAttribute("userdonated", userdonated);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("currentPage", page);
-        return "";
+        PageRequest pageRequest = PageRequest.of(page, limit);
+        Page<UserDonatedDTO> list = userDonatedService.getPageByPostId(pageRequest, id);
 
+        // Chuẩn bị dữ liệu để trả về cho phía client
+        Map<String, Object> response = new HashMap<>();
+        response.put("userdonated", list.getContent());
+        response.put("totalPages", list.getTotalPages());
+        response.put("currentPage", page);
+        return response;
     }
 
     @PostMapping("donate")

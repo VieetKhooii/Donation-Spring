@@ -10,4 +10,9 @@ public class loginController {
         return "login";
     }
 
+    @GetMapping("/api/admin/user")
+    public String admin(){
+        return "admin/user";
+    }
+
 }

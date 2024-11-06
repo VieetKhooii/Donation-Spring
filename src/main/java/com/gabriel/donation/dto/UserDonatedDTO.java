@@ -35,4 +35,6 @@ public class UserDonatedDTO {
 
     @JsonProperty("is_deleted")
     private boolean isDeleted;
+
+    private String userName;
 }

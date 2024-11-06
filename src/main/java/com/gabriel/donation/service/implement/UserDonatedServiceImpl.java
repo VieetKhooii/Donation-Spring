@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,16 +39,30 @@ public class UserDonatedServiceImpl implements UserDonatedService {
     @Override
     public Page<UserDonatedDTO> getAll(PageRequest pageRequest)
     {
-        List<UserDonated> UserDonatedList = userDonatedRepo.findAll();
+        List<UserDonated> UserDonatedList = userDonatedRepo.findAll(pageRequest).getContent();
         List<UserDonatedDTO> userDonatedDTOS = UserDonatedList
                 .stream()
                 .map(UserDonatedMapper.INSTANCE::toDto)
                 .toList();
         return new PageImpl<UserDonatedDTO>(
                 userDonatedDTOS,
-                userDonatedRepo.findAll(pageRequest).getPageable(),
+                pageRequest,
                 userDonatedRepo.findAll(pageRequest).getTotalElements()
         );
+    }
+
+    @Override
+    public Page<UserDonatedDTO> getPageByPostId(PageRequest pageRequest, int postId) {
+        DonationPost donationPost = donationPostRepo.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy DonationPost với id: " + postId));
+
+        Page<UserDonated> userDonatedPage = userDonatedRepo.findByDonationPost(donationPost, pageRequest);
+        List<UserDonatedDTO> userDonatedDTOList = userDonatedPage
+                .getContent()
+                .stream()
+                .map(UserDonatedMapper.INSTANCE::toDto)
+                .toList();
+        return new PageImpl<>(userDonatedDTOList, pageRequest, userDonatedPage.getTotalElements());
     }
 
     @Override
@@ -115,12 +130,12 @@ public class UserDonatedServiceImpl implements UserDonatedService {
             List<UserDonated> filteredUserDonatedList = userDonatedList.stream()
                     .filter(userDonated -> userDonated.getDonationPost().getId() == donationPost.getId())
                     .sorted((u1, u2) -> Long.compare(u2.getAmount(), u1.getAmount()))
-                    .collect(Collectors.toList());
+                    .toList();
 
             // chuyển dto rồi add từng list con vaào list bự
             List<UserDonatedDTO> userDonatedDTOs = filteredUserDonatedList.stream()
                     .map(UserDonatedMapper.INSTANCE::toDto)
-                    .collect(Collectors.toList());
+                    .toList();
 
             allUserDonatedDTOs.addAll(userDonatedDTOs);
             // số lượng người đã đóng góp mỗi post

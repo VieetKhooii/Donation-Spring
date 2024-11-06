@@ -16,11 +16,13 @@ public interface UserDonatedMapper {
     @Mapping(source = "userDonatedId", target = "id")
     @Mapping(source = "userId", target = "user.id")  // Mapping the userId to user entity's id
     @Mapping(source = "donationPostId", target = "donationPost.id")
+    @Mapping(target = "user.name", ignore = true)
     UserDonated toEntity(UserDonatedDTO userDonatedDTO);
 
     @Mapping(source = "id", target = "userDonatedId")
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "donationPost.id", target = "donationPostId")
+    @Mapping(target = "userName", expression = "java(userDonated.isAnonymous() ? \"Ẩn danh\" : userDonated.getUser().getName())")
     // Fields from entity that are Object type (Foreign key) must have ".id" (ex: role.id)
     // so that DTO can understand and store it
     UserDonatedDTO toDto(UserDonated userDonated);
