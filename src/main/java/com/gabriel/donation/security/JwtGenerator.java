@@ -28,6 +28,17 @@ public class JwtGenerator {
         return token;
     }
 
+    public long getExpirationDateFromToken(String token) {
+        return getClaimsFromToken(token).getExpiration().getTime();
+    }
+
+    private Claims getClaimsFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(SecurityConstants.JWT_SECRET)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
     public String getUserNameFromJWT(String token){
         Claims claims = Jwts.parser()
                 .setSigningKey(SecurityConstants.JWT_SECRET)

@@ -66,6 +66,7 @@ public class AuthController {
             if (authentication.isAuthenticated()) {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String token = jwtGenerator.generateToken(authentication);
+                System.out.println("Phone: "+userDTOInput.getPhone());
                 UserDTO userDTO = userService.findByPhone(userDTOInput.getPhone());
                 ObjectMapper objectMapper = new ObjectMapper();
                 String userDTOJson = objectMapper.writeValueAsString(userDTO);
@@ -82,9 +83,8 @@ public class AuthController {
                         .build();
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-                System.out.println(userDTOJson);
                 ResponseCookie userInfoCookie = ResponseCookie.from(String.valueOf(CookieName.userInfo), encodedUserDTOJson)
-                        .httpOnly(true) // Có thể chỉnh sửa tùy nhu cầu
+                        .httpOnly(true)
                         .secure(true)
                         .path("/")
                         .maxAge(600)
@@ -108,15 +108,15 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public String register(
+    public ResponseEntity<?> register(
             @RequestBody UserDTO userDTO,
             Model model) {
         if (userService.findByPhone(userDTO.getPhone()) != null) {
             model.addAttribute("message","Số điện thoại đã tồn tại");
-            return "";
+            return ResponseEntity.ok("fail");
         }
         String message = userService.register(userDTO);
-        return message;
+        return ResponseEntity.ok("success");
     }
 
 
@@ -148,5 +148,16 @@ public class AuthController {
 
             return new ResponseEntity<>("", HttpStatus.BAD_GATEWAY);
         }
+    }
+
+    @GetMapping("/signout")
+    public String signOut(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ){
+        boolean isSignOut = userService.signOut(request, response);
+        return isSignOut?
+                "login" :
+                "";
     }
 }

@@ -1,6 +1,8 @@
 package com.gabriel.donation.service;
 
 import com.gabriel.donation.dto.UserDTO;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -30,4 +32,8 @@ public interface UserService {
     UserDTO findByEmail(String email);
 
     String register(UserDTO userDTO);
+
+    void updatePassword(String email, String password);
+
+    boolean signOut(HttpServletRequest request, HttpServletResponse response);
 }
