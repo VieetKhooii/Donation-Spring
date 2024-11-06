@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
         User use1=userRepo.findById(id);
         use1.setPhone(userDTO.getPhone());
         use1.setBalance(userDTO.getBalance());
-
+        use1.setName(userDTO.getName());
         Role role1=roleRepo.findById(userDTO.getRoleId()).get();
         use1.setRole(role1);
         use1.setDeleted(userDTO.isDeleted());
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
         User updatedUser=userRepo.save(use1);
         return  UserMapper.INSTANCE.toDto(updatedUser);
     }
-
+//$2a$10$g2sXLiee22iaWNNUJCSgeu4qNvFO5X8ucUILKgQ49P86x3N2NvNC6
     @Override
     public void deleteUser(int id)
     {
