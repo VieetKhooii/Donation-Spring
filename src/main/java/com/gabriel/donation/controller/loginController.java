@@ -12,4 +12,9 @@ public class loginController {
     @GetMapping("/register")
     public String register() {return "register";}
 
+    @GetMapping("/api/admin/user")
+    public String admin(){
+        return "admin/user";
+    }
+
 }

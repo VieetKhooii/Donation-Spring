@@ -1,13 +1,6 @@
 package com.gabriel.donation.controller;
 
-import com.gabriel.donation.dto.AuthResponseDTO;
-import com.gabriel.donation.dto.RoleDTO;
 import com.gabriel.donation.dto.UserDTO;
-import com.gabriel.donation.entity.Role;
-import com.gabriel.donation.entity.User;
-import com.gabriel.donation.mapper.RoleMapper;
-import com.gabriel.donation.mapper.UserMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.security.JwtGenerator;
@@ -83,9 +76,8 @@ public class AuthController {
                         .build();
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-                System.out.println(userDTOJson);
                 ResponseCookie userInfoCookie = ResponseCookie.from(String.valueOf(CookieName.userInfo), encodedUserDTOJson)
-                        .httpOnly(true) // Có thể chỉnh sửa tùy nhu cầu
+                        .httpOnly(true)
                         .secure(true)
                         .path("/")
                         .maxAge(600)
@@ -149,5 +141,16 @@ public class AuthController {
 
             return new ResponseEntity<>("", HttpStatus.BAD_GATEWAY);
         }
+    }
+
+    @GetMapping("/signout")
+    public String signOut(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ){
+        boolean isSignOut = userService.signOut(request, response);
+        return isSignOut?
+                "login" :
+                "";
     }
 }

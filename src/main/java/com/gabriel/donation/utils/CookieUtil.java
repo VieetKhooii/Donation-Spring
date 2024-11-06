@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gabriel.donation.dto.UserDTO;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -25,4 +26,18 @@ public class CookieUtil {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(userDTOJson, UserDTO.class);
     }
+
+    public void setCookieToExpire(Cookie[] cookies, String cookieName, HttpServletResponse response) {
+        Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(cookieName))
+                .findFirst()
+                .ifPresent(cookie -> {
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                });
+
+
+    }
+
 }

@@ -1,12 +1,21 @@
 package com.gabriel.donation.service.implement;
 
+import com.gabriel.donation.entity.BlacklistedToken;
 import com.gabriel.donation.entity.Role;
 import com.gabriel.donation.mapper.UserMapper;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.entity.User;
+import com.gabriel.donation.payload.CookieName;
+import com.gabriel.donation.repository.BlacklistedTokenRepo;
 import com.gabriel.donation.repository.RoleRepo;
 import com.gabriel.donation.repository.UserRepo;
+import com.gabriel.donation.security.JwtGenerator;
 import com.gabriel.donation.service.UserService;
+import com.gabriel.donation.utils.CookieUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -18,6 +27,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.Optional;
@@ -30,6 +41,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepo userRepo;
+
+    @Autowired
+    CookieUtil cookieUtil;
+
+    @Autowired
+    BlacklistedTokenRepo blacklistedTokenRepo;
+
+    @Autowired
+    JwtGenerator jwtGenerator;
 
     @Autowired
     private RoleRepo roleRepo;
@@ -159,6 +179,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(String email, String password){
         userRepo.updatePassword(email, password);
+    }
+
+    @Override
+    public boolean signOut(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            Cookie[] cookies = request.getCookies();
+
+            String tokenString = cookieUtil.getCookieValue(cookies, String.valueOf(CookieName.jwt));
+            long expirationTime = jwtGenerator.getExpirationDateFromToken(tokenString);
+            cookieUtil.setCookieToExpire(cookies, String.valueOf(CookieName.jwt), response);
+            cookieUtil.setCookieToExpire(cookies, String.valueOf(CookieName.userInfo), response);
+
+            BlacklistedToken blacklistedToken = new BlacklistedToken();
+            blacklistedToken.setToken(tokenString);
+            blacklistedToken.setExpirationTime(new Timestamp(expirationTime));
+            blacklistedTokenRepo.save(blacklistedToken);
+
+
+            return true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
 

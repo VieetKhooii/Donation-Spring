@@ -9,6 +9,8 @@ import java.util.List;
 public interface UserDonatedService {
     Page<UserDonatedDTO> getAll(PageRequest pageRequest);
 
+    Page<UserDonatedDTO> getPageByPostId(PageRequest pageRequest, int postId);
+
     UserDonatedDTO addUserDonated(UserDonatedDTO userDonatedDTO);
 
     UserDonatedDTO updateUserDonated(UserDonatedDTO userDonatedDTO, int id);
