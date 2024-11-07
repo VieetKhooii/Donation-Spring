@@ -26,31 +26,39 @@
         background-color:#B5E61D;
         color:white;
     }
+    .forgot-password {
+        text-decoration: underline;
+        color: #007bff;
+        cursor: pointer;
+    }
 </style>
-    <div class="container-fluid vh-100 bg-dark d-flex justify-content-center align-items-center">
-        <div class="text-center form-login p-sm-3">
-            <h2 class="text-black p-3 r-sm-3">Đăng nhập</h2>
-            <form id="loginForm" class="needs-validation" method="post" novalidate>
-                    <div class="form-group">
-                        <div class="form-floating m-3">
-                            <input type="text" class="form-control" placeholder="email/sđt" name="phone" id="phone" required>
-                            <label >SĐT/Email</label>
-                            <div class="valid-feedback"></div>
-                            <div class="invalid-feedback">Vui lòng không để trống</div>
-                        </div>
-                        <div class="form-floating m-3">
-                            <input type="password" id="password" class="form-control" placeholder="password" name="password" required>
-                            <label>Password</label>
-                            <div class="valid-feedback"></div>
-                            <div class="invalid-feedback">Vui lòng không để trống</div>
-                        </div>
-                    </div>
-                <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
-                <button type="submit" class="custom-btn login m-3">Đăng nhập</button>
-                <button class="custom-btn m-3" onclick="window.history.back();">Trở lại</button>
-            </form>
-        </div>
+<div class="container-fluid vh-100 bg-dark d-flex justify-content-center align-items-center">
+    <div class="text-center form-login p-sm-3">
+        <h2 class="text-black p-3 r-sm-3">Đăng nhập</h2>
+        <form id="loginForm" class="needs-validation" method="post" novalidate>
+            <div class="form-group">
+                <div class="form-floating m-3">
+                    <input type="text" class="form-control" placeholder="email/sđt" name="phone" id="phone" required>
+                    <label >SĐT/Email</label>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Vui lòng không để trống</div>
+                </div>
+                <div class="form-floating m-3">
+                    <input type="password" id="password" class="form-control" placeholder="password" name="password" required>
+                    <label>Password</label>
+                    <div class="valid-feedback"></div>
+                    <div class="invalid-feedback">Vui lòng không để trống</div>
+                </div>
+            </div>
+            <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
+            <button type="submit" class="custom-btn login m-3">Đăng nhập</button>
+            <button  class="custom-btn m-3">Trở lại</button>
+            <div class="mt-3">
+                <a href="/forgotPassword" class="forgot-password">Quên mật khẩu?</a>
+            </div>
+        </form>
     </div>
+</div>
 <script>
     // Khi người dùng submit form
     (function () {
@@ -91,7 +99,7 @@
                         window.location.href = "/api/donation_post/get";
                     } else if (response === "admin") {
                         // Điều hướng đến trang dành cho admin
-                        window.location.href = "/api/user/admin/get";
+                        window.location.href = "/api/admin";
                     }
                 },
                 error: function(xhr, status, error) {
@@ -111,7 +119,7 @@
 </script>
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 </body>
 </html>
