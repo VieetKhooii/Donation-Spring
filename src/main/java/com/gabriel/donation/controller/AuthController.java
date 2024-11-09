@@ -112,8 +112,7 @@ public class AuthController {
             @RequestBody UserDTO userDTO,
             Model model) {
         if (userService.findByPhone(userDTO.getPhone()) != null) {
-            model.addAttribute("message","Số điện thoại đã tồn tại");
-            return ResponseEntity.ok("fail");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại");
         }
         String message = userService.register(userDTO);
         return ResponseEntity.ok("success");
