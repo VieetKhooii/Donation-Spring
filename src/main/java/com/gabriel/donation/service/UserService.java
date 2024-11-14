@@ -1,5 +1,6 @@
 package com.gabriel.donation.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gabriel.donation.dto.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,7 +16,7 @@ public interface UserService {
 
     UserDTO addUser(UserDTO userDTO);
 
-    UserDTO updateUser(UserDTO userDTO, int id);
+    UserDTO updateUser(UserDTO userDTO, int id, HttpServletResponse response) throws JsonProcessingException;
 
     void deleteUser(int id);
 

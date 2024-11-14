@@ -1,14 +1,6 @@
 package com.gabriel.donation.controller;
 
-import com.gabriel.donation.dto.AuthResponseDTO;
-import com.gabriel.donation.dto.RoleDTO;
 import com.gabriel.donation.dto.UserDTO;
-import com.gabriel.donation.entity.Role;
-import com.gabriel.donation.entity.User;
-import com.gabriel.donation.mapper.RoleMapper;
-import com.gabriel.donation.mapper.UserMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.security.JwtGenerator;
 import com.gabriel.donation.service.RoleService;
@@ -19,9 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,11 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.Base64;
 
 @Controller
 @RequestMapping("/api/auth")
@@ -66,30 +52,15 @@ public class AuthController {
             if (authentication.isAuthenticated()) {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String token = jwtGenerator.generateToken(authentication);
-                System.out.println("Phone: "+userDTOInput.getPhone());
+
                 UserDTO userDTO = userService.findByPhone(userDTOInput.getPhone());
-                ObjectMapper objectMapper = new ObjectMapper();
-                String userDTOJson = objectMapper.writeValueAsString(userDTO);
-                String encodedUserDTOJson = Base64.getEncoder().encodeToString(userDTOJson.getBytes());
 
                 session.setAttribute("userId", userDTO.getUserId());
                 session.setAttribute("username", userDTO.getName());
 
-                ResponseCookie cookie = ResponseCookie.from(String.valueOf(CookieName.jwt), token)
-                        .httpOnly(true)
-                        .secure(true)
-                        .path("/")
-                        .maxAge(600)
-                        .build();
-                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+                cookieUtil.createNewCookie(response, token, CookieName.jwt);
+                cookieUtil.createNewCookie(response, userDTO);
 
-                ResponseCookie userInfoCookie = ResponseCookie.from(String.valueOf(CookieName.userInfo), encodedUserDTOJson)
-                        .httpOnly(true)
-                        .secure(true)
-                        .path("/")
-                        .maxAge(600)
-                        .build();
-                response.addHeader(HttpHeaders.SET_COOKIE, userInfoCookie.toString());
                 if (roleService.findRoleNameById(userDTO.getRoleId()).equalsIgnoreCase("USER")){
                     return ResponseEntity.ok("user");
                 }
