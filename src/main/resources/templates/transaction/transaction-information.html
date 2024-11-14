@@ -10,6 +10,9 @@
 </head>
 <body style="background: #ff4081">
 <div class="container mt-5">
+  <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}">
+    
+  </div>
   <form id="donationForm" th:action="@{/api/user_donated/donate}" method="post" class="p-4 rounded shadow-sm bg-white" style="max-width: 500px; margin: auto; border: 2px solid #ff4081;">
     <h2 class="mb-4 text-center" style="color: #ff4081; font-weight: bold;">Gabriel Donation</h2>
 
@@ -27,8 +30,8 @@
     </div>
 
     <div class="mb-3">
-      <label for="receiver" class="form-label" style="color: #ff4081;">Tài khoản hoặc số điện thoại thụ hưởng</label>
-      <input type="text" class="form-control" id="receiver" th:name="receiver" th:value="${receiverPhone}"  readonly required>
+      <label for="phone" class="form-label" style="color: #ff4081;">Tài khoản hoặc số điện thoại thụ hưởng</label>
+      <input type="text" class="form-control" id="phone" th:name="phone" th:value="${receiverPhone}"  readonly required>
     </div>
 
     <!-- Hidden fields for UserDonatedDTO -->

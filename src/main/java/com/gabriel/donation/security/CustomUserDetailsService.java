@@ -33,7 +33,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.getPhone(),
                 user.getPassword(),
                 mapRoleToAuthorities(user.getRole())
-        );    }
+        );
+    }
 
     private Collection<GrantedAuthority> mapRoleToAuthorities(Role role) {
         return Collections.singletonList(new SimpleGrantedAuthority(role.getName()));

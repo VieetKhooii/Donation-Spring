@@ -1,11 +1,11 @@
 package com.gabriel.donation.controller;
 
-import com.gabriel.donation.dto.DonationPostDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gabriel.donation.dto.PaymentDTO;
 import com.gabriel.donation.dto.UserDTO;
-import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.PaymentService;
 import com.gabriel.donation.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,15 +180,16 @@ public class PaymentController {
 
     @PostMapping("/deposit")
     public String deposit(
-            @RequestBody PaymentDTO paymentDTO, HttpSession session
-    ){
+            @RequestBody PaymentDTO paymentDTO, HttpSession session, HttpServletResponse response
+    ) throws JsonProcessingException {
         int userId = (int) session.getAttribute("userId");
         paymentDTO.setUserId(userId);
         paymentService.addPayment(paymentDTO);
 
         UserDTO userDTO = userService.findById(userId);
         userDTO.setBalance(userDTO.getBalance()+paymentDTO.getAmount());
-        userService.updateUser(userDTO, userId);
+        userService.updateUser(userDTO, userId, response);
+
         return "";
     }
 }

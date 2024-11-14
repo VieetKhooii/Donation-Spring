@@ -21,5 +21,13 @@
     <div th:include="fragments/hoanCanh :: hoanCanh"></div>
     <div th:include="fragments/gioiThieu :: gioiThieu"></div>
     <div th:include="fragments/quyenGop :: quyenGop"></div>
+
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <df-messenger
+            intent="WELCOME"
+            chat-title="Gabriel"
+            agent-id="4d632a3c-9fd9-4c8c-9cb9-a375ee0a2f25"
+            language-code="en"
+    ></df-messenger>
 </div>
 
