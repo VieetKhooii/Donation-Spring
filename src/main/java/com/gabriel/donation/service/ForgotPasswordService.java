@@ -13,4 +13,5 @@ public interface ForgotPasswordService {
 
     void saveForgotPassword(ForgotPassword forgotPassword);
 
+    void deleteExpiredOtps();
 }
