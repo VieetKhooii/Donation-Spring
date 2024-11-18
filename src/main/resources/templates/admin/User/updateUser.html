@@ -1,0 +1,23 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:each="u : ${user}">
+    <form th:action="@{/api/user/admin/edit}" method="post" id="form-donationPost">
+        <input type="hidden" name="userId" th:value="${u.userId}">
+        <h4 >Donation Post</h4>
+        <div class="mb-2 mt-2">
+            <label class="form-label">Name :</label>
+            <input type="text" class="form-control" placeholder="name" name="name" th:value="${u.name}">
+        </div>
+        <div class="mb-2 mt-2">
+            <label class="form-label">Phone : </label>
+            <input type="number" class="form-control" id="phone" name="phone" th:value="${u.phone}">
+        </div>
+        <div class="mb-2 mt-2">
+            <label class="form-label">Password :</label>
+            <input type="password" class="form-control" id="password" name="password" th:value="${u.password}">
+        </div>
+        <div class="d-flex justify-content-between form-btn">
+            <button type="submit"> Sửa </button>
+            <button type="button">Trở lại</button>
+        </div>
+    </form>
+</div>

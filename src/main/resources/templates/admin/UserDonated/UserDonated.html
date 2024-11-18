@@ -1,0 +1,64 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="custom-table mt-1" >
+    <div class="bg-white p-3" style="border-radius: 35px;">
+        <div class="panel-Main">
+            <h1 class="mb-4">User-Donated Management</h1>
+            <a  href="#" class="btn btn-sm custom-btnAdd">Add</a>
+        </div>
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+            <tr>
+                <th scope="col">UserDonatedId</th>
+                <th scope="col">UserId</th>
+                <th scope="col">DonationPostId</th>
+                <th scope="col">Amount</th>
+                <th scope="col">DonateDate</th>
+                <th scope="col">PaymentMethod</th>
+                <th scope="col">IsDeleted</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="userdonate : ${userdonated}">
+                <td th:text="${userdonate.userDonatedId}"></td>
+                <td th:text="${userdonate.userId}"></td>
+                <td th:text="${userdonate.donationPostId}"></td>
+                <td th:text="${userdonate.amount}"></td>
+                <td th:text="${userdonate.donateDate}"></td>
+                <td th:text="${userdonate.paymentMethod}"></td>
+                <td th:text="${userdonate.isDeleted}"></td>
+                <td class="d-flex flex-column">
+                    <a href="#" class="btn btn-primary btn-sm">View</a>
+                    <a href="#" class="mt-1 btn btn-warning btn-sm">Edit</a>
+                    <a href="#" class="mt-1 btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div th:if="${totalPages > 0}">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li th:classappend="${currentPage == 0} ? 'disabled'" class="page-item">
+                        <a class="page-link" th:href="@{/api/user_donated/admin/get(page=${currentPage - 1})}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${currentPage == i} ? 'active'" class="page-item">
+                        <a class="page-link" th:text="${i + 1}" th:href="@{/api/user_donated/admin/get(page=${i})}"></a>
+                    </li>
+                    <li th:classappend="${currentPage == totalPages - 1} ? 'disabled'" class="page-item">
+                        <a class="page-link" th:href="@{/api/user_donated/admin/get(page=${currentPage + 1})}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+
+
+

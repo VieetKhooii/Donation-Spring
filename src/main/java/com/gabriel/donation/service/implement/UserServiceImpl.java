@@ -2,6 +2,7 @@ package com.gabriel.donation.service.implement;
 
 import com.gabriel.donation.entity.BlacklistedToken;
 import com.gabriel.donation.entity.Role;
+import com.gabriel.donation.mapper.RoleMapper;
 import com.gabriel.donation.mapper.UserMapper;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.entity.User;
@@ -94,7 +95,7 @@ public class UserServiceImpl implements UserService {
         User updatedUser=userRepo.save(use1);
         return  UserMapper.INSTANCE.toDto(updatedUser);
     }
-//$2a$10$g2sXLiee22iaWNNUJCSgeu4qNvFO5X8ucUILKgQ49P86x3N2NvNC6
+
     @Override
     public void deleteUser(int id)
     {
@@ -155,9 +156,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public String register(UserDTO userDTO) {
         if (userRepo.findByPhone(userDTO.getPhone()).isPresent()) {
-            System.out.println("qiwfbiqwubfwiu");
-            System.out.println(userDTO.getEmail());
-            System.out.println(userDTO.getPhone());
             return "Số điện thoại đã tồn tại!";
         }
         try {
@@ -206,5 +204,11 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
+
+    @Override
+    public UserDTO getUserById(int id) {
+        return UserMapper.INSTANCE.toDto(userRepo.findById(id));
+    }
 
 }

@@ -9,6 +9,7 @@ import com.gabriel.donation.mapper.RoleMapper;
 import com.gabriel.donation.mapper.UserMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.security.JwtGenerator;
 import com.gabriel.donation.service.RoleService;
@@ -66,7 +67,6 @@ public class AuthController {
             if (authentication.isAuthenticated()) {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String token = jwtGenerator.generateToken(authentication);
-                System.out.println("Phone: "+userDTOInput.getPhone());
                 UserDTO userDTO = userService.findByPhone(userDTOInput.getPhone());
                 ObjectMapper objectMapper = new ObjectMapper();
                 String userDTOJson = objectMapper.writeValueAsString(userDTO);
@@ -83,8 +83,9 @@ public class AuthController {
                         .build();
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
+                System.out.println(userDTOJson);
                 ResponseCookie userInfoCookie = ResponseCookie.from(String.valueOf(CookieName.userInfo), encodedUserDTOJson)
-                        .httpOnly(true)
+                        .httpOnly(true) // Có thể chỉnh sửa tùy nhu cầu
                         .secure(true)
                         .path("/")
                         .maxAge(600)

@@ -1,5 +1,6 @@
 package com.gabriel.donation.service;
 
+import com.gabriel.donation.dto.DonationPostDTO;
 import com.gabriel.donation.dto.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,4 +37,5 @@ public interface UserService {
     void updatePassword(String email, String password);
 
     boolean signOut(HttpServletRequest request, HttpServletResponse response);
+    UserDTO getUserById(int id);
 }

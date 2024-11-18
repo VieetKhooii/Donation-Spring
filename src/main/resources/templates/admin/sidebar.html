@@ -1,0 +1,42 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div  th:fragment="sidebar">
+    <nav class=" sidebar flex-column " >
+        <a class="navbar-brand mx-2 ">
+            <i class="fa-solid fa-hands-praying">  Friend Ship</i>
+        </a>
+        <div class="mt-4">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="pill"  href="/api/user/admin/get">
+                        <i class="fa-solid fa-user"> User</i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="/api/donation_post/admin/get">
+                        <i class="fa-solid fa-circle-dollar-to-slot"> Donation Post</i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="/api/category/admin/get">
+                        <i class="fa-solid fa-layer-group"> Category</i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="/api/payment/admin/get">
+                        <i class="fa-solid fa-money-bill-wave"> Payment</i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="/api/role/admin/get">
+                        <i class="fa-solid fa-user-gear"> Role</i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="/api/user_donated/admin/get">
+                        <i class="fa-solid fa-users"> User Donated</i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>

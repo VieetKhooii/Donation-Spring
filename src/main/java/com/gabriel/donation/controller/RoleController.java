@@ -1,6 +1,7 @@
 package com.gabriel.donation.controller;
 
 import com.gabriel.donation.dto.DonationPostDTO;
+import com.gabriel.donation.dto.ImageOfDonationDTO;
 import com.gabriel.donation.dto.PaymentDTO;
 import com.gabriel.donation.dto.RoleDTO;
 import com.gabriel.donation.entity.Role;
@@ -33,8 +34,8 @@ public class RoleController {
 
     @GetMapping("/admin/get")
     public String getAllRole(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
             Model model
     ) {
         PageRequest pageRequest = PageRequest.of(
@@ -43,11 +44,27 @@ public class RoleController {
         Page<RoleDTO> list = roleService.getAll(pageRequest);
         int totalPages = list.getTotalPages();
         List<RoleDTO> roles = list.getContent();
-        model.addAttribute("donationPost", roles);
+        model.addAttribute("roles", roles);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
-        return "admin/Role";
+        return "admin/Role/Role";
 
+    }
+
+    @GetMapping("/admin/add")
+    public String showAddRoleForm(Model model)
+    {
+        model.addAttribute("role", new RoleDTO());
+        return "admin/Role/addRole";
+    }
+    @PostMapping("/saveDonationPost")
+    public String saveRole(
+            @ModelAttribute("role") RoleDTO roleDTO,
+            Model model
+    )
+    {
+        roleService.addRole(roleDTO);
+        return "redirect:/api/user/admin";
     }
 
     @GetMapping("/admin/hide/{id}")
@@ -57,14 +74,14 @@ public class RoleController {
         return "redirect:/admin/get";
     }
 
-    @PostMapping("/admin/edit/{id}")
+    @GetMapping("/admin/edit/{id}")
     public String showUpdateForm(
             @PathVariable("id") int id,
             Model model
     ) {
         RoleDTO roleDTO = roleService.getRoleById(id);
         model.addAttribute("role", roleDTO);
-        return "admin/updateRole";
+        return "admin/Role/updateRole";
     }
 
     @PostMapping("/updateRole")
@@ -73,6 +90,6 @@ public class RoleController {
             Model model
     ) {
         roleService.updateRole(roleDTO, roleDTO.getRoleId());
-        return "redirect:/admin/get";
+        return "redirect:/api/admin/role/get";
     }
 }

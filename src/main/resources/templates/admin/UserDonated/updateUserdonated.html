@@ -1,0 +1,19 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:each="user : ${userdonated}">
+    <form th:action="@{/api/user_donated/updateUserDonated(id=${user.userDonatedId})}" method="post" id="form-donationPost">
+<!--        <input type="hidden" name="roleId" th:value="${user.userDonatedId}">-->
+        <h4>User Donated </h4>
+        <div class="mb-2 mt-2">
+            <label class="form-label">Name :</label>
+            <input type="text" class="form-control" placeholder="Name" name="name" th:value="${ro.name}" required>
+        </div>
+        <div class="mb-2 mt-2">
+            <label class="form-label">Description :</label>
+            <input type="text" class="form-control" placeholder="Description" name="description" th:value="${ro.description}" required>
+        </div>
+        <div class="d-flex justify-content-between form-btn">
+            <button type="submit" class="btn btn-primary">Sửa</button>
+            <button type="button" class="btn btn-secondary" onclick="window.history.back();">Trở lại</button>
+        </div>
+    </form>
+</div>

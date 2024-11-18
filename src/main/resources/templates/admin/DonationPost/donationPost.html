@@ -1,0 +1,107 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="custom-table mt-1" >
+    <div class="bg-white p-3" style="border-radius: 35px;">
+        <div class="panel-Main">
+            <h1 class="mb-2">DonationPost Management</h1>
+            <a  href="/api/donation_post/admin/add" class="btn btn-sm custom-btnAdd">Add</a>
+        </div>
+            <table class="table table-bordered table-hover" >
+                <thead class="table-light">
+                <tr>
+                    <th scope="col">DonationPostId</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">StartDate</th>
+                    <th scope="col">EndDate</th>
+                    <th scope="col">GoalAmount</th>
+                    <th scope="col">CurrentAmount</th>
+                    <th scope="col">Story</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="donation : ${donationPost}">
+                    <td th:text="${donation.donationPostId}"></td>
+                    <td th:text=" ${donation.title}"></td>
+                    <td th:text="${donation.startDate}"></td>
+                    <td th:text="${donation.endDate}"></td>
+                    <td th:text="${donation.goalAmount}"></td>
+                    <td th:text="${donation.currentAmount}"></td>
+                    <td th:text="${donation.story}" ></td>
+                    <td class="d-flex ">
+                        <!--            <a id="" href="" class="mx-1 btn btn-primary btn-sm">View</a>-->
+                        <a th:data-id="${donation.donationPostId} "
+                           class="mx-1 btn btn-warning btn-sm btn-edit">Edit</a>
+                        <a th:href="@{/api/donation_post/admin/hide/{id}(id=${donation.donationPostId})}" class="mx-1 btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        <div th:if="${totalPages > 0}">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li th:classappend="${currentPage == 0} ? 'disabled'" class="page-item">
+                        <a class="page-link" th:href="@{/api/donation_post/admin/get(page=${currentPage - 1})}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${currentPage == i} ? 'active'" class="page-item">
+                        <a class="page-link" th:text="${i + 1}" th:href="@{/api/donation_post/admin/get(page=${i})}"></a>
+                    </li>
+                    <li th:classappend="${currentPage == totalPages - 1} ? 'disabled'" class="page-item">
+                        <a class="page-link" th:href="@{/api/donation_post/admin/get(page=${currentPage + 1})}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+
+
+</div>
+<script>
+    $(document).ready(function() {
+        // Khi bấm nút "Edit"
+        $(document).on('click', '.btn-edit', function(event) {
+            event.preventDefault();
+
+            // Lấy ID của đối tượng từ thuộc tính data-id
+            let donationId = $(this).data('id');
+
+            // Gọi AJAX để lấy dữ liệu
+            $.ajax({
+                url: '/api/donation_post/admin/edit/' + donationId,
+                method: 'GET',
+                success: function(response) {
+                    // Đưa dữ liệu vào form
+                    $('#form-update').html(response); // Giả sử response chứa HTML cho form
+                    $('.overlay').show();
+                },
+                error: function() {
+                    $('#form-content').html('Không thể tải dữ liệu.');
+                    $('.overlay').show(); // Hiển thị overlay với thông báo lỗi
+                }
+            });
+        });
+
+        // Ẩn overlay khi bấm nút đóng
+        $(document).on('click', '.close-btn', function() {
+            $('.overlay').hide();
+        });
+
+        // Ẩn overlay khi nhấp bên ngoài form
+        $(document).on('click', '.overlay', function(event) {
+            if ($(event.target).is('.overlay')) {
+                $('.overlay').hide();
+            }
+        });
+    });
+</script>
+<div class="overlay">
+    <div id="form-update" class="mx-auto">
+
+    </div>
+</div>

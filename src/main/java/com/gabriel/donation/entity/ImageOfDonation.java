@@ -14,7 +14,7 @@ public class ImageOfDonation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int  id;
 
-    @Column(nullable = true, length = 35)
+    @Column(nullable = true )
     private String description;
 
     @Column(nullable = true)
