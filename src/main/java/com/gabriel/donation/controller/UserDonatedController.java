@@ -1,11 +1,8 @@
 package com.gabriel.donation.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.gabriel.donation.dto.DonationPostDTO;
-import com.gabriel.donation.dto.PaymentDTO;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.dto.UserDonatedDTO;
-import com.gabriel.donation.entity.User;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.payload.PaymentMethod;
 import com.gabriel.donation.service.DonationPostService;
@@ -16,11 +13,10 @@ import com.gabriel.donation.utils.DateTimeFormatter;
 import com.gabriel.donation.utils.UserDonatedUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -224,14 +220,21 @@ public class UserDonatedController {
             @RequestParam("donationPostId") int donationPostId,
             @RequestParam("anonymous") boolean anonymous,
             HttpServletRequest request,
+            HttpServletResponse response,
             Model model
     ) throws JsonProcessingException {
         Cookie[] cookies = request.getCookies();
         String userInfoJson = cookieUtil.getCookieValue(cookies, String.valueOf(CookieName.userInfo));
         UserDTO userDTO = cookieUtil.decodeUserDTOInCookie(userInfoJson);
+        if (userDTO.getBalance() < amount) {
+            model.addAttribute("errorMessage", "Số dư của bạn không đủ để thực hiện quyên góp.");
+            model.addAttribute("donationPostId", donationPostId);
+            model.addAttribute("receiverPhone", receiver);
+            return "transaction/transaction-information";
+        }
         userDTO.setBalance(userDTO.getBalance() - amount);
         int userId = userDTO.getUserId();
-        userService.updateUser(userDTO, userId);
+        userService.updateUser(userDTO, userId, response);
 
         UserDonatedDTO userDonatedDTO = userDonatedUtil.setupUserDonatedForTransactions(amount, donationPostId, anonymous, PaymentMethod.GABRIEL_PAY, request);
 
@@ -243,6 +246,8 @@ public class UserDonatedController {
         model.addAttribute("totalPrice", userDonatedDTO.getAmount());
         model.addAttribute("paymentTime", paymentTime);
         model.addAttribute("transactionId", userDonatedDTO.getUserDonatedId());
+
+        cookieUtil.createNewCookie(response, userDTO);
         return "/transaction/order-success";
     }
 

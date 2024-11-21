@@ -1,5 +1,6 @@
 package com.gabriel.donation.service.implement;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gabriel.donation.entity.BlacklistedToken;
 import com.gabriel.donation.entity.Role;
 import com.gabriel.donation.mapper.RoleMapper;
@@ -16,23 +17,24 @@ import com.gabriel.donation.utils.CookieUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -80,8 +82,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO userDTO, int id)
-    {
+    public UserDTO updateUser(UserDTO userDTO, int id, HttpServletResponse response) throws JsonProcessingException {
         User use1=userRepo.findById(id);
         use1.setPhone(userDTO.getPhone());
         use1.setBalance(userDTO.getBalance());
@@ -93,7 +94,24 @@ public class UserServiceImpl implements UserService {
             use1.setPassword(userDTO.getPassword());
 
         User updatedUser=userRepo.save(use1);
-        return  UserMapper.INSTANCE.toDto(updatedUser);
+
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                use1.getPhone(),
+                use1.getPassword(),
+                use1.getAuthorities()
+        );
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        String token = jwtGenerator.generateToken(authenticationToken);
+        cookieUtil.createNewCookie(response, token, CookieName.jwt);
+
+        UserDTO userDTOReturn = UserMapper.INSTANCE.toDto(updatedUser);
+        cookieUtil.createNewCookie(response, userDTOReturn);
+
+        return userDTOReturn;
     }
 
     @Override

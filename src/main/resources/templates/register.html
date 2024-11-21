@@ -104,6 +104,24 @@
             var password = $('#password').val();
             var confirm = $('#confirm').val();
 
+            // Kiểm tra số điện thoại có đúng định dạng 10 chữ số hay không
+            var phoneRegex = /^\d{10}$/;
+            if (!phoneRegex.test(phone)) {
+                $('#errorMessage').text("Số điện thoại không hợp lệ. Vui lòng nhập đúng định dạng 10 chữ số.").show();
+                return; // Ngăn gửi form nếu số điện thoại không hợp lệ
+            } else {
+                $('#errorMessage').hide(); // Ẩn thông báo lỗi nếu hợp lệ
+            }
+
+            // Kiểm tra email có đúng định dạng hay không
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                $('#errorMessage').text("Email không hợp lệ. Vui lòng nhập đúng định dạng email.").show();
+                return; // Ngăn gửi form nếu email không hợp lệ
+            } else {
+                $('#errorMessage').hide(); // Ẩn thông báo lỗi nếu hợp lệ
+            }
+
             $.ajax({
                 url: '/api/auth/register',
                 type: 'POST',
@@ -117,16 +135,17 @@
                 }),
                 success: function(response) {
                 if(response == "success"){
+                    alert("Đăng ký tài khoản thành công!");
                     $('#successMessage').show();
                     setTimeout(function () {
                         window.location.href = "/login";
-                    }, 2000);
+                    }, 1000);
                     }
                 },
                 error: function(xhr, status, error) {
                     var errorMessage = xhr.responseText || "Đã xảy ra lỗi. Vui lòng thử lại sau.";
                     if (xhr.status === 400) {
-                        console.log(errorMessage)
+                        $('#errorMessage').text(errorMessage).show();
                     } else if (xhr.status === 401) {
                         $('#errorMessage').text(errorMessage).show();
                     } else {

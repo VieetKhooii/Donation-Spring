@@ -11,6 +11,7 @@ import com.gabriel.donation.service.UserService;
 import com.gabriel.donation.utils.CookieUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpResponse;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -38,6 +38,8 @@ public class UserController {
     UserService userService;
     @Autowired
     PaymentService paymentService;
+    @Autowired
+    CookieUtil cookieUtil;
 
     @GetMapping("/admin")
     @Cacheable("Admin")
@@ -103,10 +105,11 @@ public class UserController {
     public String editUser(
             @RequestBody UserDTO userDTO,
             @PathVariable int id,
+            HttpServletResponse response,
             Model model
     ){
         try {
-            userService.updateUser(userDTO, id);
+            userService.updateUser(userDTO, id, response);
             model.addAttribute("message", "User updated successfully");
         } catch (Exception e) {
             model.addAttribute("message", "An error occurred while adding the user");
@@ -137,14 +140,15 @@ public class UserController {
     @GetMapping("/user_info")
     public String user_info(HttpSession session,
                             Model model,
-                            HttpServletRequest request) throws JsonProcessingException {
-//        int userId= (int) session.getAttribute("userId");
+                            HttpServletRequest request
+    ) throws JsonProcessingException {
         Cookie[] cookie = request.getCookies();
         CookieUtil cookieUtil = new CookieUtil();
         String info = cookieUtil.getCookieValue(cookie, String.valueOf(CookieName.userInfo));
-        UserDTO userDTO = cookieUtil.decodeUserDTOInCookie(info);
-//        UserDTO userLogin=userService.findById(userId);
-        model.addAttribute("userLogin", userDTO);
+        if (!info.isEmpty() && info != null) {
+            UserDTO userDTO = cookieUtil.decodeUserDTOInCookie(info);
+            model.addAttribute("userLogin", userDTO);
+        }
         return "user_information/user_info";
     }
 
@@ -157,10 +161,14 @@ public class UserController {
     @PostMapping("/deposit")
     public String deposit(
             @RequestParam("deposit_amount") long depositAmount,
-            HttpSession session
-    )
-    {
-        int userId = (int) session.getAttribute("userId");
+            HttpSession session,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws JsonProcessingException {
+        Cookie[] cookie = request.getCookies();
+        String userInfo = cookieUtil.getCookieValue(cookie, String.valueOf(CookieName.userInfo));
+        int userId = cookieUtil.decodeUserDTOInCookie(userInfo).getUserId();
+
         PaymentDTO paymentDTO=new PaymentDTO();
         paymentDTO.setAmount(depositAmount);
         paymentDTO.setUserId(userId);
@@ -170,7 +178,7 @@ public class UserController {
 
         UserDTO userDTO = userService.findById(userId);
         userDTO.setBalance(userDTO.getBalance()+paymentDTO.getAmount());
-        userService.updateUser(userDTO, userId);
+        userService.updateUser(userDTO, userId, response);
         return  "redirect:/api/user/user_info";
     }
 
@@ -187,8 +195,8 @@ public class UserController {
 
     @PostMapping("changeInfo")
     public  ResponseEntity<?> changeInfo(@RequestBody UserDTO userDTOInput,
-            HttpServletRequest request) throws JsonProcessingException {
-        System.out.println(userDTOInput.getName());
+                                         HttpServletRequest request,
+                                         HttpServletResponse response) throws JsonProcessingException {
         if (userDTOInput.getPhone() == null || userDTOInput.getPhone().isEmpty() ||
                 userDTOInput.getName() == null || userDTOInput.getName().isEmpty()||
                 userDTOInput.getEmail() == null || userDTOInput.getEmail().isEmpty()) {
@@ -209,33 +217,26 @@ public class UserController {
         if (userDTOInput.getName().length() < 3) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tên người dùng phải có ít nhất 3 ký tự!");
         }
-//        int userId= (int) session.getAttribute("userId");
+
         Cookie[] cookie = request.getCookies();
-        CookieUtil cookieUtil = new CookieUtil();
         String info = cookieUtil.getCookieValue(cookie, String.valueOf(CookieName.userInfo));
         UserDTO userDTO = cookieUtil.decodeUserDTOInCookie(info);
+
+        // nhập số chưa tồn tại trong db thif bị null, cập nhật k được
         UserDTO existingUser = userService.findByPhone(userDTOInput.getPhone());
-        if (existingUser != null && existingUser.getUserId() != userDTO.getUserId()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã được dùng");
+
+        if (existingUser != null) {
+            if (existingUser.getUserId() != userDTO.getUserId())
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã được dùng");
         }
-        userDTOInput.setBalance(existingUser.getBalance());
-        userDTOInput.setRoleId(existingUser.getRoleId());
-        userDTOInput.setDeleted(existingUser.isDeleted());
-        userService.updateUser(userDTOInput, userDTO.getUserId());
+
+        UserDTO unChangeInfo = userService.findById(userDTO.getUserId());
+        userDTOInput.setBalance(unChangeInfo.getBalance());
+        userDTOInput.setRoleId(unChangeInfo.getRoleId());
+        userDTOInput.setDeleted(unChangeInfo.isDeleted());
+        UserDTO check = userService.updateUser(userDTOInput, userDTO.getUserId(), response);
+
 //        session.setAttribute("username", userDTOInput.getName());
         return ResponseEntity.ok("update_success");
     }
-
-//    @GetMapping("/to_changePassword")
-//    public String to_changePassword(HttpServletRequest request,
-//                                Model model) throws JsonProcessingException {
-//        Cookie[] cookie = request.getCookies();
-//        CookieUtil cookieUtil = new CookieUtil();
-//        String info = cookieUtil.getCookieValue(cookie, String.valueOf(CookieName.userInfo));
-//        UserDTO userDTO = cookieUtil.decodeUserDTOInCookie(info);
-//        System.out.println(userDTO.getPassword());
-//        model.addAttribute("userLogin", userDTO);
-//        return "user_information/change_password";
-//    }
-
 }

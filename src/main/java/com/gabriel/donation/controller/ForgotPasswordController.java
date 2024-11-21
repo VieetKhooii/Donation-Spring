@@ -44,6 +44,9 @@ public class ForgotPasswordController {
     //send mail to email verification
     @PostMapping("/verifyMail/{email}")
     public ResponseEntity<String> verifyEmail(@PathVariable String email){
+
+        forgotPasswordService.deleteExpiredOtps();
+
         UserDTO userDTO = Optional.ofNullable(userService.findByEmail(email))
                 .orElseThrow(() -> new UsernameNotFoundException("Please provide an valid email"));
 

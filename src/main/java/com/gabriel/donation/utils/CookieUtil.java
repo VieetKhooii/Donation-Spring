@@ -3,8 +3,11 @@ package com.gabriel.donation.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gabriel.donation.dto.UserDTO;
+import com.gabriel.donation.payload.CookieName;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -36,8 +39,27 @@ public class CookieUtil {
                     cookie.setPath("/");
                     response.addCookie(cookie);
                 });
-
-
     }
 
+    public void createNewCookie(HttpServletResponse response, UserDTO userDTOInput) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userDTOJson = objectMapper.writeValueAsString(userDTOInput);
+        String encodedUserDTOJson = Base64.getEncoder().encodeToString(userDTOJson.getBytes());
+
+        createNewCookie(response, encodedUserDTOJson, CookieName.userInfo);
+    }
+
+    public void createNewCookie(
+            HttpServletResponse response,
+            String value,
+            CookieName cookieName) {
+
+        ResponseCookie cookie = ResponseCookie.from(String.valueOf(cookieName), value)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(600)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
 }

@@ -1,7 +1,5 @@
 package com.gabriel.donation.controller;
 
-import com.gabriel.donation.dto.AuthResponseDTO;
-import com.gabriel.donation.dto.RoleDTO;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.entity.Role;
 import com.gabriel.donation.entity.User;
@@ -20,9 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,11 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.Base64;
 
 @Controller
 @RequestMapping("/api/auth")
@@ -68,29 +60,13 @@ public class AuthController {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String token = jwtGenerator.generateToken(authentication);
                 UserDTO userDTO = userService.findByPhone(userDTOInput.getPhone());
-                ObjectMapper objectMapper = new ObjectMapper();
-                String userDTOJson = objectMapper.writeValueAsString(userDTO);
-                String encodedUserDTOJson = Base64.getEncoder().encodeToString(userDTOJson.getBytes());
 
                 session.setAttribute("userId", userDTO.getUserId());
                 session.setAttribute("username", userDTO.getName());
 
-                ResponseCookie cookie = ResponseCookie.from(String.valueOf(CookieName.jwt), token)
-                        .httpOnly(true)
-                        .secure(true)
-                        .path("/")
-                        .maxAge(600)
-                        .build();
-                response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+                cookieUtil.createNewCookie(response, token, CookieName.jwt);
+                cookieUtil.createNewCookie(response, userDTO);
 
-                System.out.println(userDTOJson);
-                ResponseCookie userInfoCookie = ResponseCookie.from(String.valueOf(CookieName.userInfo), encodedUserDTOJson)
-                        .httpOnly(true) // Có thể chỉnh sửa tùy nhu cầu
-                        .secure(true)
-                        .path("/")
-                        .maxAge(600)
-                        .build();
-                response.addHeader(HttpHeaders.SET_COOKIE, userInfoCookie.toString());
                 if (roleService.findRoleNameById(userDTO.getRoleId()).equalsIgnoreCase("USER")){
                     return ResponseEntity.ok("user");
                 }
@@ -113,8 +89,7 @@ public class AuthController {
             @RequestBody UserDTO userDTO,
             Model model) {
         if (userService.findByPhone(userDTO.getPhone()) != null) {
-            model.addAttribute("message","Số điện thoại đã tồn tại");
-            return ResponseEntity.ok("fail");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại");
         }
         String message = userService.register(userDTO);
         return ResponseEntity.ok("success");
