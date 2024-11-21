@@ -1,6 +1,13 @@
 package com.gabriel.donation.controller;
 
 import com.gabriel.donation.dto.UserDTO;
+import com.gabriel.donation.entity.Role;
+import com.gabriel.donation.entity.User;
+import com.gabriel.donation.mapper.RoleMapper;
+import com.gabriel.donation.mapper.UserMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.security.JwtGenerator;
 import com.gabriel.donation.service.RoleService;
@@ -52,7 +59,6 @@ public class AuthController {
             if (authentication.isAuthenticated()) {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String token = jwtGenerator.generateToken(authentication);
-
                 UserDTO userDTO = userService.findByPhone(userDTOInput.getPhone());
 
                 session.setAttribute("userId", userDTO.getUserId());

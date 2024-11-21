@@ -50,8 +50,8 @@ public class UserDonatedController {
 
     @GetMapping("/admin/get")
     public String getAllUserDonated(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
             Model model
     ) {
         PageRequest pageRequest = PageRequest.of(
@@ -63,7 +63,7 @@ public class UserDonatedController {
         model.addAttribute("userdonated", userdonated);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
-        return "admin/UserDonated";
+        return "admin/UserDonated/UserDonated";
 
     }
 
@@ -134,7 +134,7 @@ public class UserDonatedController {
     ) {
         UserDonatedDTO userDonatedDTO = userDonatedService.getUserDonatedById(id);
         model.addAttribute("userdonated", userDonatedDTO);
-        return "admin/updateUserdonated";
+        return "admin/UserDonated/updateUserdonated";
     }
 
     @PostMapping("/updateUserdonated")

@@ -2,18 +2,25 @@ package com.gabriel.donation.controller;
 
 import com.gabriel.donation.dto.CategoryDTO;
 import com.gabriel.donation.dto.DonationPostDTO;
+import com.gabriel.donation.dto.ImageOfDonationDTO;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.service.DonationPostService;
+import com.gabriel.donation.service.ImageOfDonationService;
 import com.gabriel.donation.service.UserService;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -31,12 +38,14 @@ public class DonationPostController {
     //admin
     @Autowired
     DonationPostService donationPostService;
+    @Autowired
+    ImageOfDonationService imageOfDonationService;
 
     @GetMapping("/admin/get")
     @Cacheable("donationPostAdmin")
     public String getAllDonationPost(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "5") int limit,
             Model model
     ) {
         PageRequest pageRequest = PageRequest.of(
@@ -48,51 +57,70 @@ public class DonationPostController {
         model.addAttribute("donationPost", donations);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
-        return "admin/DonationPost";
-
+        return "admin/DonationPost/donationPost";
+    }
+    @GetMapping("/admin/get/{id}")
+    public String showDonationPostById(
+            @PathVariable("id") int id,
+            Model model
+    ){
+        DonationPostDTO donationPostDTO = donationPostService.getDonationPostById(id);
+        model.addAttribute("donationpost", donationPostDTO);
+        return "admin/DonationPost/DetailDonationPost";
     }
 
     @GetMapping("/admin/add")
     public String showAddDonationPostForm(Model model)
     {
         model.addAttribute("donationpost", new DonationPostDTO());
-        return "admin/addDonationPost";
+        return "admin/DonationPost/addDonationPost";
     }
-
+//    @InitBinder
+//    public void initBinder(WebDataBinder binder) {
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+//        dateFormat.setLenient(false);
+//        binder.registerCustomEditor(Date.class, "startDate", new CustomDateEditor(dateFormat, true));
+//        binder.registerCustomEditor(Date.class, "endDate", new CustomDateEditor(dateFormat, true));
+//    }
     @PostMapping("/saveDonationPost")
     public String saveDonationPost(
             @ModelAttribute("donationpost") DonationPostDTO donationPostDTO,
+            @ModelAttribute("imagePost") ImageOfDonationDTO imageOfDonationDTO,
             Model model
     )
     {
-        donationPostService.addDonationPost(donationPostDTO);
-        return "redirect:/admin/get";
+        donationPostService.addDonationPost(donationPostDTO, imageOfDonationDTO);
+        return "redirect:/api/user/admin";
     }
 
     @GetMapping("/admin/hide/{id}")
+    @CacheEvict(value = "donationPostAdmin", allEntries = true)
     public String deleteDonationPost(@PathVariable("id") int id, Model model) {
 
         donationPostService.deleteDonationPost(id);
-        return "redirect:/admin/get";
+        return "redirect:/api/admin/user/get";
     }
 
-    @PostMapping("/admin/edit/{id}")
+    @GetMapping("/admin/edit/{id}")
     public String showUpdateForm(
             @PathVariable("id") int id,
             Model model
     ) {
         DonationPostDTO donationPostDTO = donationPostService.getDonationPostById(id);
+        ImageOfDonationDTO imageOfDonationDTO = imageOfDonationService.getImageOfDonationById(id);
         model.addAttribute("donationpost", donationPostDTO);
-        return "admin/updateDonationPost";
+        model.addAttribute("imageofdonation", imageOfDonationDTO);
+        return "admin/DonationPost/updateDonationPost";
     }
 
     @PostMapping("/updateDonationPost")
     public String updateDonationPost(
             @ModelAttribute("donationpost") DonationPostDTO donationPostDTO,
+            @ModelAttribute("imagePost") ImageOfDonationDTO imageOfDonationDTO,
             Model model
     ) {
-        donationPostService.updateDonationPost(donationPostDTO, donationPostDTO.getDonationPostId());
-        return "redirect:/admin/get";
+        donationPostService.updateDonationPostAndImage(donationPostDTO,imageOfDonationDTO ,donationPostDTO.getDonationPostId());
+        return "redirect:/api/admin/user/get";
     }
 
     //<<<<==================>>>>

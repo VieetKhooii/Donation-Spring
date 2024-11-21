@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>User Management</title>
+  <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/admin.css}" />
+  <script src="https://kit.fontawesome.com/35a4dbb68f.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <div  class="col-md-2 ">
+      <div th:include="admin/sidebar :: sidebar"></div>
+    </div>
+    <div class="col-md-10 ml-sm-auto">
+      <div id="main-content">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function(){
+      var deafaultUrl = '/api/user/admin/get';
+      $(document).on('click', '.page-link, .nav-link', function(event) {
+        event.preventDefault();
+        var url = $(this).attr('href') || deafaultUrl; ;
+        $.ajax({
+            url: url ,
+            type: 'GET',
+            success: function(response) {
+                $('#main-content').html(response);
+            },
+            error: function() {
+                $('#main-content').html('<h2>Error during loading</h2>');
+            }
+        });
+    });
+    $.ajax({
+            url: deafaultUrl,
+            type: 'GET',
+            success: function(response) {
+                $('#main-content').html(response);
+            },
+            error: function() {
+                $('#main-content').html('<h2>Error during loading</h2>');
+            }
+        });
+});
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

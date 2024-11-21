@@ -2,6 +2,8 @@ package com.gabriel.donation.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gabriel.donation.dto.PaymentDTO;
+import com.gabriel.donation.dto.DonationPostDTO;
+import com.gabriel.donation.dto.ImageOfDonationDTO;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.service.PaymentService;
@@ -39,6 +41,24 @@ public class UserController {
     @Autowired
     CookieUtil cookieUtil;
 
+    @GetMapping("/admin")
+    @Cacheable("Admin")
+    public String getAdmin(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            Model model
+    ) {
+        int limit = 7;
+        PageRequest pageRequest = PageRequest.of(
+                page, limit
+        );
+        Page<UserDTO> list = userService.getUsersForAdmin(pageRequest);
+        int totalPages = list.getTotalPages();
+        List<UserDTO> users = list.getContent();
+        model.addAttribute("users", users);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        return "admin/admin";
+    }
     @GetMapping("/admin/get")
     @Cacheable("usersAdmin")
     public String getAllUsers(
@@ -55,9 +75,8 @@ public class UserController {
         model.addAttribute("users", users);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
-        return "admin/user";
+        return "admin/User/user";
     }
-
     @PostMapping("/admin/add")
     public String addUser(
             @RequestBody UserDTO userDTO,
@@ -73,7 +92,15 @@ public class UserController {
         }
         return "admin/user";
     }
-
+    @GetMapping("/admin/edit/{id}")
+    public String showUpdateForm(
+            @PathVariable("id") int id,
+            Model model
+    ) {
+        UserDTO userDTO = userService.getUserById(id);
+        model.addAttribute("user", userDTO);
+        return "admin/User/updateUser";
+    }
     @PostMapping("/admin/edit")
     public String editUser(
             @RequestBody UserDTO userDTO,

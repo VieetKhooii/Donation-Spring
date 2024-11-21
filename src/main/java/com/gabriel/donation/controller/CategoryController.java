@@ -1,11 +1,14 @@
 package com.gabriel.donation.controller;
 
 import com.gabriel.donation.dto.CategoryDTO;
+import com.gabriel.donation.dto.PaymentDTO;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.service.CategoryService;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,18 +23,28 @@ public class CategoryController {
     CategoryService categoryService;
     @GetMapping("/admin/get")
     @Cacheable("categoriesAdmin")
-    public String getAllCategories(Model model) {
-        List<CategoryDTO> categories = categoryService.getAll();
+    public String getAllCategories(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
+            Model model
+    )  {
+        PageRequest pageRequest = PageRequest.of(
+                page, limit
+        );
+        Page<CategoryDTO> list = categoryService.getAll(pageRequest);
+        int totalPages = list.getTotalPages();
+        List<CategoryDTO> categories = list.getContent();
         model.addAttribute("categories", categories);
-
-        return "admin/category";
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        return "admin/Category/category";
     }
 
     @GetMapping("/admin/add")
     public String showAddCategoryForm(Model model)
     {
         model.addAttribute("category", new CategoryDTO());
-        return "admin/addCategory";
+        return "admin/Category/addCategory";
     }
 
     @PostMapping("/saveCategory")
@@ -41,7 +54,7 @@ public class CategoryController {
     )
     {
         categoryService.addCategory(categoryDTO);
-        return "redirect:/admin/get";
+        return "redirect:/api/user/admin";
     }
 
     @GetMapping("/admin/hide/{id}")
@@ -51,14 +64,14 @@ public class CategoryController {
         return "redirect:/admin/get";
     }
 
-    @PostMapping("/admin/edit/{id}")
+    @GetMapping("/admin/edit/{id}")
     public String showUpdateCategoryForm(
             @PathVariable("id") int id,
             Model model
     ) {
         CategoryDTO categoryDTO = categoryService.getCategoryById(id);
         model.addAttribute("category", categoryDTO);
-        return "admin/updateCategory";
+        return "admin/Category/updateCategory";
     }
 
     @PostMapping("/updateCategory")
@@ -67,7 +80,7 @@ public class CategoryController {
             Model model
     ) {
         categoryService.updateCategory(categoryDTO, categoryDTO.getCategoryId());
-        return "redirect:/admin/get";
+        return "redirect:/api/user/admin";
     }
 
 
@@ -75,8 +88,8 @@ public class CategoryController {
     @GetMapping("/get")
     @Cacheable("categoriesUser")
     public String getAllCategoriesForUser(Model model) {
-        List<CategoryDTO> categories = categoryService.getAll();
-        model.addAttribute("categories", categories);
+//        List<CategoryDTO> categories = categoryService.getAll();
+//        model.addAttribute("categories", categories);
 
         return "user/category";
     }

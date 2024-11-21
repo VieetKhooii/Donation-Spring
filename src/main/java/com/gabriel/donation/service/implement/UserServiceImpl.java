@@ -3,6 +3,7 @@ package com.gabriel.donation.service.implement;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gabriel.donation.entity.BlacklistedToken;
 import com.gabriel.donation.entity.Role;
+import com.gabriel.donation.mapper.RoleMapper;
 import com.gabriel.donation.mapper.UserMapper;
 import com.gabriel.donation.dto.UserDTO;
 import com.gabriel.donation.entity.User;
@@ -173,9 +174,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public String register(UserDTO userDTO) {
         if (userRepo.findByPhone(userDTO.getPhone()).isPresent()) {
-            System.out.println("qiwfbiqwubfwiu");
-            System.out.println(userDTO.getEmail());
-            System.out.println(userDTO.getPhone());
             return "Số điện thoại đã tồn tại!";
         }
         try {
@@ -224,5 +222,11 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
+
+    @Override
+    public UserDTO getUserById(int id) {
+        return UserMapper.INSTANCE.toDto(userRepo.findById(id));
+    }
 
 }
