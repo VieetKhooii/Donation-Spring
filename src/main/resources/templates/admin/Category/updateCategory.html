@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <div th:each="cate : ${category}">
-    <form th:action="@{/api/category/updateCategory(id=${cate.categoryId})}"
+    <form th:action="@{/api/category/updateCategory}"
           method="post" id="form-donationPost">
         <input type="hidden" name="categoryId" th:value="${cate.categoryId}">
         <h4>Category Update</h4>

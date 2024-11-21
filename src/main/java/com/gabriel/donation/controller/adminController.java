@@ -23,7 +23,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/api/admin")
 @Mapper
-public class adminController {
+public class AdminController {
     @Autowired
     UserService userService;
     @Autowired

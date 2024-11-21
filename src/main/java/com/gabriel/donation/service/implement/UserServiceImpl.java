@@ -64,6 +64,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepo.findAll(pageRequest).getContent();
         List<UserDTO> userDTOS = users
                 .stream()
+                .filter(user -> !user.isDeleted())
                 .map(UserMapper.INSTANCE::toDto)
                 .toList();
         return new PageImpl<UserDTO>(
@@ -83,15 +84,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTO userDTO, int id, HttpServletResponse response) throws JsonProcessingException {
-        User use1=userRepo.findById(id);
+        User use1 = userRepo.findById(id);
         use1.setPhone(userDTO.getPhone());
-        use1.setBalance(userDTO.getBalance());
         use1.setName(userDTO.getName());
         Role role1=roleRepo.findById(userDTO.getRoleId()).get();
         use1.setRole(role1);
         use1.setDeleted(userDTO.isDeleted());
-        if (userDTO.getPassword()!= null && !userDTO.getPassword().isEmpty())
-            use1.setPassword(userDTO.getPassword());
 
         User updatedUser=userRepo.save(use1);
 
@@ -117,8 +115,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(int id)
     {
-        if(userRepo.existsById(id))
-            userRepo.deleteById(id);
+        User user = userRepo.findById(id);
+        if(user != null){
+            user.setDeleted(true);
+            userRepo.save(user);
+        }
     }
 
     @Override
@@ -166,9 +167,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findByEmail(String email) {
-        User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
-        return UserMapper.INSTANCE.toDto(user);
+        System.out.println("Searching for email "+email);
+        Optional<User> user = userRepo.findByEmail(email);
+        return user.map(UserMapper.INSTANCE::toDto).orElse(null);
+//                .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
     }
 
     @Override
@@ -220,6 +222,17 @@ public class UserServiceImpl implements UserService {
             return false;
         }
 
+    }
+
+    @Override
+    public UserDTO registerNewGoogleUser(String email, String name) {
+        UserDTO user = new UserDTO();
+        user.setEmail(email);
+        user.setName(name);
+//        user.setRoleId(roleService.getDefaultUserRoleId());
+
+//        userRepo.save(user);
+        return null;
     }
 
 

@@ -40,4 +40,10 @@ public class UserDonated {
 
     @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean isDeleted = false;
+
+    public interface UserDonatedProjection {
+        String getUsername();
+        long getAmount();
+        boolean isAnonymous();
+    }
 }

@@ -57,6 +57,12 @@
                 <a href="/forgotPassword" class="forgot-password">Quên mật khẩu?</a>
             </div>
         </form>
+
+        <form action="/oauth2/authorization/google" method="GET">
+            <button type="submit">
+                Sign In with Google
+            </button>
+        </form>
     </div>
 </div>
 <script>
@@ -99,7 +105,7 @@
                             window.location.href = "/api/donation_post/get";
                         } else if (response === "admin") {
                             // Điều hướng đến trang dành cho admin
-                            window.location.href = "api/admin";
+                            window.location.href = "/api/admin/user/get";
                         }
                 },
                 error: function(xhr, status, error) {

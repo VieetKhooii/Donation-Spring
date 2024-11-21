@@ -1,6 +1,7 @@
 package com.gabriel.donation.service;
 
 import com.gabriel.donation.dto.UserDonatedDTO;
+import com.gabriel.donation.entity.UserDonated;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -9,7 +10,7 @@ import java.util.List;
 public interface UserDonatedService {
     Page<UserDonatedDTO> getAll(PageRequest pageRequest);
 
-    Page<UserDonatedDTO> getPageByPostId(PageRequest pageRequest, int postId);
+    List<UserDonatedDTO> getPageByPostId(PageRequest pageRequest, int postId);
 
     UserDonatedDTO addUserDonated(UserDonatedDTO userDonatedDTO);
 

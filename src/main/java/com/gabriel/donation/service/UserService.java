@@ -39,4 +39,6 @@ public interface UserService {
 
     boolean signOut(HttpServletRequest request, HttpServletResponse response);
     UserDTO getUserById(int id);
+
+    UserDTO registerNewGoogleUser(String email, String name);
 }

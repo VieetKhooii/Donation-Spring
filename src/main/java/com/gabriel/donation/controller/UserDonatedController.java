@@ -202,13 +202,10 @@ public class UserDonatedController {
             @RequestParam("limit") int limit
     ) {
         PageRequest pageRequest = PageRequest.of(page, limit);
-        Page<UserDonatedDTO> list = userDonatedService.getPageByPostId(pageRequest, id);
-
+        List<UserDonatedDTO> list = userDonatedService.getPageByPostId(pageRequest, id);
         // Chuẩn bị dữ liệu để trả về cho phía client
         Map<String, Object> response = new HashMap<>();
-        response.put("userdonated", list.getContent());
-        response.put("totalPages", list.getTotalPages());
-        response.put("currentPage", page);
+        response.put("userdonated", list);
         return response;
     }
 

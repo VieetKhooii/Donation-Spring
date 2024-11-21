@@ -103,32 +103,31 @@ public class UserController {
     }
     @PostMapping("/admin/edit")
     public String editUser(
-            @RequestBody UserDTO userDTO,
-            @PathVariable int id,
+            @ModelAttribute UserDTO userDTO,
             HttpServletResponse response,
             Model model
     ){
         try {
-            userService.updateUser(userDTO, id, response);
+            userService.updateUser(userDTO, userDTO.getUserId(), response);
             model.addAttribute("message", "User updated successfully");
         } catch (Exception e) {
             model.addAttribute("message", "An error occurred while adding the user");
         }
-        return "admin/user";
+        return "redirect:/api/admin/user/get";
     }
 
-    @PostMapping("/admin/hide")
+    @GetMapping("/admin/hide/{userId}")
     public String hideUser(
-            @PathVariable int id,
+            @PathVariable int userId,
             Model model
     ){
         try {
-            userService.deleteUser(id);
+            userService.deleteUser(userId);
             model.addAttribute("message", "User hidden successfully");
         } catch (Exception e) {
             model.addAttribute("message", "An error occurred while adding the user");
         }
-        return "admin/user";
+        return "redirect:/api/admin/user/get";
     }
 
     // Test only, not use for Production

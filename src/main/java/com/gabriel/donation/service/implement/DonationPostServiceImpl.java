@@ -63,8 +63,6 @@ public class DonationPostServiceImpl implements DonationPostService {
         );
     }
 
-
-
     @Transactional
     @Override
     public DonationPostDTO addDonationPost(DonationPostDTO donationPostDTO, ImageOfDonationDTO imagePostDTO) {
