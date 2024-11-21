@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -119,5 +118,14 @@ public class DonationPostServiceImpl implements DonationPostService {
     @Override
     public DonationPostDTO findById(int id){
         return  DonationPostMapper.INSTANCE.toDto(donationPostRepo.findById(id).get());
+    }
+
+    @Override
+    public void updateCurrentAmountForDonationPosts(List<DonationPostDTO> donationPosts) {
+        for (DonationPostDTO post : donationPosts) {
+            Long totalAmount = donationPostRepo.getTotalAmountForDonationPost(post.getDonationPostId());
+            post.setCurrentAmount(totalAmount != null ? totalAmount : 0);
+            donationPostRepo.updateCurrentAmount(post.getDonationPostId(), totalAmount);
+        }
     }
 }
