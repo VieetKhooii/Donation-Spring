@@ -1,0 +1,16 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:each="cate : ${category}">
+    <form th:action="@{/api/category/updateCategory}"
+          method="post" id="form-donationPost">
+        <input type="hidden" name="categoryId" th:value="${cate.categoryId}">
+        <h4>Category Update</h4>
+        <div class="mb-2 mt-2">
+            <label class="form-label">Name :</label>
+            <input type="text" class="form-control" placeholder="Name" name="name" th:value="${cate.name}" required>
+        </div>
+        <div class="d-flex justify-content-between form-btn">
+            <button type="submit" class="btn btn-primary">Sửa</button>
+            <button type="button" class="btn btn-secondary" onclick="window.history.back();">Trở lại</button>
+        </div>
+    </form>
+</div>

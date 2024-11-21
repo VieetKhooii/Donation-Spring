@@ -26,4 +26,7 @@ public interface UserDonatedMapper {
     // Fields from entity that are Object type (Foreign key) must have ".id" (ex: role.id)
     // so that DTO can understand and store it
     UserDonatedDTO toDto(UserDonated userDonated);
+
+    @Mapping(source = "username", target = "userName")
+    UserDonatedDTO toDto(UserDonated.UserDonatedProjection userDonatedProjection);
 }

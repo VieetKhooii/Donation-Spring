@@ -1,0 +1,44 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <div th:each="donation : ${donationpost}">
+        <div th:each="image : ${imageofdonation}">
+            <form th:action="@{/api/donation_post/updateDonationPost}" method="post" id="form-donationPost">
+                <input type="hidden" name="donationPostId" th:value="${donation.donationPostId}">
+                <input type="hidden" name="imageOfDonationId" th:value="${image.imageOfDonationId}">
+                <h4 >Donation Post</h4>
+                <div class="mb-2 mt-2">
+                    <label class="form-label">Title :</label>
+                    <input type="text" class="form-control" placeholder="title" name="title" th:value="${donation.title}">
+                </div>
+                <div class="mb-2 mt-2">
+                    <label class="form-label">Start Date : </label>
+                    <input type="date" class="form-control" id="startDate" name="startDate" th:value="${#dates.format(donation.startDate, 'dd/MM/yyyy')}">
+                </div>
+                <div class="mb-2 mt-2">
+                    <label class="form-label">End Date :</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate" th:value="${#dates.format(donation.endDate, 'dd/MM/yyyy')}">
+                </div>
+                <div class="mb-2 mt-2">
+                    <label class="form-label">Goal Amount :</label>
+                    <input type="text" class="form-control" placeholder="Goal Amount" name="goalAmount" th:value="${donation.goalAmount}">
+                </div>
+                <div class="mb-2 mt-2">
+                    <label class="form-label">Story :</label>
+                    <textarea class="form-control" id="exampleTextarea" rows="3" placeholder="Nhập câu chuyện..." name="Story" th:text="${donation.story}"></textarea>
+                </div>
+
+                <div class="mb-2 mt-2">
+                    <label class="form-label">Description :</label>
+                    <input type="text" class="form-control" placeholder="Description" name="description" th:value="${image.description}">
+                </div>
+                <div class="mb-2 mt-2">
+                    <label class="form-label">Image :</label>
+<!--                    <img th:src="${image.url}" alt="Image" style="width: 50px; height: auto;" >-->
+                    <input type="text" class="form-control" placeholder="url" name="url" th:value="${image.url}">
+                </div>
+                <div class="d-flex justify-content-between form-btn">
+                    <button type="submit"> Sửa </button>
+                    <button type="button">Trở lại</button>
+                </div>
+            </form>
+        </div>
+    </div>

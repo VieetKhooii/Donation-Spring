@@ -69,7 +69,7 @@ public class ImageOfDonationServiceImpl implements ImageOfDonationService {
     @Override
     public ImageOfDonationDTO getImageOfDonationById(int id)
     {
-        return ImageOfDonationMapper.INSTANCE.toDto(imageOfDonationRepo.findById(id).get());
+        return ImageOfDonationMapper.INSTANCE.toDto(imageOfDonationRepo.findByDonationPostId(id).get(0));
     }
 
 }

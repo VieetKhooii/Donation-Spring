@@ -1,11 +1,14 @@
 package com.gabriel.donation.service;
 
 import com.gabriel.donation.dto.CategoryDTO;
+import com.gabriel.donation.dto.DonationPostDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
 public interface CategoryService {
-    List<CategoryDTO> getAll();
+    Page<CategoryDTO> getAll(PageRequest pageRequest);
 
     CategoryDTO addCategory(CategoryDTO categoryDTO);
 

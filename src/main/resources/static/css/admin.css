@@ -1,0 +1,128 @@
+.sidebar{
+    height:100vh;
+    background: #00B4DB;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #0083B0, #00B4DB);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #0083B0, #00B4DB); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    width:246px;
+}
+.navbar-brand{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(225, 252, 207);
+    padding-top: 14%;
+}
+.nav-item{
+  padding-top:5%;
+  margin-top:15%;
+  border-radius:20px;
+  font-size: 14px;
+  font-weight: 500;
+  display:flex;
+  align-items: center;
+}
+.nav-link{
+    color: white;
+}
+.nav-pills, .nav-link.active{
+    background-color: rgb(237, 238, 241);
+    color: black ;
+    border-radius : 48px 0 0 48px;
+    width:250px;
+    padding:7%;
+}
+
+.nav-pills, .nav-link:hover{
+    color: rgb(225, 252, 207);
+}
+.nav-pills, .nav-link.active:hover{
+    color: black;
+}
+
+.custom-table{
+ /*   border-radius: 35px 0 0 0px;*/
+    background-color: rgb(237, 238, 241);
+    padding: 2%;
+    height:100%;
+}
+
+.panel-Main{
+    height: auto;
+    color: black;
+    padding: 2%;
+}
+#main-content{
+  max-height: 100vh;
+  height:100vh;
+  overflow-y: auto;
+}
+.btn-group-sm>.btn, .btn-sm {
+    width:56px;
+}
+
+#exampleTextarea{
+resize: none;
+}
+
+
+
+.form-add{
+  width:40%;
+  height:100%;
+  background-color:white;
+  padding:1%;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+  position: relative;
+  perspective: 1000px;
+}
+.form-rotate {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+  transition: transform 0.6s;
+}
+
+.form-front{
+    transform: rotateY(0deg);
+}
+.form-back {
+  transform: rotateY(180deg);
+}
+.rotate-container {
+   margin-top:20px;
+   transform-style: preserve-3d;
+   transition: transform 0.6s ease;
+}
+.form-btn{
+    border: none;
+}
+button {
+  z-index: 10;
+}
+.custom-btnAdd{
+    background-color: #89B449;
+    color: white;
+    width: 10%;
+}
+
+.overlay{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  display: none;
+}
+#form-update{
+  width: 50%;
+  padding: 2%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+}

@@ -1,5 +1,6 @@
 package com.gabriel.donation.service;
 
+import com.gabriel.donation.dto.DonationPostDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gabriel.donation.dto.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,4 +38,7 @@ public interface UserService {
     void updatePassword(String email, String password);
 
     boolean signOut(HttpServletRequest request, HttpServletResponse response);
+    UserDTO getUserById(int id);
+
+    UserDTO registerNewGoogleUser(String email, String name);
 }

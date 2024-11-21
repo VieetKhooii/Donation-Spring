@@ -12,10 +12,7 @@ import com.gabriel.donation.repository.UserRepo;
 import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.UserDonatedService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -52,17 +49,12 @@ public class UserDonatedServiceImpl implements UserDonatedService {
     }
 
     @Override
-    public Page<UserDonatedDTO> getPageByPostId(PageRequest pageRequest, int postId) {
+    public List<UserDonatedDTO> getPageByPostId(PageRequest pageRequest, int postId) {
         DonationPost donationPost = donationPostRepo.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy DonationPost với id: " + postId));
-
-        Page<UserDonated> userDonatedPage = userDonatedRepo.findByDonationPost(donationPost, pageRequest);
-        List<UserDonatedDTO> userDonatedDTOList = userDonatedPage
-                .getContent()
-                .stream()
-                .map(UserDonatedMapper.INSTANCE::toDto)
-                .toList();
-        return new PageImpl<>(userDonatedDTOList, pageRequest, userDonatedPage.getTotalElements());
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "amount"));
+        List<UserDonated.UserDonatedProjection> userDonatedProjections = userDonatedRepo.findByDonationPost(donationPost, pageable);
+        return userDonatedProjections.stream().map(UserDonatedMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
     @Override

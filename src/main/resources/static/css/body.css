@@ -9,11 +9,9 @@
 }
 
 .nenTang {
-    width: 92%;
-    padding: 132px;
-    position: absolute;
-    bottom: 0;
-    transform: translate(3%, -23%);
+    width: 85%;
+    padding: 10%;
+    transform: translate(10%, 4%);
     border-top-left-radius: 20%;
     border-top-right-radius: 20%;
     z-index: 2;
@@ -51,16 +49,16 @@
 }
 
 .height {
-    height: 600px;
+    height: 60%;
     position: relative;
-    top: 133px;
+    top: 80%;
 }
 
 .custom-div {
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     height: 440px;
-    width: 350px;
-    margin:20px;
+    width: 92%;
+    margin:5%;
 }
 .custom-H4
 {

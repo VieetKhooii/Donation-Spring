@@ -36,6 +36,17 @@ spring:
   thymeleaf:
     cache: false
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 926183180298-1k4es0a9ih9vo3puk0hd5dhi7olr0ohl.apps.googleusercontent.com
+            client-secret: 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
+          scope:
+            - email
+            - profile
+            - https://www.googleapis.com/auth/user.phonenumbers.read
 #  vnp:
 #    vnp_TmnCode: NEOBKC89
 #    access:

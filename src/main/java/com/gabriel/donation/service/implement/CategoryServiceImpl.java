@@ -7,6 +7,9 @@ import com.gabriel.donation.mapper.CategoryMapper;
 
 import com.gabriel.donation.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,13 +21,24 @@ public class CategoryServiceImpl implements CategoryService {
     CategoryRepo cateRepo;
 
     @Override
-    public List<CategoryDTO> getAll()
-    {
-        List<Category> categories=cateRepo.findAll();
-        return  categories.stream()
+    public Page<CategoryDTO> getAll(PageRequest pageRequest) {
+        // Fetch categories with pagination
+        Page<Category> categoriesPage = cateRepo.findAll(pageRequest);
+        List<Category> categories = categoriesPage.getContent();
+
+        // Map categories to DTOs
+        List<CategoryDTO> categoryDTOS = categories.stream()
                 .map(CategoryMapper.INSTANCE::toDto)
                 .toList();
+
+        // Return a PageImpl object with the mapped DTOs
+        return new PageImpl<CategoryDTO>(
+                categoryDTOS,
+                categoriesPage.getPageable(),
+                categoriesPage.getTotalElements()
+        );
     }
+
 
     @Override
     public CategoryDTO addCategory(CategoryDTO categoryDTO)
@@ -39,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
     {
         Category cate1=cateRepo.findById(id).get();
         cate1.setName(categoryDTO.getName());
-        cate1.setDeleted(categoryDTO.isDeleted());
+//        cate1.setDeleted(categoryDTO.isDeleted());
         Category updatedCategory=cateRepo.save(cate1);
         return CategoryMapper.INSTANCE.toDto(updatedCategory);
     }

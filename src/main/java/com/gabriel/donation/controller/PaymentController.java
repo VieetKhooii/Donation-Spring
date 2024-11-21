@@ -33,8 +33,8 @@ public class PaymentController {
     @GetMapping("/admin/get")
     @Cacheable("paymentsAdmin")
     public String getAllPayment(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
             Model model
     ) {
         PageRequest pageRequest = PageRequest.of(
@@ -43,10 +43,10 @@ public class PaymentController {
         Page<PaymentDTO> list = paymentService.getAll(pageRequest);
         int totalPages = list.getTotalPages();
         List<PaymentDTO> payments = list.getContent();
-        model.addAttribute("Payment", payments);
+        model.addAttribute("payments", payments);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
-        return "admin/Payment";
+        return "admin/Payment/Payment";
 
     }
 

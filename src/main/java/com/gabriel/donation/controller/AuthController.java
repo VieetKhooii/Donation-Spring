@@ -52,7 +52,6 @@ public class AuthController {
             if (authentication.isAuthenticated()) {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String token = jwtGenerator.generateToken(authentication);
-
                 UserDTO userDTO = userService.findByPhone(userDTOInput.getPhone());
 
                 session.setAttribute("userId", userDTO.getUserId());
@@ -95,7 +94,7 @@ public class AuthController {
             HttpServletRequest request
     ) {
         try {
-            System.out.println("Cookie Checking");
+//            System.out.println("Cookie Checking");
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 String token = cookieUtil.getCookieValue(cookies, String.valueOf(CookieName.jwt));
@@ -107,11 +106,11 @@ public class AuthController {
                         System.out.println("Found username "+userDTO.getName());
                         return new ResponseEntity<>(userDTO.getName(), HttpStatus.OK);
                     }
-                    System.out.println("Validation jwt failed");
+//                    System.out.println("Validation jwt failed");
                 }
-                System.out.println("jwt not found");
+//                System.out.println("jwt not found");
             }
-            System.out.println("Check cookie fail");
+//            System.out.println("Check cookie fail");
             return new ResponseEntity<>("", HttpStatus.EXPECTATION_FAILED);
         }
         catch (Exception e){

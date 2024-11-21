@@ -16,11 +16,18 @@ public class JwtGenerator {
 
     public String generateToken(Authentication authentication){
         String phone = authentication.getName();
+        return buildToken(phone);
+    }
+
+    public String generateToken(String email){
+        return buildToken(email);
+    }
+
+    private static String buildToken(String requiredString) {
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
-
         String token = Jwts.builder()
-                .setSubject(phone)
+                .setSubject(requiredString)
                 .setIssuedAt(new Date())
                 .setExpiration(expireDate)
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.JWT_SECRET)
