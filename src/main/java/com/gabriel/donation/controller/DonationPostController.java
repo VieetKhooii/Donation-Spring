@@ -134,6 +134,9 @@ public class DonationPostController {
             Model model) {
         PageRequest pageRequest = PageRequest.of(page, limit);
         Page<DonationPostDTO> list = getDonationPostDTOPage(pageRequest);
+
+        donationPostService.updateCurrentAmountForDonationPosts(list.getContent());
+
         List<Long> dateDifferences = getDateDifferences(list);
 
         System.out.println("Page: "+ page);

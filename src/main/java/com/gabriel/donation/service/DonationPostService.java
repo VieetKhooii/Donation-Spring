@@ -23,4 +23,6 @@ public interface DonationPostService {
     DonationPostDTO getDonationPostById(int id);
 
     DonationPostDTO findById(int id);
+
+    void updateCurrentAmountForDonationPosts(List<DonationPostDTO> donationPosts);
 }
