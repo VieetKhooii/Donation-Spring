@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add User Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+<style>
+  .form-register{
+    width:530px;
+    background-color:white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border: 2px solid black;
+    border-radius: 10px
+  }
+  .custom-btn{
+    border:none;
+    width:107px;
+    height:43px;
+  }
+  .register{
+    background-color:#B5E61D;
+    color:white;
+  }
+</style>
+<div class="container-fluid vh-100 bg-dark d-flex justify-content-center align-items-center">
+  <div class="text-center form-register p-sm-3">
+    <h2 class="text-black p-3 r-sm-3">Thêm user</h2>
+    <form id="registerForm" class="needs-validation" method="post" novalidate>
+      <div class="form-group">
+
+        <div class="form-floating m-3">
+          <input type="text" class="form-control" placeholder="sđt is your username" name="phone" id="phone" required>
+          <label >SĐT</label>
+          <div class="valid-feedback"></div>
+          <div class="invalid-feedback">Vui lòng không để trống</div>
+        </div>
+
+        <div class="form-floating m-3">
+          <input type="text" class="form-control" placeholder="email" name="email" id="email" required>
+          <label >Email</label>
+          <div class="valid-feedback"></div>
+          <div class="invalid-feedback">Vui lòng không để trống</div>
+        </div>
+
+        <div class="form-floating m-3">
+          <input type="text" class="form-control" placeholder="name" name="name" id="name" required>
+          <label >Name</label>
+          <div class="valid-feedback"></div>
+          <div class="invalid-feedback">Vui lòng không để trống</div>
+        </div>
+
+        <div class="form-floating m-3">
+          <input type="password" id="password" class="form-control" placeholder="password" name="password" required>
+          <label>Password</label>
+          <div class="valid-feedback"></div>
+          <div class="invalid-feedback">Vui lòng không để trống</div>
+        </div>
+
+        <div class="form-floating m-3">
+          <input type="password" id="confirm" class="form-control" placeholder="Confirm password" name="confirm" required>
+          <label>Confirm Password</label>
+          <div class="valid-feedback"></div>
+          <div class="invalid-feedback">Vui lòng không để trống</div>
+        </div>
+
+        <div class="form-floating m-3">
+          <select class="form-control" name="roleId" id="roleId" required>
+            <option value="" disabled selected>Chọn vai trò</option>
+            <th:block th:each="role : ${listRole}">
+              <option th:value="${role.roleId}" th:text="${role.name}"></option>
+            </th:block>
+          </select>
+          <label>Vai trò</label>
+          <div class="valid-feedback"></div>
+          <div class="invalid-feedback">Vui lòng chọn một vai trò</div>
+        </div>
+
+      </div>
+      <div id="errorMessage" class="alert alert-danger" style="display:none;"></div>
+      <button type="submit" class="custom-btn register m-3">Đăng ký</button>
+      <button  class="custom-btn m-3">Trở lại</button>
+    </form>
+  </div>
+</div>
+<script>
+  // Khi người dùng submit form
+  (function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+
+    // Ngăn chặn submit nếu form không hợp lệ
+    Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+              form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                  event.preventDefault()
+                  event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+              }, false)
+            })
+  })()
+
+  $(document).ready(function() {
+    $('#registerForm').submit(function(event) {
+      event.preventDefault(); // Ngăn form gửi yêu cầu tự động
+
+      var phone = $('#phone').val();
+      var email = $('#email').val();
+      var name = $('#name').val();
+      var password = $('#password').val();
+      var confirm = $('#confirm').val();
+      var role=  parseInt($('#roleId').val());
+      console.log({ phone, email, role });
+      // Kiểm tra số điện thoại có đúng định dạng 10 chữ số hay không
+      var phoneRegex = /^\d{10}$/;
+      if (!phoneRegex.test(phone)) {
+        $('#errorMessage').text("Số điện thoại không hợp lệ. Vui lòng nhập đúng định dạng 10 chữ số.").show();
+        return; // Ngăn gửi form nếu số điện thoại không hợp lệ
+      } else {
+        $('#errorMessage').hide(); // Ẩn thông báo lỗi nếu hợp lệ
+      }
+
+      // Kiểm tra email có đúng định dạng hay không
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        $('#errorMessage').text("Email không hợp lệ. Vui lòng nhập đúng định dạng email.").show();
+        return; // Ngăn gửi form nếu email không hợp lệ
+      } else {
+        $('#errorMessage').hide(); // Ẩn thông báo lỗi nếu hợp lệ
+      }
+
+      $.ajax({
+        url: '/api/user/admin/saveUser',
+        type: 'POST',
+        contentType: 'application/json', // Thiết lập Content-Type là application/json
+        data: JSON.stringify({ // Chuyển đổi dữ liệu sang định dạng JSON
+          phone: phone,
+          email: email,
+          name: name,
+          password: password,
+          confirm: confirm,
+          role_id: role
+        }),
+        success: function(response) {
+          if(response == "success"){
+            alert("Thêm tài khoản thành công!");
+            $('#successMessage').show();
+            setTimeout(function () {
+              window.location.href = "/api/admin/user/get";
+            }, 1000);
+          }
+        },
+        error: function(xhr, status, error) {
+          var errorMessage = xhr.responseText || "Đã xảy ra lỗi. Vui lòng thử lại sau.";
+          if (xhr.status === 400) {
+            $('#errorMessage').text(errorMessage).show();
+          } else if (xhr.status === 401) {
+            $('#errorMessage').text(errorMessage).show();
+          } else {
+            $('#errorMessage').text(errorMessage).show();
+          }
+        }
+      });
+    });
+  });
+
+</script>
+</body>
+</html>

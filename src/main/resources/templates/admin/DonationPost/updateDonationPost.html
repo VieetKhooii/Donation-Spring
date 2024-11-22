@@ -11,11 +11,11 @@
                 </div>
                 <div class="mb-2 mt-2">
                     <label class="form-label">Start Date : </label>
-                    <input type="date" class="form-control" id="startDate" name="startDate" th:value="${#dates.format(donation.startDate, 'dd/MM/yyyy')}">
+                    <input type="date" class="form-control" id="startDate" name="startDate" th:value="${#dates.format(donation.startDate, 'yyyy-MM-dd')}">
                 </div>
                 <div class="mb-2 mt-2">
                     <label class="form-label">End Date :</label>
-                    <input type="date" class="form-control" id="endDate" name="endDate" th:value="${#dates.format(donation.endDate, 'dd/MM/yyyy')}">
+                    <input type="date" class="form-control" id="endDate" name="endDate" th:value="${#dates.format(donation.endDate, 'yyyy-MM-dd')}">
                 </div>
                 <div class="mb-2 mt-2">
                     <label class="form-label">Goal Amount :</label>

@@ -22,11 +22,11 @@ public class DonationPostDTO {
     private String title;
 
     @JsonProperty("start_date")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
 
     @JsonProperty("end_date")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
     @JsonProperty("goal_amount")
