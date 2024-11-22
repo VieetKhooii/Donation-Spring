@@ -1,12 +1,10 @@
 package com.gabriel.donation.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.gabriel.donation.dto.PaymentDTO;
-import com.gabriel.donation.dto.DonationPostDTO;
-import com.gabriel.donation.dto.ImageOfDonationDTO;
-import com.gabriel.donation.dto.UserDTO;
+import com.gabriel.donation.dto.*;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.service.PaymentService;
+import com.gabriel.donation.service.RoleService;
 import com.gabriel.donation.service.UserService;
 import com.gabriel.donation.utils.CookieUtil;
 import jakarta.servlet.http.Cookie;
@@ -36,6 +34,8 @@ public class UserController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    RoleService roleService;
     @Autowired
     PaymentService paymentService;
     @Autowired
@@ -77,21 +77,29 @@ public class UserController {
         model.addAttribute("currentPage", page);
         return "admin/User/user";
     }
-    @PostMapping("/admin/add")
-    public String addUser(
-            @RequestBody UserDTO userDTO,
+    @GetMapping("/admin/add")
+    public String showAddUserForm(
             Model model
     ) {
-        try {
-            userService.addUser(userDTO);
-            model.addAttribute("message", "User added successfully");
-        } catch (DataIntegrityViolationException e) {
-            model.addAttribute("message", "User already exists or data integrity issue");
-        } catch (Exception e) {
-            model.addAttribute("message", "An error occurred while adding the user");
-        }
-        return "admin/user";
+        List <RoleDTO> roleDTOS= roleService.getRoles();
+        model.addAttribute("listRole",roleDTOS);
+        model.addAttribute("user", new UserDTO());
+        return "admin/User/addUser";
     }
+
+    @PostMapping("/admin/saveUser")
+    public ResponseEntity<?> saveUser(
+            @RequestBody UserDTO userDTO,
+            Model model
+    )
+    {
+        if (userService.findByPhone(userDTO.getPhone()) != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại");
+        }
+        String message = userService.addUser(userDTO);
+        return ResponseEntity.ok("success");
+    }
+
     @GetMapping("/admin/edit/{id}")
     public String showUpdateForm(
             @PathVariable("id") int id,
