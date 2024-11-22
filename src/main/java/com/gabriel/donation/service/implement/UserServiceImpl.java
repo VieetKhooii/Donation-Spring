@@ -75,11 +75,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO addUser(UserDTO userDTO)
+    public String addUser(UserDTO userDTO)
     {
-        User user= UserMapper.INSTANCE.toEntity(userDTO);
-        User savedUser=userRepo.save(user);
-        return UserMapper.INSTANCE.toDto(savedUser);
+        if (userRepo.findByPhone(userDTO.getPhone()).isPresent()) {
+            return "Số điện thoại đã tồn tại!";
+        }
+        try {
+            User user = new User();
+            user.setName(userDTO.getName());
+            user.setPhone(userDTO.getPhone());
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            user.setEmail(userDTO.getEmail());
+            System.out.println(userDTO.getRoleId());
+            Role role = roleRepo.findById(userDTO.getRoleId()).get();
+            user.setRole(role);
+            userRepo.save(user);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Thêm tài khoản thành công!";
     }
 
     @Override

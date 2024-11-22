@@ -15,7 +15,7 @@ import java.util.Set;
 public interface UserService {
     Page<UserDTO> getUsersForAdmin(PageRequest pageRequest);
 
-    UserDTO addUser(UserDTO userDTO);
+    String addUser(UserDTO userDTO);
 
     UserDTO updateUser(UserDTO userDTO, int id, HttpServletResponse response) throws JsonProcessingException;
 

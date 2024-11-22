@@ -90,7 +90,7 @@ public class DonationPostController {
     )
     {
         donationPostService.addDonationPost(donationPostDTO, imageOfDonationDTO);
-        return "redirect:/api/user/admin";
+        return "redirect:/api/admin/user/get";
     }
 
     @GetMapping("/admin/hide/{id}")

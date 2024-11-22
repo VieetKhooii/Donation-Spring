@@ -22,4 +22,5 @@ public interface RoleService {
 
     String findRoleNameById(int id);
 
+    List<RoleDTO> getRoles();
 }
