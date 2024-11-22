@@ -116,9 +116,11 @@ public class DonationPostController {
     @PostMapping("/updateDonationPost")
     public String updateDonationPost(
             @ModelAttribute("donationpost") DonationPostDTO donationPostDTO,
-            @ModelAttribute("imagePost") ImageOfDonationDTO imageOfDonationDTO,
+            @ModelAttribute("imageofdonation") ImageOfDonationDTO imageOfDonationDTO,
             Model model
     ) {
+        System.out.println(donationPostDTO.getStartDate());
+
         donationPostService.updateDonationPostAndImage(donationPostDTO,imageOfDonationDTO ,donationPostDTO.getDonationPostId());
         return "redirect:/api/admin/user/get";
     }
