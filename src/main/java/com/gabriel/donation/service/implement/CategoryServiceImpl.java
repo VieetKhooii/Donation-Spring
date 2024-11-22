@@ -28,6 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         // Map categories to DTOs
         List<CategoryDTO> categoryDTOS = categories.stream()
+                .filter(category -> category.isDeleted() == false)
                 .map(CategoryMapper.INSTANCE::toDto)
                 .toList();
 
@@ -41,17 +42,17 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public CategoryDTO addCategory(CategoryDTO categoryDTO)
+    public void addCategory(CategoryDTO categoryDTO)
     {
         Category category=CategoryMapper.INSTANCE.toEntity(categoryDTO);
-        Category savedCategory=cateRepo.save(category);
-        return  CategoryMapper.INSTANCE.toDto(savedCategory);
+       cateRepo.save(category);
+//        return  CategoryMapper.INSTANCE.toDto(savedCategory);
     }
 
     @Override
     public CategoryDTO updateCategory(CategoryDTO categoryDTO, int id)
     {
-        Category cate1=cateRepo.findById(id).get();
+        Category cate1=cateRepo.findById(id);
         cate1.setName(categoryDTO.getName());
 //        cate1.setDeleted(categoryDTO.isDeleted());
         Category updatedCategory=cateRepo.save(cate1);
@@ -61,14 +62,19 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(int id)
     {
-        if(cateRepo.existsById(id))
-            cateRepo.deleteById(id);
+        Category cate=cateRepo.findById(id);
+        if(cate!= null)
+        {
+            cate.setDeleted(true);
+            cateRepo.save(cate);
+        }
+
     }
 
     @Override
     public CategoryDTO getCategoryById(int id)
     {
-        return CategoryMapper.INSTANCE.toDto(cateRepo.findById(id).get());
+        return CategoryMapper.INSTANCE.toDto(cateRepo.findById(id));
     }
 
 }

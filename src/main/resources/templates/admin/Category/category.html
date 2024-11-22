@@ -23,7 +23,7 @@
                     <a id="btn-add" href="#" class="btn btn-primary btn-sm">View</a>
                     <a th:data-id="${category.categoryId} "
                        class="mt-1 btn btn-warning btn-sm btn-edit-category">Edit</a>
-                    <a href="#" class="mt-1 btn btn-danger btn-sm">Delete</a>
+                    <a th:href="@{'/api/category/admin/hide/' +${category.categoryId}}" class="mt-1 btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
             </tbody>

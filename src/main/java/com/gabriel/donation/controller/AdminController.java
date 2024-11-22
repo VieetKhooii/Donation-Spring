@@ -37,9 +37,10 @@ public class AdminController {
     @Cacheable("Admin")
     public String getAdmin(
             @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "5") int limit,
             Model model
     ) {
-        int limit = 7;
+
         PageRequest pageRequest = PageRequest.of(
                 page, limit
         );

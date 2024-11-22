@@ -53,15 +53,16 @@ public class CategoryController {
             Model model
     )
     {
+        categoryDTO.setDeleted(false);
         categoryService.addCategory(categoryDTO);
-        return "redirect:/api/user/admin";
+        return "redirect:/api/admin/user/get";
     }
 
     @GetMapping("/admin/hide/{id}")
     public String deleteCategory(@PathVariable("id") int id, Model model) {
 
         categoryService.deleteCategory(id);
-        return "redirect:/admin/get";
+        return "redirect:/api/admin/user/get";
     }
 
     @GetMapping("/admin/edit/{id}")
@@ -80,7 +81,7 @@ public class CategoryController {
             Model model
     ) {
         categoryService.updateCategory(categoryDTO, categoryDTO.getCategoryId());
-        return "redirect:/api/user/admin";
+        return "redirect:/api/admin/user/get";
     }
 
 
