@@ -96,7 +96,7 @@ public class DonationPostServiceImpl implements DonationPostService {
         donationPost.setTitle(donationPostDTO.getTitle());
         donationPost.setNumberOfDonation(donationPostDTO.getNumberOfDonation());
 //        Sponsor sponsor1=sponsorRepo.findById(donationPostDTO.getSponsorId()).get();
-        Category category1=categoryRepo.findById(donationPostDTO.getCategoryId()).get();
+        Category category1=categoryRepo.findById(donationPostDTO.getCategoryId());
 //        donationPost.setSponsor(sponsor1);
         donationPost.setCategory(category1);
 

@@ -29,7 +29,7 @@ $(document).ready(function(){
       var deafaultUrl = '/api/user/admin/get';
       $(document).on('click', '.page-link, .nav-link', function(event) {
         event.preventDefault();
-        var url = $(this).attr('href') || deafaultUrl; ;
+        var url = $(this).attr('href') || deafaultUrl;
         $.ajax({
             url: url ,
             type: 'GET',

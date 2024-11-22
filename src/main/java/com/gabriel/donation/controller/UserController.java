@@ -41,31 +41,31 @@ public class UserController {
     @Autowired
     CookieUtil cookieUtil;
 
-    @GetMapping("/admin")
-    @Cacheable("Admin")
-    public String getAdmin(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            Model model
-    ) {
-        int limit = 7;
-        PageRequest pageRequest = PageRequest.of(
-                page, limit
-        );
-        Page<UserDTO> list = userService.getUsersForAdmin(pageRequest);
-        int totalPages = list.getTotalPages();
-        List<UserDTO> users = list.getContent();
-        model.addAttribute("users", users);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("currentPage", page);
-        return "admin/admin";
-    }
+//    @GetMapping("/admin")
+//    @Cacheable("Admin")
+//    public String getAdmin(
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            Model model
+//    ) {
+//        int limit = 7;
+//        PageRequest pageRequest = PageRequest.of(
+//                page, limit
+//        );
+//        Page<UserDTO> list = userService.getUsersForAdmin(pageRequest);
+//        int totalPages = list.getTotalPages();
+//        List<UserDTO> users = list.getContent();
+//        model.addAttribute("users", users);
+//        model.addAttribute("totalPages", totalPages);
+//        model.addAttribute("currentPage", page);
+//        return "admin/admin";
+//    }
     @GetMapping("/admin/get")
     @Cacheable("usersAdmin")
     public String getAllUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "5") int limit,
             Model model
     ) {
-        int limit = 5;
         PageRequest pageRequest = PageRequest.of(
                 page, limit
         );

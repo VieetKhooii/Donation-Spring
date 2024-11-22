@@ -10,7 +10,7 @@ import java.util.List;
 public interface CategoryService {
     Page<CategoryDTO> getAll(PageRequest pageRequest);
 
-    CategoryDTO addCategory(CategoryDTO categoryDTO);
+    void addCategory(CategoryDTO categoryDTO);
 
     CategoryDTO updateCategory(CategoryDTO categoryDTO, int id);
 
