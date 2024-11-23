@@ -39,6 +39,9 @@ public class User implements UserDetails {
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean isDeleted = false;
+
     @OneToMany(mappedBy = "user")
     private List<Payment> payments = new ArrayList<>();
 
@@ -48,8 +51,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "receiver")
     private List<DonationPost> donationPosts = new ArrayList<>();
 
-    @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
-    private boolean isDeleted = false;
 
     @Override
     public String getUsername(){

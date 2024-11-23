@@ -13,12 +13,15 @@ import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface DonationPostRepo extends JpaRepository<DonationPost, Integer> {
-    @Query("SELECT SUM(ud.amount) FROM UserDonated ud WHERE ud.donationPost.id = :donationPostId AND ud.isDeleted = false")
+
+    @Query("SELECT COALESCE(SUM(ud.amount), 0) FROM UserDonated ud WHERE ud.donationPost.id = :donationPostId AND ud.isDeleted = false")
     Long getTotalAmountForDonationPost(@Param("donationPostId") Integer donationPostId);
+
     @Transactional
     @Modifying
     @Query("UPDATE DonationPost dp SET dp.currentAmount = :currentAmount WHERE dp.id = :donationPostId")
     void updateCurrentAmount(@Param("donationPostId") Integer donationPostId, @Param("currentAmount") Long currentAmount);
+
     @Modifying
     @Transactional
     @Query("UPDATE DonationPost dp SET dp.isDeleted = true WHERE dp.id = ?1")
