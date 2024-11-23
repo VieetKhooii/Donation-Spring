@@ -24,7 +24,7 @@
                 <td class="d-flex ">
 <!--                    <a href="#" class="btn btn-primary btn-sm">View</a>-->
                     <a th:data-id="${role.roleId} " class="mt-1 btn btn-warning btn-sm btn-edit-role">Edit</a>
-                    <a href="#" class="mt-1 btn btn-danger btn-sm">Delete</a>
+                    <a th:href="@{'/api/role/admin/hide/' +${role.roleId}}" class="mt-1 btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
             </tbody>
