@@ -101,6 +101,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(UserDTO userDTO, int id, HttpServletResponse response) throws JsonProcessingException {
         User use1 = userRepo.findById(id);
         use1.setPhone(userDTO.getPhone());
+        use1.setBalance(userDTO.getBalance());
         use1.setName(userDTO.getName());
         Role role1=roleRepo.findById(userDTO.getRoleId()).get();
         use1.setRole(role1);

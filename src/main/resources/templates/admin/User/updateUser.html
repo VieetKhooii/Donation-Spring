@@ -2,6 +2,7 @@
 <div th:each="u : ${user}">
     <form th:action="@{/api/user/admin/edit}" method="post" id="form-donationPost">
         <input type="hidden" name="userId" th:value="${u.userId}">
+        <input type="hidden" name="balance" th:value="${u.balance}">
         <h4 >Donation Post</h4>
         <div class="mb-2 mt-2">
             <label class="form-label">Name :</label>

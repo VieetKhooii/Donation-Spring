@@ -26,6 +26,7 @@ public class RoleServiceImpl implements RoleService {
         List<Role> roles=roleRepo.findAll(pageRequest).getContent();
         List<RoleDTO> roleDTOS = roles
                 .stream()
+                .filter(role -> !role.isDeleted())
                 .map(RoleMapper.INSTANCE::toDto)
                 .toList();
         return new PageImpl<RoleDTO>(
@@ -57,8 +58,9 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void deleteRole(int id)
     {
-        if(roleRepo.existsById(id))
-            roleRepo.deleteById(id);
+        Role role= roleRepo.findById(id).get();
+            role.setDeleted(true);
+            roleRepo.save(role);
     }
 
     @Override

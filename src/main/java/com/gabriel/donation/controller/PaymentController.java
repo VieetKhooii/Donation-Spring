@@ -43,6 +43,7 @@ public class PaymentController {
         Page<PaymentDTO> list = paymentService.getAll(pageRequest);
         int totalPages = list.getTotalPages();
         List<PaymentDTO> payments = list.getContent();
+        System.out.println(payments.getFirst().getTransactionDate());
         model.addAttribute("payments", payments);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);

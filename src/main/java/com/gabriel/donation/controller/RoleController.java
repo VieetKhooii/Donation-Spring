@@ -57,21 +57,21 @@ public class RoleController {
         model.addAttribute("role", new RoleDTO());
         return "admin/Role/addRole";
     }
-    @PostMapping("/saveDonationPost")
+    @PostMapping("/saveRole")
     public String saveRole(
             @ModelAttribute("role") RoleDTO roleDTO,
             Model model
     )
     {
         roleService.addRole(roleDTO);
-        return "redirect:/api/user/admin";
+        return "redirect:/api/admin/user/get";
     }
 
     @GetMapping("/admin/hide/{id}")
     public String deleteCategory(@PathVariable("id") int id, Model model) {
 
         roleService.deleteRole(id);
-        return "redirect:/admin/get";
+        return "redirect:/api/admin/user/get";
     }
 
     @GetMapping("/admin/edit/{id}")
@@ -90,6 +90,6 @@ public class RoleController {
             Model model
     ) {
         roleService.updateRole(roleDTO, roleDTO.getRoleId());
-        return "redirect:/api/admin/role/get";
+        return "redirect:/api/admin/user/get";
     }
 }

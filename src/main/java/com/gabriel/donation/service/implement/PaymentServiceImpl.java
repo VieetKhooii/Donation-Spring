@@ -26,14 +26,14 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Page<PaymentDTO> getAll(PageRequest pageRequest)
     {
-        List<Payment> payments = paymentRepo.findAll();
+        List<Payment> payments = paymentRepo.findAll(pageRequest).getContent();
         List<PaymentDTO> paymentDTOS = payments
                 .stream()
                 .map(PaymentMapper.INSTANCE::toDto)
                 .toList();
         return new PageImpl<PaymentDTO>(
                 paymentDTOS,
-                paymentRepo.findAll(pageRequest).getPageable(),
+                pageRequest,
                 paymentRepo.findAll(pageRequest).getTotalElements()
         );
     }
