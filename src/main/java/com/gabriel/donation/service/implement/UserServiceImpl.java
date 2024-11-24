@@ -64,7 +64,6 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepo.findAll(pageRequest).getContent();
         List<UserDTO> userDTOS = users
                 .stream()
-                .filter(user -> !user.isDeleted())
                 .map(UserMapper.INSTANCE::toDto)
                 .toList();
         return new PageImpl<UserDTO>(
@@ -83,9 +82,9 @@ public class UserServiceImpl implements UserService {
         try {
             User user = new User();
             user.setName(userDTO.getName());
+            user.setEmail(userDTO.getEmail());
             user.setPhone(userDTO.getPhone());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-            user.setEmail(userDTO.getEmail());
             System.out.println(userDTO.getRoleId());
             Role role = roleRepo.findById(userDTO.getRoleId()).get();
             user.setRole(role);
@@ -133,7 +132,7 @@ public class UserServiceImpl implements UserService {
     {
         User user = userRepo.findById(id);
         if(user != null){
-            user.setDeleted(true);
+            user.setDeleted(!user.isDeleted());
             userRepo.save(user);
         }
     }

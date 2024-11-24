@@ -54,7 +54,7 @@ public class AuthController {
                 String token = jwtGenerator.generateToken(authentication);
                 UserDTO userDTO = userService.findByPhone(userDTOInput.getPhone());
 
-                session.setAttribute("userId", userDTO.getUserId());
+//                session.setAttribute("userId", userDTO.getUserId());
                 session.setAttribute("username", userDTO.getName());
 
                 cookieUtil.createNewCookie(response, token, CookieName.jwt);
@@ -126,7 +126,7 @@ public class AuthController {
     ){
         boolean isSignOut = userService.signOut(request, response);
         return isSignOut?
-                "login" :
+                "redirect:/login" :
                 "";
     }
 }

@@ -60,7 +60,7 @@ public class UserController {
 //        return "admin/admin";
 //    }
     @GetMapping("/admin/get")
-    @Cacheable("usersAdmin")
+//    @Cacheable("usersAdmin")
     public String getAllUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "limit", defaultValue = "5") int limit,
@@ -72,6 +72,7 @@ public class UserController {
         Page<UserDTO> list = userService.getUsersForAdmin(pageRequest);
         int totalPages = list.getTotalPages();
         List<UserDTO> users = list.getContent();
+
         model.addAttribute("users", users);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
@@ -154,6 +155,9 @@ public class UserController {
         String info = cookieUtil.getCookieValue(cookie, String.valueOf(CookieName.userInfo));
         if (!info.isEmpty() && info != null) {
             UserDTO userDTO = cookieUtil.decodeUserDTOInCookie(info);
+            if (userDTO.getPhone().equalsIgnoreCase("phone")){
+                userDTO.setPhone("Hãy nhớ cung cấp số điện thoại nha!");
+            }
             model.addAttribute("userLogin", userDTO);
         }
         return "user_information/user_info";
