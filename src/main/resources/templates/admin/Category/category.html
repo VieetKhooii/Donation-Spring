@@ -80,6 +80,10 @@
             $('.overlay').hide();
         });
 
+        $(document).on('click', '.back-btn', function() {
+            $('.overlay').hide();
+        });
+
         // Ẩn overlay khi nhấp bên ngoài form
         $(document).on('click', '.overlay', function(event) {
             if ($(event.target).is('.overlay')) {
