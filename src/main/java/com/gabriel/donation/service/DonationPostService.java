@@ -25,4 +25,8 @@ public interface DonationPostService {
     DonationPostDTO findById(int id);
 
     void updateCurrentAmountForDonationPosts(List<DonationPostDTO> donationPosts);
+
+    Page<DonationPostDTO> getAllSortedByEndDate(PageRequest pageRequest,boolean descending);
+
+    Page<DonationPostDTO> getAllSortedByPercent(PageRequest pageRequest, boolean descending);
 }
