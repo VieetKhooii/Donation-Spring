@@ -13,15 +13,14 @@
         <div id="items-container" class="row mx-5">
             <div class="col-md-4" th:each="donationPost, iterStat  : ${lstDonationPost}">
                 <div th:if="${!donationPost.isDeleted} and (${dateDifferences[iterStat.index]>0})">
-                    <div class="custom-div mb-3">
-                        <div th:each="image : ${donationPost.lstImages}">
+                    <div class="custom-div mb-3 donationPost">
+                        <div th:each="image : ${donationPost.lstImages}" style="max-width:100%; height: 188px; width: 100%;">
                             <img class="img-fluid rounded-top"
                                  style="max-width:100%; height: 188px; width: 100%; object-fit: cover;"
                                  alt="images"
                                  th:src="@{/images/{imageUrl}(imageUrl=${image.url})}"
                             >
                         </div>
-
                         <div class=" custom-H4">
                             <h4 class="px-3 pt-2 fs-5" th:text="${donationPost.title}"></h4>
                         </div>

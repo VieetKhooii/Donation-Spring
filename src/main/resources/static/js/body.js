@@ -129,19 +129,31 @@ document.addEventListener('DOMContentLoaded',function (){
 
 //chạy số
 
+// JavaScript để thêm class 'visible' khi cuộn tới phần tử
+window.addEventListener('scroll', function() {
+    const elements = document.querySelectorAll('.gt'); // Lấy tất cả các phần tử với class 'gt'
 
+    const donations = document.querySelectorAll('.donationPost');
 
-        window.addEventListener('scroll', function() {
-            var quyenGop = document.querySelector(".div_quyenGop");
-            console.log(quyenGop);
-            var offsetTop = quyenGop.offsetTop;
-            var scrollY = window.scrollY;
-            console.log("offsetTop:", offsetTop, "scrollY:", scrollY);
+    elements.forEach(element => {
+        // Kiểm tra vị trí của phần tử so với cửa sổ trình duyệt
+        if (element.getBoundingClientRect().top < window.innerHeight) {
+            element.classList.add('visible'); // Thêm class 'visible' khi phần tử vào trong cửa sổ
+        }else{
+             element.classList.remove('visible');
+        }
+    });
+    let delay = 0;
+    donations.forEach(donation => {
+        if (donation.getBoundingClientRect().top < window.innerHeight) {
+            setTimeout( () =>{
+                donation.classList.add('visible');
+            },delay)
+            delay+=10;
+        }else{
+             donation.classList.remove('visible');
+        }
+    });
+});
 
-            if (scrollY > offsetTop) {
-                quyenGop.classList.add('abc');
-            } else {
-                quyenGop.classList.remove('abc');
-            }
-        });
 
