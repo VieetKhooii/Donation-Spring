@@ -20,6 +20,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -73,6 +74,7 @@ public class DonationPostController {
     public String showAddDonationPostForm(Model model)
     {
         model.addAttribute("donationpost", new DonationPostDTO());
+        model.addAttribute("imagePost", new ImageOfDonationDTO());
         return "admin/DonationPost/addDonationPost";
     }
 //    @InitBinder
@@ -87,8 +89,8 @@ public class DonationPostController {
             @ModelAttribute("donationpost") DonationPostDTO donationPostDTO,
             @ModelAttribute("imagePost") ImageOfDonationDTO imageOfDonationDTO,
             Model model
-    )
-    {
+    ) {
+
         donationPostService.addDonationPost(donationPostDTO, imageOfDonationDTO);
         return "redirect:/api/admin/user/get";
     }
@@ -132,7 +134,7 @@ public class DonationPostController {
     @Cacheable("donationPostUsers")
     public String getAllDonationPostForUser(
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "limit", defaultValue = "3") int limit,
+            @RequestParam(value = "limit", defaultValue = "4") int limit,
             Model model) {
         PageRequest pageRequest = PageRequest.of(page, limit);
         Page<DonationPostDTO> list = getDonationPostDTOPage(pageRequest);
@@ -204,4 +206,38 @@ public class DonationPostController {
     public Page<DonationPostDTO> getDonationPostDTOPage(PageRequest pageRequest) {
         return donationPostService.getAll(pageRequest);
     }
+
+    @GetMapping("/getSorted")
+    @Cacheable("donationPostUsers")
+    public String getAllDonationPostForUserSorted(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
+            @RequestParam(value = "sortBy",defaultValue = "none")String sortBy,
+            Model model) {
+        PageRequest pageRequest = PageRequest.of(page, limit);
+
+        Page<DonationPostDTO> list;
+        if("endDateAsc".equals(sortBy))
+        {
+            list=donationPostService.getAllSortedByEndDate(pageRequest,true);
+        }
+        else if ("endDateDesc".equals(sortBy))
+            list=donationPostService.getAllSortedByEndDate(pageRequest,false);
+        else if ("PercentAsc".equals(sortBy))
+            list=donationPostService.getAllSortedByPercent(pageRequest,true);
+        else if ("PercentDesc".equals(sortBy))
+            list=donationPostService.getAllSortedByPercent(pageRequest,false);
+        else list=getDonationPostDTOPage(pageRequest);
+        donationPostService.updateCurrentAmountForDonationPosts(list.getContent());
+
+        List<Long> dateDifferences = getDateDifferences(list);
+
+        model.addAttribute("lstDonationPost", list.getContent());
+        model.addAttribute("totalPages", list.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("dateDifferences", dateDifferences);
+        model.addAttribute("sortBy",sortBy);
+        return "home";
+    }
+
 }

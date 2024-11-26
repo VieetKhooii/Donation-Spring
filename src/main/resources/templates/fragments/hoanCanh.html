@@ -7,6 +7,24 @@
 
 <div th:fragment="hoanCanh">
     <div class="container mt-5">
+        <form action="/api/donation_post/getSorted" method="get" id="sortForm">
+            <input type="hidden" name="page" th:value="${currentPage}">
+            <input type="hidden" name="limit" value="10">
+
+            <label>Sắp xếp</label>
+            <select name="sortBy" id="sortBy" onchange="document.getElementById('sortForm').submit();">
+                <option value="none" th:if="${sortBy == 'none'} "selected>Không sắp xếp</option>
+                <option value="none" th:if="${sortBy != 'none'} ">Không sắp xếp</option>
+                <option value="endDateAsc" th:if="${sortBy == 'endDateAsc'} "selected>Ngày kết thúc tăng dần</option>
+                <option value="endDateAsc" th:if="${sortBy != 'endDateAsc'} ">Ngày kết thúc giảm dần</option>
+                <option value="endDateDesc" th:if="${sortBy == 'endDateDesc'} "selected>Ngày kết thúc tăng dần</option>
+                <option value="endDateDesc" th:if="${sortBy != 'endDateDesc'} ">Ngày kết thúc tăng dần</option>
+                <option value="PercentAsc" th:if="${sortBy == 'PercentAsc'} "selected>Tiến độ giảm dần</option>
+                <option value="PercentAsc" th:if="${sortBy != 'PercentAsc'} ">Tiến độ giảm dần</option>
+                <option value="PercentDesc" th:if="${sortBy == 'PercentDesc'} "selected>Tiến độ tăng dần</option>
+                <option value="PercentDesc" th:if="${sortBy != 'PercentDesc'} ">Tiến độ tăng dần</option>
+            </select>
+        </form>
         <div class="d-flex justify-content-center align-items-center">
             <h2 class="color-pink">Các hoàn cảnh Quyên góp</h2>
         </div>

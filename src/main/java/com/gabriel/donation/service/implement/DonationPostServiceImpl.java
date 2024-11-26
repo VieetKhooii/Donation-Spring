@@ -170,4 +170,74 @@ public class DonationPostServiceImpl implements DonationPostService {
             donationPostRepo.updateCurrentAmount(post.getDonationPostId(), totalAmount);
         }
     }
+
+    @Override
+    public Page<DonationPostDTO> getAllSortedByEndDate(PageRequest pageRequest,boolean descending) {
+        Page<DonationPost> donationPostsPage = donationPostRepo.findByIsDeletedFalse(pageRequest);
+
+        List<DonationPostDTO> donationPostDTOS = donationPostsPage.getContent()
+                .stream()
+                .filter(donationPost -> donationPost.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now()))
+                .map(post -> {
+                    List<ImageOfDonation> imagesOfDonationPosts = imageOfDonationRepo.findByDonationPostId(post.getId());
+                    DonationPostDTO donationPostDTO = DonationPostMapper.INSTANCE.toDto(post);
+                    List<ImageOfDonationDTO> imageOfDonationDTOS = imagesOfDonationPosts
+                            .stream()
+                            .map(ImageOfDonationMapper.INSTANCE::toDto)
+                            .toList();
+                    donationPostDTO.setLstImages(imageOfDonationDTOS);
+                    return donationPostDTO;
+                })
+                .sorted(((o1, o2) ->
+                {
+                    if(descending)
+                    {
+                        return o2.getEndDate().compareTo(o1.getEndDate());
+                    }
+                    else return o1.getEndDate().compareTo(o2.getEndDate());
+                }))
+                .toList();
+
+        return new PageImpl<>(
+                donationPostDTOS,
+                donationPostsPage.getPageable(),
+                donationPostsPage.getTotalElements()
+        );
+    }
+
+    @Override
+    public Page<DonationPostDTO> getAllSortedByPercent(PageRequest pageRequest, boolean descending) {
+        Page<DonationPost> donationPostsPage = donationPostRepo.findByIsDeletedFalse(pageRequest);
+
+        List<DonationPostDTO> donationPostDTOS = donationPostsPage.getContent()
+                .stream()
+                .filter(donationPost -> donationPost.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now()))
+                .map(post -> {
+                    List<ImageOfDonation> imagesOfDonationPosts = imageOfDonationRepo.findByDonationPostId(post.getId());
+                    DonationPostDTO donationPostDTO = DonationPostMapper.INSTANCE.toDto(post);
+                    List<ImageOfDonationDTO> imageOfDonationDTOS = imagesOfDonationPosts
+                            .stream()
+                            .map(ImageOfDonationMapper.INSTANCE::toDto)
+                            .toList();
+                    donationPostDTO.setLstImages(imageOfDonationDTOS);
+                    return donationPostDTO;
+                })
+                .sorted(((o1, o2) ->
+                {
+                    if(descending)
+                    {
+                        return Double.compare(((double) o2.getCurrentAmount() /o2.getGoalAmount()),((double) o1.getCurrentAmount() /o1.getGoalAmount()));
+                    }
+                    else return Double.compare(((double) o1.getCurrentAmount() /o1.getGoalAmount()),((double) o2.getCurrentAmount() /o2.getGoalAmount()));
+                }))
+                .toList();
+
+        return new PageImpl<>(
+                donationPostDTOS,
+                donationPostsPage.getPageable(),
+                donationPostsPage.getTotalElements()
+        );
+    }
+
+
 }

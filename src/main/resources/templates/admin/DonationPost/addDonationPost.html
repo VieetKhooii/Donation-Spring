@@ -9,6 +9,8 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/admin.css}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 </head>
 
 <body>
@@ -36,7 +38,7 @@
                         </div>
                         <div class="mb-2 mt-2">
                             <label class="form-label">Story :</label>
-                            <textarea class="form-control" id="exampleTextarea" rows="3" placeholder="Nhập câu chuyện..." name="Story"></textarea>
+                            <textarea class="form-control" id="exampleTextarea" rows="3" placeholder="Nhập câu chuyện..." name="story"></textarea>
                         </div>
                         <div class="mb-2 mt-2">
                             <label class="form-label">Image Of Donation :</label>
@@ -70,14 +72,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    flatpickr("#startDate", {
-        dateFormat: "d/m/Y",
-        allowInput: true
-    });
-    flatpickr("#endDate", {
-        dateFormat: "d/m/Y",
-        allowInput: true
-    });
+    // flatpickr("#startDate", {
+    //     dateFormat: "Y/m/d",
+    //     allowInput: true
+    // });
+    // flatpickr("#endDate", {
+    //     dateFormat: "Y/m/d",
+    //     allowInput: true
+    // });
 
     const rotateContainer = document.getElementById('rotateContainer');
 
