@@ -102,6 +102,7 @@ public class UserServiceImpl implements UserService {
         use1.setPhone(userDTO.getPhone());
         use1.setBalance(userDTO.getBalance());
         use1.setName(userDTO.getName());
+        use1.setEmail(userDTO.getEmail());
         Role role1=roleRepo.findById(userDTO.getRoleId()).get();
         use1.setRole(role1);
         use1.setDeleted(userDTO.isDeleted());
