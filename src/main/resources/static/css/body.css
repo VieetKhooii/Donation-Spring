@@ -104,3 +104,38 @@
     color:white;
     background-color:rgb(211, 42, 135);
 }
+.heart{
+        background-image: url('/images/vn.jpg'); /* Đường dẫn đến hình ảnh */
+            background-size: cover; /* Đảm bảo hình ảnh bao phủ toàn bộ phần tử */
+            background-position: center; /* Căn giữa hình ảnh */
+            color: whitesmoke; /* Màu chữ */
+            padding: 20px; /* Thêm khoảng cách bên trong */
+            border-radius: 10px; /* Bo góc cho phần tử */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+
+/* CSS cho hiệu ứng trồi lên */
+.gt {
+    opacity: 0; /* Ẩn phần tử ban đầu */
+    transform: translateX(30px); /* Đặt vị trí ban đầu ở dưới */
+    transition: opacity 0.9s ease-out, transform 0.9s ease-out; /* Hiệu ứng chuyển đổi */
+
+}
+
+/* Khi phần tử được kích hoạt (scroll đến phần tử) */
+.gt.visible {
+    opacity: 1;
+    transform: translateX(0); /* Di chuyển về vị trí ban đầu */
+}
+
+.donationPost {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s ease-out, transform 0.9s ease-out;
+}
+.donationPost.visible{
+    opacity: 1;
+    transform: translateY(0);
+}

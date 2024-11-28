@@ -26,8 +26,8 @@
 
 <script>
 $(document).ready(function(){
-      var deafaultUrl = '/api/user/admin/get';
-      $(document).on('click', '.page-link, .nav-link', function(event) {
+      var deafaultUrl = '/api/user_donated/thongke';
+      $(document).on('click', '.page-link, .nav-link' ,'.filter', function(event) {
         event.preventDefault();
         var url = $(this).attr('href') || deafaultUrl;
         $.ajax({
