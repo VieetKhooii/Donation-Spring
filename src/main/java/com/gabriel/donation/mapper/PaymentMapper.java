@@ -20,6 +20,7 @@ public interface PaymentMapper {
 
     @Mapping(source = "id", target = "paymentId")
     @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "transaction_date", target = "transactionDate")
     // Fields from entity that are Object type (Foreign key) must have ".id" (ex: role.id)
     // so that DTO can understand and store it
     PaymentDTO toDto(Payment payment);
