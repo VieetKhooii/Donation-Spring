@@ -34,7 +34,17 @@ $(document).ready(function(){
             url: url ,
             type: 'GET',
             success: function(response) {
+              if(response.isSignOut)
+              {
+                $('.col-md-2').hide();
+                $('#main-content').html('<h2>You have been signed out. Redirecting to login...</h2>');
+                setTimeout(() => window.location.href = '/login', 700);
+              }
+              else
+              {
                 $('#main-content').html(response);
+                $('.col-md-2').show();
+              }
             },
             error: function() {
                 $('#main-content').html('<h2>Error during loading</h2>');

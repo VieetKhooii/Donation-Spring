@@ -7,11 +7,15 @@ import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.ImageOfDonationService;
 import com.gabriel.donation.service.RoleService;
 import com.gabriel.donation.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/api/admin")
@@ -90,5 +95,24 @@ public class AdminController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
         return "admin/admin";
+    }
+
+    @GetMapping("/signout")
+    public ResponseEntity<?> signOut(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ){
+        boolean isSignOut = userService.signOut(request, response);
+        String ajaxHeader= request.getHeader("X-Requested-With");
+        if("XMLHttpRequest".equals(ajaxHeader))
+        {
+            return ResponseEntity.ok(Map.of(
+                    "isSignOut",isSignOut,
+                    "message","You have been signout successfully."));
+
+        }
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location","/login")
+                .build();
     }
 }

@@ -18,7 +18,7 @@ overflow:hidden;
 }
 .nav-item{
   padding-top:3%;
-  margin-top:15%;
+  margin-top:13%;
   border-radius:20px;
   font-size: 14px;
   font-weight: 500;
@@ -32,7 +32,7 @@ overflow:hidden;
     background-color: rgb(237, 238, 241);
     color: black ;
     border-radius : 48px 0 0 48px;
-    width:16rem;
+    width:15.35rem;
     padding:7%;
 }
 

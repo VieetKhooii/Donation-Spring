@@ -3,7 +3,7 @@
     <div class="bg-white p-3" style="border-radius: 35px;">
         <div class="panel-Main">
             <h1 class="mb-4">Payment Management</h1>
-            <a  href="#" class="btn btn-sm custom-btnAdd">Add</a>
+
         </div>
         <table class="table table-bordered table-hover">
             <thead class="table-light">
@@ -13,7 +13,6 @@
                 <th scope="col">TransactionDate</th>
                 <th scope="col">UserId</th>
                 <th scope="col">IsDeleted</th>
-                <th scope="col">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -23,11 +22,7 @@
                 <td th:text="${payment.transactionDate}"></td>
                 <td th:text="${payment.userId}"></td>
                 <td th:text="${payment.isDeleted}"></td>
-                <td class="d-flex flex-column">
-                    <a href="#" class="btn btn-primary btn-sm">View</a>
-                    <a href="#" class="mt-1 btn btn-warning btn-sm">Edit</a>
-                    <a href="#" class="mt-1 btn btn-danger btn-sm">Delete</a>
-                </td>
+
             </tr>
             </tbody>
         </table>
