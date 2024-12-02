@@ -179,18 +179,18 @@ public class PaymentController {
         return "";
     }
 
-    @PostMapping("/deposit")
-    public String deposit(
-            @RequestBody PaymentDTO paymentDTO, HttpSession session, HttpServletResponse response
-    ) throws JsonProcessingException {
-        int userId = (int) session.getAttribute("userId");
-        paymentDTO.setUserId(userId);
-        paymentService.addPayment(paymentDTO);
-
-        UserDTO userDTO = userService.findById(userId);
-        userDTO.setBalance(userDTO.getBalance()+paymentDTO.getAmount());
-        userService.updateUser(userDTO, userId, response);
-
-        return "";
-    }
+//    @PostMapping("/deposit")
+//    public String deposit(
+//            @RequestBody PaymentDTO paymentDTO, HttpSession session, HttpServletResponse response
+//    ) throws JsonProcessingException {
+//        int userId = (int) session.getAttribute("userId");
+//        paymentDTO.setUserId(userId);
+//        paymentService.addPayment(paymentDTO);
+//
+//        UserDTO userDTO = userService.findById(userId);
+//        userDTO.setBalance(userDTO.getBalance()+paymentDTO.getAmount());
+//        userService.updateUser(userDTO, userId, response);
+//
+//        return "";
+//    }
 }

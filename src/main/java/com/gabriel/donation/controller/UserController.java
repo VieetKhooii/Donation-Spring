@@ -13,12 +13,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +59,7 @@ public class UserController {
 //        return "admin/admin";
 //    }
     @GetMapping("/admin/get")
+    @PreAuthorize("hasRole('ADMIN')")
 //    @Cacheable("usersAdmin")
     public String getAllUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -117,7 +117,7 @@ public class UserController {
             Model model
     ){
         try {
-            userService.updateUser(userDTO, userDTO.getUserId(), response);
+            userService.updateUserAndCookie(userDTO, userDTO.getUserId(), response);
             model.addAttribute("message", "User updated successfully");
         } catch (Exception e) {
             model.addAttribute("message", "An error occurred while adding the user");
@@ -189,7 +189,7 @@ public class UserController {
 
         UserDTO userDTO = userService.findById(userId);
         userDTO.setBalance(userDTO.getBalance()+paymentDTO.getAmount());
-        userService.updateUser(userDTO, userId, response);
+        userService.updateUserAndCookie(userDTO, userId, response);
         return  "redirect:/api/user/user_info";
     }
 
@@ -245,7 +245,7 @@ public class UserController {
         userDTOInput.setBalance(unChangeInfo.getBalance());
         userDTOInput.setRoleId(unChangeInfo.getRoleId());
         userDTOInput.setDeleted(unChangeInfo.isDeleted());
-        UserDTO check = userService.updateUser(userDTOInput, userDTO.getUserId(), response);
+        UserDTO check = userService.updateUserAndCookie(userDTOInput, userDTO.getUserId(), response);
 
 //        session.setAttribute("username", userDTOInput.getName());
         return ResponseEntity.ok("update_success");

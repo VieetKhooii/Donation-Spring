@@ -46,7 +46,6 @@ spring:
           scope:
             - email
             - profile
-            - https://www.googleapis.com/auth/user.phonenumbers.read
 #  vnp:
 #    vnp_TmnCode: NEOBKC89
 #    access:

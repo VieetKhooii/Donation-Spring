@@ -84,8 +84,35 @@
 
 
                     });
+
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const navbar = document.querySelector("nav.navbar");
+
+                        // Ban đầu ẩn header
+                        navbar.classList.add("navbar-hidden");
+
+                        let lastScrollPosition = 0;
+
+                        window.addEventListener("scroll", function() {
+                            const currentScrollPosition = window.pageYOffset;
+
+                            if (currentScrollPosition > 100) { // Khi cuộn xuống 100px, header sẽ hiện ra
+                                navbar.classList.remove("navbar-hidden");
+                                navbar.classList.add("navbar-visible");
+                            } else {
+                                navbar.classList.remove("navbar-visible");
+                                navbar.classList.add("navbar-hidden");
+                            }
+
+                            lastScrollPosition = currentScrollPosition;
+                        });
+                    });
+
                 </script>
             </div>
         </div>
     </nav>
 </div>
+
+
+

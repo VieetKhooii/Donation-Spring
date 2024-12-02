@@ -1,23 +1,51 @@
-<html xmlns:th="http://www.thymeleaf.org">
-<div class="container-fluid" th:fragment="gioiThieu">
-    <div class="p-5 mt-5"  style="height: 500px; background-color:rgb(254, 231, 247);">
-        <h2 class="d-flex justify-content-center align-items-center " style="color:rgb(211, 42, 135)">FriendShip - Chung tay góp sức vượt khó </h2>
-        <div class="d-flex justify-content-center align-items-center ">
-           <div class="row gt">
-               <div class="col-sm-3 mt-5 d-flex flex-column align-items-center gap-5">
-                   <h4>Cùng nhau vượt qua hoạn nạn.</h4>
-                   <h4>Ai cũng có lòng tốt , thể hiện đi.</h4>
-               </div>
-               <div class="col-sm-6 mt-5 heart">
-                   <h4>Chia sẽ với những người có hoàn cảnh khó khăn hơn mình để họ cải thiện cuộc sống tốt hơn. Nụ cười của họ sẽ là phần thưởng dành cho mình ^.^ .</h4>
-               </div>
-               <div class="col-sm-3 mt-5 d-flex flex-column align-items-center gap-5" >
-                   <h4>Máu đỏ da vàng , tiếc chi vài ngàn .</h4>
-                   <h4>Sống cho đi không thiệt thòi, được nhiều hơn đấy  !</h4>
-               </div>
-           </div>
-       </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+<footer class="footer-container" th:fragment="gioiThieu">
+    <div class="footer bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <!-- Phần 1: Logo và Mô tả -->
+                <div class="col-md-3">
+                    <img th:src="@{/images/logo2.png}" alt="Logo" class="mb-3" style="width: 60px;">
+                    <p>Gabriel là nơi kết nối yêu thương, hỗ trợ cộng đồng khó khăn thông qua những chiến dịch đầy ý nghĩa.</p>
+                </div>
 
+                <!-- Phần 2: Liên kết nhanh -->
+                <div class="col-md-3">
+                    <h5>Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-white text-decoration-none">Trang Chủ</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Chiến Dịch Gây Quỹ</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Tin Tức Cộng Đồng</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Đối Tác Đồng Hành</a></li>
+                    </ul>
+                </div>
+
+                <!-- Phần 3: Liên hệ và Mạng xã hội -->
+                <div class="col-md-3">
+                    <h5>Liên hệ</h5>
+                    <p><i class="bi bi-envelope"></i> Email: contact@gabriel.com</p>
+                    <p><i class="bi bi-telephone"></i> Hotline: 0123-456-789</p>
+                    <div class="social-icons mt-3">
+                        <a href="https://facebook.com" target="_blank" class="text-white me-2">
+                            <i class="bi bi-facebook" style="font-size: 1.5rem;"></i>
+                        </a>
+                        <a href="https://twitter.com" target="_blank" class="text-white me-2">
+                            <i class="bi bi-twitter" style="font-size: 1.5rem;"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="text-white">
+                            <i class="bi bi-instagram" style="font-size: 1.5rem;"></i>
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- Phần 4: Bản quyền -->
+                <div class="col-md-3 text-center">
+                    <h5>Bản quyền</h5>
+                    <p>&copy; 2024 Trái Tim NgaoNgo</p>
+                    <p>Điều khoản sử dụng | Chính sách bảo mật</p>
+                </div>
+            </div>
+        </div>
     </div>
-
-</div>
+</footer>

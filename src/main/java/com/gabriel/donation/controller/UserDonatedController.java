@@ -213,7 +213,7 @@ public class UserDonatedController {
     public String donate(
             @RequestParam("amount") int amount,
             @RequestParam("orderInfo") String orderInfo,
-            @RequestParam("receiver") String receiver,
+            @RequestParam("receiverPhone") String receiverPhone,
             @RequestParam("donationPostId") int donationPostId,
             @RequestParam("anonymous") boolean anonymous,
             HttpServletRequest request,
@@ -226,12 +226,12 @@ public class UserDonatedController {
         if (userDTO.getBalance() < amount) {
             model.addAttribute("errorMessage", "Số dư của bạn không đủ để thực hiện quyên góp.");
             model.addAttribute("donationPostId", donationPostId);
-            model.addAttribute("receiverPhone", receiver);
+            model.addAttribute("receiverPhone", receiverPhone);
             return "transaction/transaction-information";
         }
         userDTO.setBalance(userDTO.getBalance() - amount);
         int userId = userDTO.getUserId();
-        userService.updateUser(userDTO, userId, response);
+        userService.updateUserAndCookie(userDTO, userId, response);
 
         UserDonatedDTO userDonatedDTO = userDonatedUtil.setupUserDonatedForTransactions(amount, donationPostId, anonymous, PaymentMethod.GABRIEL_PAY, request);
 
@@ -239,11 +239,14 @@ public class UserDonatedController {
 
         String paymentTime = new Date().toString();
 
+        UserDTO receiverDTO = userService.findByPhone(receiverPhone);
+        receiverDTO.setBalance(receiverDTO.getBalance() + amount);
+
         model.addAttribute("orderInfo", orderInfo);
         model.addAttribute("totalPrice", userDonatedDTO.getAmount());
         model.addAttribute("paymentTime", paymentTime);
         model.addAttribute("transactionId", userDonatedDTO.getUserDonatedId());
-
+        userService.updateUser(receiverDTO, receiverDTO.getUserId());
         cookieUtil.createNewCookie(response, userDTO);
         return "/transaction/order-success";
     }

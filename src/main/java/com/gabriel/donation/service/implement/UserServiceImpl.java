@@ -76,7 +76,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public String addUser(UserDTO userDTO)
     {
-        if (userRepo.findByPhone(userDTO.getPhone()).isPresent()) {
+        if (userRepo.findByPhone(userDTO.getPhone()).isPresent() &&
+            !userDTO.getPhone().equalsIgnoreCase("phone")) {
             return "Số điện thoại đã tồn tại!";
         }
         try {
@@ -85,9 +86,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(userDTO.getEmail());
             user.setPhone(userDTO.getPhone());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-            System.out.println(userDTO.getRoleId());
-            Role role = roleRepo.findById(userDTO.getRoleId()).get();
-            user.setRole(role);
+            roleRepo.findById(userDTO.getRoleId()).ifPresent(user::setRole);
             userRepo.save(user);
         }
         catch (Exception e) {
@@ -97,22 +96,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO userDTO, int id, HttpServletResponse response) throws JsonProcessingException {
-        User use1 = userRepo.findById(id);
-        use1.setPhone(userDTO.getPhone());
-        use1.setBalance(userDTO.getBalance());
-        use1.setName(userDTO.getName());
-        use1.setEmail(userDTO.getEmail());
-        Role role1=roleRepo.findById(userDTO.getRoleId()).get();
-        use1.setRole(role1);
-        use1.setDeleted(userDTO.isDeleted());
-
-        User updatedUser=userRepo.save(use1);
+    public UserDTO updateUserAndCookie(UserDTO userDTO, int id, HttpServletResponse response) throws JsonProcessingException {
+        User updatedUser = updateUserInformation(userDTO, id);
 
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-                use1.getPhone(),
-                use1.getPassword(),
-                use1.getAuthorities()
+                updatedUser.getPhone(),
+                updatedUser.getPassword(),
+                updatedUser.getAuthorities()
         );
 
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -126,6 +116,26 @@ public class UserServiceImpl implements UserService {
         cookieUtil.createNewCookie(response, userDTOReturn);
 
         return userDTOReturn;
+    }
+
+    private User updateUserInformation(UserDTO userDTO, int id) {
+        User user = userRepo.findById(id);
+        user.setPhone(userDTO.getPhone());
+        user.setBalance(userDTO.getBalance());
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        Role role1=roleRepo.findById(userDTO.getRoleId()).get();
+        user.setRole(role1);
+        user.setDeleted(userDTO.isDeleted());
+
+        User updatedUser=userRepo.save(user);
+        return updatedUser;
+    }
+
+    @Override
+    public UserDTO updateUser(UserDTO userDTO, int id) {
+        User user = updateUserInformation(userDTO, id);
+        return UserMapper.INSTANCE.toDto(user);
     }
 
     @Override

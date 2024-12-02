@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,6 +19,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -31,8 +35,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private JwtAuthEntryPoint authEntryPoint;
-    private CustomUserDetailsService userDetailsService;
 
     @Autowired
     private UserService userService;
@@ -41,16 +43,7 @@ public class SecurityConfig {
     @Autowired
     private CookieUtil cookieUtil;
     @Autowired
-    private RoleService roleService;
-    @Autowired
-    private OAuth2AuthorizedClientService clientService;
-
-
-    @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthEntryPoint authEntryPoint) {
-        this.userDetailsService = userDetailsService;
-        this.authEntryPoint = authEntryPoint;
-    }
+    private ClientRegistrationRepository  clientRegistrationRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -61,11 +54,12 @@ public class SecurityConfig {
 //                                .anyRequest().permitAll())
                             .requestMatchers("api/auth/**", "login", "error/**", "/").permitAll()
                             .requestMatchers("api/auth/**", "register").permitAll()
+                            .requestMatchers("api/admin/**").hasRole("ADMIN")
                             .requestMatchers("/forgotPassword.html").permitAll()
                             .requestMatchers("/enterOtp").permitAll()
                             .requestMatchers("/resetPassword").permitAll()
                             .requestMatchers("/css/**", "/images/**", "/js/**", "/forgotPassword/**").permitAll()
-                            .requestMatchers("api/donation_post/get", "api/donation_post/getDonationPostByID").permitAll()
+                            .requestMatchers("api/donation_post/get", "api/donation_post/getDonationPostByID", "api/donation_post/getSorted").permitAll()
                             .requestMatchers("/api/user_donated/getByDonationPostId").permitAll()
                             .anyRequest().authenticated())
                 .httpBasic(withDefaults())
@@ -75,6 +69,9 @@ public class SecurityConfig {
                         oauth2Login ->
                         oauth2Login
                                 .loginPage("/login")
+                                .authorizationEndpoint(authEndpoint -> authEndpoint
+                                        .authorizationRequestResolver(customAuthorizationRequestResolver(clientRegistrationRepository))
+                                )
                                 .successHandler((request, response, authentication) -> {
 
                                     OAuth2AuthenticationToken oAuth2Token = (OAuth2AuthenticationToken) authentication;
@@ -85,7 +82,6 @@ public class SecurityConfig {
 
                                     UserDTO userDTO = userService.findByEmail(email);
                                     if (userDTO == null) {
-                                        User user = new User();
                                         UserDTO newUser = new UserDTO();
                                         newUser.setEmail(email);
                                         newUser.setName(name);
@@ -111,6 +107,9 @@ public class SecurityConfig {
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint((request, response, authException) ->
                                 response.sendRedirect("/error/401")))
+                .exceptionHandling(exception ->
+                        exception.accessDeniedHandler((request, response, authException) ->
+                                response.sendRedirect("/error/403")))
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -139,4 +138,10 @@ public class SecurityConfig {
         return  new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public OAuth2AuthorizationRequestResolver customAuthorizationRequestResolver(ClientRegistrationRepository clientRegistrationRepository) {
+        DefaultOAuth2AuthorizationRequestResolver defaultResolver =
+                new DefaultOAuth2AuthorizationRequestResolver(clientRegistrationRepository, "/oauth2/authorization");
+        return new CustomAuthorizationRequestResolver(defaultResolver);
+    }
 }

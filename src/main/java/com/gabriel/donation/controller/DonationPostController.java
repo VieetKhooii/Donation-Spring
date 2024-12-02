@@ -134,7 +134,7 @@ public class DonationPostController {
     @Cacheable("donationPostUsers")
     public String getAllDonationPostForUser(
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "limit", defaultValue = "4") int limit,
+            @RequestParam(value = "limit", defaultValue = "3") int limit,
             Model model) {
         PageRequest pageRequest = PageRequest.of(page, limit);
         Page<DonationPostDTO> list = getDonationPostDTOPage(pageRequest);

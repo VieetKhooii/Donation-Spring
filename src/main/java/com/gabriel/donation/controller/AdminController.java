@@ -39,7 +39,7 @@ public class AdminController {
     RoleService roleService;
 
     @GetMapping("user/get")
-//    @Cacheable("Admin")
+    @Cacheable("Admin")
     public String getAdmin(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "limit", defaultValue = "7") int limit,

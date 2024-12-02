@@ -60,7 +60,7 @@ public class AuthController {
                 cookieUtil.createNewCookie(response, token, CookieName.jwt);
                 cookieUtil.createNewCookie(response, userDTO);
 
-                if (roleService.findRoleNameById(userDTO.getRoleId()).equalsIgnoreCase("USER")){
+                if (roleService.findRoleNameById(userDTO.getRoleId()).equalsIgnoreCase("ROLE_USER")){
                     return ResponseEntity.ok("user");
                 }
                 else {
@@ -126,7 +126,7 @@ public class AuthController {
     ){
         boolean isSignOut = userService.signOut(request, response);
         return isSignOut?
-                "redirect:/login" :
+                "redirect:/" :
                 "";
     }
 }

@@ -1,11 +1,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="body" class="container-fluid ">
+<div th:fragment="body">
+    <div th:include="fragments/proverb :: proverb"></div>
+
+    <hr class="section-divider">
+
     <div th:include="fragments/carousel :: carousel"></div>
+
+    <hr class="section-divider">
+
     <div th:include="fragments/nenTang :: nenTang"></div>
     <div th:include="fragments/hoanCanh :: hoanCanh"></div>
     <div th:include="fragments/gioiThieu :: gioiThieu"></div>
-    <div th:include="fragments/quyenGop :: quyenGop"></div>
 
     <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
     <df-messenger
@@ -14,5 +20,18 @@
             agent-id="4d632a3c-9fd9-4c8c-9cb9-a375ee0a2f25"
             language-code="en"
     ></df-messenger>
+
+    <script>
+        document.addEventListener('scroll', function () {
+            const carousel = document.querySelector('.carousel');
+            const scrollPosition = window.scrollY + window.innerHeight;
+            const carouselTop = carousel.offsetTop;
+
+            if (scrollPosition > carouselTop) {
+                carousel.classList.add('scrolled');
+            }
+        });
+    </script>
+
 </div>
 

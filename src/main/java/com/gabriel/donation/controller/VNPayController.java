@@ -98,10 +98,8 @@ public class VNPayController {
 
             UserDTO receiverDTO = userService.findByPhone(receiverPhone);
 
-            System.out.println(receiverDTO.getName() + " - " + receiverDTO.getBalance());
-
             receiverDTO.setBalance(receiverDTO.getBalance()+userDonatedDTO.getAmount());
-            userService.updateUser(receiverDTO, receiverDTO.getUserId(), response);
+            userService.updateUser(receiverDTO, receiverDTO.getUserId());
 
             int donatePersonId = userDonatedDTO.getUserId();
             userDonatedService.processDonation(userDonatedDTO, donatePersonId);

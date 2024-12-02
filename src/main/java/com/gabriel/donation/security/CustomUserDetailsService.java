@@ -29,6 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
         User user = userRepo.findByPhone(phone).orElse(userRepo.findByEmail(phone).orElse(null));
+        assert user != null;
         if (user.getPhone().equals("phone")) {
             return new org.springframework.security.core.userdetails.User(
                     user.getEmail(),
@@ -44,6 +45,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private Collection<GrantedAuthority> mapRoleToAuthorities(Role role) {
-        return Collections.singletonList(new SimpleGrantedAuthority(role.getName()));
+        String roleName = role.getName().startsWith("ROLE_") ? role.getName() : "ROLE_" + role.getName();
+        return Collections.singletonList(new SimpleGrantedAuthority(roleName));
     }
 }
