@@ -4,6 +4,7 @@ import com.gabriel.donation.dto.CategoryDTO;
 import com.gabriel.donation.dto.DonationPostDTO;
 import com.gabriel.donation.dto.ImageOfDonationDTO;
 import com.gabriel.donation.dto.UserDTO;
+import com.gabriel.donation.repository.UserRepo;
 import com.gabriel.donation.service.DonationPostService;
 import com.gabriel.donation.service.ImageOfDonationService;
 import com.gabriel.donation.service.UserService;
@@ -42,6 +43,8 @@ public class DonationPostController {
     DonationPostService donationPostService;
     @Autowired
     ImageOfDonationService imageOfDonationService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/admin/get")
     @Cacheable("donationPostAdmin")
@@ -74,6 +77,8 @@ public class DonationPostController {
     @GetMapping("/admin/add")
     public String showAddDonationPostForm(Model model)
     {
+        List<UserDTO> userDTOList = userService.getUsers();
+        model.addAttribute("users", userDTOList);
         model.addAttribute("donationpost", new DonationPostDTO());
         model.addAttribute("imagePost", new ImageOfDonationDTO());
         return "admin/DonationPost/addDonationPost";
@@ -143,8 +148,6 @@ public class DonationPostController {
         donationPostService.updateCurrentAmountForDonationPosts(list.getContent());
 
         List<Long> dateDifferences = getDateDifferences(list);
-
-        System.out.println("Page: "+ page);
 
         model.addAttribute("lstDonationPost", list.getContent());
         model.addAttribute("totalPages", list.getTotalPages());

@@ -41,6 +41,15 @@
                             <textarea class="form-control" id="exampleTextarea" rows="3" placeholder="Nhập câu chuyện..." name="story"></textarea>
                         </div>
                         <div class="mb-2 mt-2">
+                            <label class="form-label">Người nhận :</label>
+                            <select class="form-control" name="receiverId" id="receiverId" required>
+                                <option value="" disabled selected>Chọn tài khoản thụ hưởng</option>
+                                <th:block th:each="user : ${users}">
+                                    <option th:value="${user.userId}" th:text="${user.userId} + ' - ' +${user.name} + ' - ' + ${user.phone}"></option>
+                                </th:block>
+                            </select>
+                        </div>
+                        <div class="mb-2 mt-2">
                             <label class="form-label">Image Of Donation :</label>
                             <!--                            <input type="hidden" class="form-control" placeholder="IdImage" name="imageOfDonationId">-->
                             <input type="range" min="0" max="100" class="rotateSlider" id="rotateSlider" style="width: 300px; margin: 20px 0;">

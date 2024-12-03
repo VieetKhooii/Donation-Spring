@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -60,7 +61,7 @@ public class UserController {
 //    }
     @GetMapping("/admin/get")
     @PreAuthorize("hasRole('ADMIN')")
-//    @Cacheable("usersAdmin")
+    @Cacheable("usersAdmin")
     public String getAllUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "limit", defaultValue = "5") int limit,
@@ -78,6 +79,18 @@ public class UserController {
         model.addAttribute("currentPage", page);
         return "admin/User/user";
     }
+
+//    @GetMapping("/haha")
+//    @Cacheable("usersAdmin")
+//    public ResponseEntity<?> getAllUser(
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            @RequestParam(value = "limit", defaultValue = "5") int limit,
+//            Model model
+//    ) {
+//        return new ResponseEntity<>("Helloo", HttpStatus.OK);
+//    }
+
+
     @GetMapping("/admin/add")
     public String showAddUserForm(
             Model model
@@ -245,7 +258,7 @@ public class UserController {
         userDTOInput.setBalance(unChangeInfo.getBalance());
         userDTOInput.setRoleId(unChangeInfo.getRoleId());
         userDTOInput.setDeleted(unChangeInfo.isDeleted());
-        UserDTO check = userService.updateUserAndCookie(userDTOInput, userDTO.getUserId(), response);
+        userService.updateUserAndCookie(userDTOInput, userDTO.getUserId(), response);
 
 //        session.setAttribute("username", userDTOInput.getName());
         return ResponseEntity.ok("update_success");

@@ -39,7 +39,6 @@ public class AdminController {
     RoleService roleService;
 
     @GetMapping("user/get")
-    @Cacheable("Admin")
     public String getAdmin(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "limit", defaultValue = "7") int limit,
@@ -49,12 +48,12 @@ public class AdminController {
         PageRequest pageRequest = PageRequest.of(
                 page, limit
         );
-        Page<UserDTO> list = userService.getUsersForAdmin(pageRequest);
-        int totalPages = list.getTotalPages();
-        List<UserDTO> users = list.getContent();
-        model.addAttribute("users", users);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("currentPage", page);
+//        Page<UserDTO> list = userService.getUsersForAdmin(pageRequest);
+//        int totalPages = list.getTotalPages();
+//        List<UserDTO> users = list.getContent();
+//        model.addAttribute("users", users);
+//        model.addAttribute("totalPages", totalPages);
+//        model.addAttribute("currentPage", page);
         return "admin/admin";
     }
     @GetMapping("/donation_post/get")

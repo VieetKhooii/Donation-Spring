@@ -17,6 +17,7 @@ public interface DonationPostMapper {
 
     //               dto's id    entity's id
     @Mapping(source = "donationPostId", target = "id")
+    @Mapping(source = "receiverId", target = "receiver.id")
     DonationPost toEntity(DonationPostDTO donationPostDTO);
 
     @Mapping(source = "id", target = "donationPostId")

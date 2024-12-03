@@ -42,7 +42,7 @@ public class VNPayController {
     @PostMapping("/submitOrder")
     public String submitOrder(@RequestParam("amount") int amount,
                               @RequestParam("orderInfo") String orderInfo,
-                              @RequestParam("receiver") String phone,
+                              @RequestParam("receiverPhone") String phone,
                               @RequestParam("donationPostId") int donationPostId,
                               @RequestParam("anonymous") boolean anonymous,
                               HttpServletRequest request) {

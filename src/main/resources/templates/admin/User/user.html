@@ -37,7 +37,7 @@
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
                     <li th:classappend="${currentPage == 0} ? 'disabled'" class="page-item">
-                        <a class="page-link" th:href="@{/admin/get(page=${currentPage - 1})}" aria-label="Previous">
+                        <a class="page-link" th:href="@{/api/user/admin/get(page=${currentPage - 1})}" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
