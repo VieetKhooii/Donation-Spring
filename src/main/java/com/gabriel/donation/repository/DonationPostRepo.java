@@ -1,6 +1,7 @@
 package com.gabriel.donation.repository;
 
 import com.gabriel.donation.entity.DonationPost;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,4 +28,9 @@ public interface DonationPostRepo extends JpaRepository<DonationPost, Integer> {
     @Query("UPDATE DonationPost dp SET dp.isDeleted = true WHERE dp.id = ?1")
     void markAsDeleted(Integer id);
     Page<DonationPost> findByIsDeletedFalse(Pageable pageable);
+
+    Page<DonationPost> findByTitleContaining(String title, Pageable pageable);
+
+
+    Page<DonationPost> findByTitleContainingIgnoreCaseAndIsDeletedFalse(String title, Pageable pageable);
 }

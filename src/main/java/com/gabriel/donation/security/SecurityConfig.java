@@ -59,7 +59,7 @@ public class SecurityConfig {
                             .requestMatchers("/enterOtp").permitAll()
                             .requestMatchers("/resetPassword").permitAll()
                             .requestMatchers("/css/**", "/images/**", "/js/**", "/forgotPassword/**").permitAll()
-                            .requestMatchers("api/donation_post/get", "api/donation_post/getDonationPostByID", "api/donation_post/getSorted").permitAll()
+                            .requestMatchers("api/donation_post/get", "api/donation_post/getDonationPostByID", "api/donation_post/getSorted", "api/donation_post/search").permitAll()
                             .requestMatchers("/api/user_donated/getByDonationPostId").permitAll()
                             .anyRequest().authenticated())
                 .httpBasic(withDefaults())

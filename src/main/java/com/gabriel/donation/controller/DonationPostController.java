@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -205,6 +206,33 @@ public class DonationPostController {
 
     public Page<DonationPostDTO> getDonationPostDTOPage(PageRequest pageRequest) {
         return donationPostService.getAll(pageRequest);
+    }
+
+    @GetMapping("/search")
+    public String searchDonationPost(
+            @RequestParam(value = "title", required = false, defaultValue = "") String title,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
+            Model model
+    ){
+        try
+        {
+            PageRequest pageRequest = PageRequest.of(page, limit);
+
+            Page<DonationPostDTO> list = donationPostService.searchDonationPosts(pageRequest, title);
+            List<Long> dateDifferences = getDateDifferences(list);
+            model.addAttribute("lstDonationPost", list.getContent());
+            model.addAttribute("totalPages", list.getTotalPages());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("dateDifferences", dateDifferences);
+
+            return "home";
+        } catch (Exception e) {
+            model.addAttribute("", "Có lỗi xảy ra trong quá trình tìm kiếm. Vui lòng thử lại sau.");
+
+            return "home";
+        }
+
     }
 
     @GetMapping("/getSorted")

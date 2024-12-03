@@ -2,8 +2,10 @@ package com.gabriel.donation.service;
 
 import com.gabriel.donation.dto.DonationPostDTO;
 import com.gabriel.donation.dto.ImageOfDonationDTO;
+import com.gabriel.donation.entity.DonationPost;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -29,4 +31,6 @@ public interface DonationPostService {
     Page<DonationPostDTO> getAllSortedByEndDate(PageRequest pageRequest,boolean descending);
 
     Page<DonationPostDTO> getAllSortedByPercent(PageRequest pageRequest, boolean descending);
+
+    Page<DonationPostDTO> searchDonationPosts(PageRequest pageRequest, String title);
 }
