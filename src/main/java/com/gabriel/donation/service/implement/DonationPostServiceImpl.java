@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DonationPostServiceImpl implements DonationPostService {
@@ -231,6 +232,32 @@ public class DonationPostServiceImpl implements DonationPostService {
                     else return Double.compare(((double) o1.getCurrentAmount() /o1.getGoalAmount()),((double) o2.getCurrentAmount() /o2.getGoalAmount()));
                 }))
                 .toList();
+
+        return new PageImpl<>(
+                donationPostDTOS,
+                donationPostsPage.getPageable(),
+                donationPostsPage.getTotalElements()
+        );
+    }
+
+    @Override
+    public Page<DonationPostDTO> searchDonationPosts(PageRequest pageRequest, String title) {
+        Page<DonationPost> donationPostsPage = donationPostRepo.findByTitleContainingIgnoreCaseAndIsDeletedFalse(title, pageRequest);
+
+        List<DonationPostDTO> donationPostDTOS = donationPostsPage.getContent()
+                .stream()
+                .filter(donationPost -> donationPost.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(LocalDate.now()))
+                .map(post -> {
+                    List<ImageOfDonation> imagesOfDonationPosts = imageOfDonationRepo.findByDonationPostId(post.getId());
+                    DonationPostDTO donationPostDTO = DonationPostMapper.INSTANCE.toDto(post);
+                    List<ImageOfDonationDTO> imageOfDonationDTOS = imagesOfDonationPosts
+                            .stream()
+                            .map(ImageOfDonationMapper.INSTANCE::toDto)
+                            .toList();
+                    donationPostDTO.setLstImages(imageOfDonationDTOS);
+                    return donationPostDTO;
+                })
+                .collect(Collectors.toList());
 
         return new PageImpl<>(
                 donationPostDTOS,

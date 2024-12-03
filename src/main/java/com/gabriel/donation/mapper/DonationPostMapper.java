@@ -9,6 +9,7 @@ import com.gabriel.donation.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
 
 @Mapper
 public interface DonationPostMapper {
@@ -25,4 +26,5 @@ public interface DonationPostMapper {
     // so that DTO can understand and store it
     DonationPostDTO toDto(DonationPost donationPost);
     ImageOfDonationDTO toDto(ImageOfDonation imageOfDonation);
+
 }
