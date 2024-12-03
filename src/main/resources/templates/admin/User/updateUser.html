@@ -3,7 +3,7 @@
     <form th:action="@{/api/user/admin/edit}" method="post" id="form-donationPost">
         <input type="hidden" name="userId" th:value="${u.userId}">
         <input type="hidden" name="balance" th:value="${u.balance}">
-        <h4 >Donation Post</h4>
+        <h4 >Update User</h4>
         <div class="mb-2 mt-2">
             <label class="form-label">Name :</label>
             <input type="text" class="form-control" placeholder="name" name="name" th:value="${u.name}">

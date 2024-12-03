@@ -210,7 +210,7 @@ public class UserServiceImpl implements UserService {
             user.setPhone(userDTO.getPhone());
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             user.setEmail(userDTO.getEmail());
-            Role role = roleRepo.findByName("USER").get();
+            Role role = roleRepo.findByName("ROLE_USER").get();
             user.setRole(role);
             userRepo.save(user);
         }
