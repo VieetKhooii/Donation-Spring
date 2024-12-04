@@ -1,6 +1,11 @@
 package com.gabriel.donation.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.gabriel.donation.config.RestPage;
 import com.gabriel.donation.dto.*;
 import com.gabriel.donation.payload.CookieName;
 import com.gabriel.donation.service.PaymentService;
@@ -14,8 +19,11 @@ import jakarta.servlet.http.HttpSession;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,6 +48,8 @@ public class UserController {
     PaymentService paymentService;
     @Autowired
     CookieUtil cookieUtil;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
 //    @GetMapping("/admin")
 //    @Cacheable("Admin")
@@ -59,37 +69,41 @@ public class UserController {
 //        model.addAttribute("currentPage", page);
 //        return "admin/admin";
 //    }
+
+
     @GetMapping("/admin/get")
     @PreAuthorize("hasRole('ADMIN')")
-    @Cacheable("usersAdmin")
     public String getAllUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "limit", defaultValue = "5") int limit,
             Model model
-    ) {
+    ) throws JsonProcessingException {
+
+        String redisKey = "usersAdmin::" + page + "," + limit;
+
+        String cachedData = (String) redisTemplate.opsForValue().get(redisKey);
+        ObjectMapper mapper = new ObjectMapper();
+        if (cachedData != null) {
+            RestPage<UserDTO> cachedUsers = mapper.readValue(cachedData, new TypeReference<RestPage<UserDTO>>() {});
+            model.addAttribute("users", cachedUsers.getContent());
+            model.addAttribute("totalPages", cachedUsers.getTotalPages());
+            model.addAttribute("currentPage", page);
+            return "admin/User/user";
+        }
         PageRequest pageRequest = PageRequest.of(
                 page, limit
         );
-        Page<UserDTO> list = userService.getUsersForAdmin(pageRequest);
-        int totalPages = list.getTotalPages();
-        List<UserDTO> users = list.getContent();
+        RestPage<UserDTO> list = new RestPage<>(userService.getUsersForAdmin(pageRequest));
+        String jsonInString = mapper.writeValueAsString(list);
+        redisTemplate.opsForValue().set("usersAdmin::"+ page + "," + limit, jsonInString);
 
-        model.addAttribute("users", users);
-        model.addAttribute("totalPages", totalPages);
+        System.out.println("GetAllUsers");
+
+        model.addAttribute("users", list.getContent());
+        model.addAttribute("totalPages", list.getTotalPages());
         model.addAttribute("currentPage", page);
         return "admin/User/user";
     }
-
-//    @GetMapping("/haha")
-//    @Cacheable("usersAdmin")
-//    public ResponseEntity<?> getAllUser(
-//            @RequestParam(value = "page", defaultValue = "0") int page,
-//            @RequestParam(value = "limit", defaultValue = "5") int limit,
-//            Model model
-//    ) {
-//        return new ResponseEntity<>("Helloo", HttpStatus.OK);
-//    }
-
 
     @GetMapping("/admin/add")
     public String showAddUserForm(
@@ -111,7 +125,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại");
         }
         String message = userService.addUser(userDTO);
-        return ResponseEntity.ok("success");
+        return ResponseEntity.ok(message);
     }
 
     @GetMapping("/admin/edit/{id}")
@@ -154,8 +168,12 @@ public class UserController {
 
     // Test only, not use for Production
     @GetMapping("/getcache")
-    public ResponseEntity<?> getCache(){
-        return ResponseEntity.ok(userService.checkCache());
+    public ResponseEntity<?> inspectCache(
+            @RequestParam("key") String key
+    ) {
+        Object cachedData = redisTemplate.opsForValue().get(key);
+        return cachedData != null ? ResponseEntity.ok(cachedData) :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body("No data found for key: " + key);
     }
 
     @GetMapping("/user_info")

@@ -124,9 +124,7 @@ public class AuthController {
             HttpServletRequest request,
             HttpServletResponse response
     ){
-        boolean isSignOut = userService.signOut(request, response);
-        return isSignOut?
-                "redirect:/" :
-                "";
+        userService.signOut(request, response);
+        return "redirect:/";
     }
 }

@@ -58,7 +58,6 @@ public class UserServiceImpl implements UserService {
     private RoleRepo roleRepo;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-
     @Override
     public Page<UserDTO> getUsersForAdmin(PageRequest pageRequest) {
         List<User> users = userRepo.findAll(pageRequest).getContent();
@@ -244,7 +243,7 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return false;
         }
 
