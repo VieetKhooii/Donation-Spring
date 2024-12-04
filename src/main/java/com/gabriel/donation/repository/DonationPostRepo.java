@@ -12,6 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Repository
 public interface DonationPostRepo extends JpaRepository<DonationPost, Integer> {
 
@@ -31,6 +35,9 @@ public interface DonationPostRepo extends JpaRepository<DonationPost, Integer> {
 
     Page<DonationPost> findByTitleContaining(String title, Pageable pageable);
 
-
     Page<DonationPost> findByTitleContainingIgnoreCaseAndIsDeletedFalse(String title, Pageable pageable);
+
+    Page<DonationPost> findByTitleContainingIgnoreCase(Pageable pageable, String title);
+
+    Page<DonationPost> findByStartDateGreaterThanEqualAndEndDateLessThanEqual(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 }
