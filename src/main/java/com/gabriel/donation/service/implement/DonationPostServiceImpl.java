@@ -16,11 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -239,6 +242,35 @@ public class DonationPostServiceImpl implements DonationPostService {
                 donationPostsPage.getTotalElements()
         );
     }
+
+    @Override
+    public Page<DonationPostDTO> searchByDateRange(PageRequest pageRequest, LocalDateTime  startDate, LocalDateTime endDate) {
+        // Thực hiện tìm kiếm trong database với điều kiện lọc trực tiếp trong truy vấn
+        Page<DonationPost> donationPostsPage = donationPostRepo.findByStartDateGreaterThanEqualAndEndDateLessThanEqual(
+                startDate, endDate, pageRequest);
+
+        List<DonationPostDTO> donationPostDTOS = donationPostsPage.getContent()
+                .stream()
+                .map(post -> {
+                    List<ImageOfDonation> imagesOfDonationPosts = imageOfDonationRepo.findByDonationPostId(post.getId());
+                    DonationPostDTO donationPostDTO = DonationPostMapper.INSTANCE.toDto(post);
+                    List<ImageOfDonationDTO> imageOfDonationDTOS = imagesOfDonationPosts
+                            .stream()
+                            .map(ImageOfDonationMapper.INSTANCE::toDto)
+                            .collect(Collectors.toList());
+                    donationPostDTO.setLstImages(imageOfDonationDTOS);
+                    return donationPostDTO;
+                })
+                .collect(Collectors.toList());
+
+        // Trả về một PageImpl chứa danh sách DTO, pageable và tổng số phần tử
+        return new PageImpl<>(
+                donationPostDTOS,
+                donationPostsPage.getPageable(),
+                donationPostsPage.getTotalElements()
+        );
+    }
+
 
     @Override
     public Page<DonationPostDTO> searchDonationPosts(PageRequest pageRequest, String title) {

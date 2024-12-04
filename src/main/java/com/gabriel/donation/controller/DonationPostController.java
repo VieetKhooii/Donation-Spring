@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -269,6 +270,64 @@ public class DonationPostController {
         model.addAttribute("dateDifferences", dateDifferences);
         model.addAttribute("sortBy",sortBy);
         return "home";
+    }
+
+    @GetMapping("/admin/searchByDate")
+    public String searchDonationPostsByDateRange(
+            @RequestParam(value = "startDate") LocalDate startDate,
+            @RequestParam(value = "endDate") LocalDate endDate,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "5") int limit,
+            Model model
+    ) {
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+
+        try
+        {
+            PageRequest pageRequest = PageRequest.of(page, limit);
+
+            Page<DonationPostDTO> donationPostsPage = donationPostService.searchByDateRange(pageRequest, startDateTime, endDateTime);
+            List<Long> dateDifferences = getDateDifferences(donationPostsPage);
+
+            model.addAttribute("donationPost", donationPostsPage.getContent());
+            model.addAttribute("totalPages", donationPostsPage.getTotalPages());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("dateDifferences", dateDifferences);
+            return "admin/DonationPost/donationPost";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Có lỗi xảy ra trong quá trình tìm kiếm. Vui lòng thử lại sau.");
+
+            return "admin/DonationPost/donationPost";
+        }
+
+    }
+    @GetMapping("/admin/searchByTitle")
+    public String searchByTitle(
+            @RequestParam(value = "title", required = false, defaultValue = "") String title,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "5") int limit,
+            Model model
+    ){
+        try
+        {
+            PageRequest pageRequest = PageRequest.of(page, limit);
+
+            Page<DonationPostDTO> list = donationPostService.searchDonationPosts(pageRequest, title);
+            List<Long> dateDifferences = getDateDifferences(list);
+
+            model.addAttribute("donationPost", list.getContent());
+            model.addAttribute("totalPages", list.getTotalPages());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("dateDifferences", dateDifferences);
+
+            return "admin/DonationPost/donationPost";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Có lỗi xảy ra trong quá trình tìm kiếm. Vui lòng thử lại sau.");
+
+            return "admin/DonationPost/donationPost";
+        }
+
     }
 
 }
