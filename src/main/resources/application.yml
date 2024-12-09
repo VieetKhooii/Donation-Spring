@@ -49,12 +49,6 @@ spring:
           scope:
             - email
             - profile
-
-#  vnp:
-#    vnp_TmnCode: NEOBKC89
-#    access:
-#      key: YOUR_ACCESS_KEY
-#    secret:
-#      key: XGBAKLTOTD9HKBSZ48HGB3KIU0A10U6X
-#    api:
-#      url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    jwt:
+      secret-key: ${SPRING_SECURITY_JWT_SECRET_KEY}
+      
