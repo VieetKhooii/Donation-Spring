@@ -1,10 +1,13 @@
 #spring.application.name=Gabriel Donation Campaign
 
 spring:
+  config:
+    import: "optional:file:.env[.properties]"
+
   datasource:
-    url: jdbc:mysql://localhost:3306/gabriel?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
-    username: root
-    password:  12345
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -19,8 +22,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: "hungdo070103@gmail.com"
-    password: "nutdiqcmsuczajxj"
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -30,8 +33,8 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
 
   thymeleaf:
     cache: false
@@ -41,11 +44,12 @@ spring:
       client:
         registration:
           google:
-            client-id: 926183180298-1k4es0a9ih9vo3puk0hd5dhi7olr0ohl.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${SPRING_SECURITY_OAUTH2_CLIENT_GOOGLE_CLIENT_ID}
+            client-secret: ${SPRING_SECURITY_OAUTH2_CLIENT_GOOGLE_CLIENT_SECRET}
           scope:
             - email
             - profile
+
 #  vnp:
 #    vnp_TmnCode: NEOBKC89
 #    access:
