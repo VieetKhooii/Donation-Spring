@@ -15,6 +15,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+@Builder
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +40,7 @@ public class User implements UserDetails {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @Column(columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Column(nullable = false)
     private boolean isDeleted = false;
 
     @OneToMany(mappedBy = "user")
