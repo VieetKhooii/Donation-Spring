@@ -63,7 +63,7 @@ Below are the GitHub profiles of the project team members:
 - [Huynh Tuan Dat](https://github.com/axy888)
 - [Do Phuoc Hung](https://github.com/dophuochung2428)
 ####  License
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the APACHE License. See the [LICENSE](./LICENSE) file for details.
 #### Acknowledgements
 This project would not have been possible without the support of:
 
