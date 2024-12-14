@@ -14,7 +14,7 @@ spring:
     properties:
       hibernate:
         column_ordering_strategy: legacy
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
     show-sql: false
@@ -36,6 +36,12 @@ spring:
       host: ${SPRING_DATA_REDIS_HOST}
       port: ${SPRING_DATA_REDIS_PORT}
 
+  logging:
+    level:
+      org.springframework.cache: DEBUG
+      org.springframework.data.redis: DEBUG
+
+
   thymeleaf:
     cache: false
 
@@ -51,4 +57,3 @@ spring:
             - profile
     jwt:
       secret-key: ${SPRING_SECURITY_JWT_SECRET_KEY}
-      

@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("/api/user")
@@ -95,9 +96,9 @@ public class UserController {
         );
         RestPage<UserDTO> list = new RestPage<>(userService.getUsersForAdmin(pageRequest));
         String jsonInString = mapper.writeValueAsString(list);
-        redisTemplate.opsForValue().set("usersAdmin::"+ page + "," + limit, jsonInString);
+        redisTemplate.opsForValue().set(redisKey, jsonInString, 1, TimeUnit.MINUTES);
 
-        System.out.println("GetAllUsers");
+        System.out.println(redisKey);
 
         model.addAttribute("users", list.getContent());
         model.addAttribute("totalPages", list.getTotalPages());
