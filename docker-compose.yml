@@ -1,13 +1,38 @@
-version: '3.8'
+#version: '3.8'
 services:
-  spring-boot-app:
+#  spring-boot-app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+#      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+#      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+#      SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST}
+#      SPRING_DATA_REDIS_PORT: ${SPRING_DATA_REDIS_PORT}
+#      SPRING_SECURITY_JWT_SECRET_KEY: ${SPRING_SECURITY_JWT_SECRET_KEY}
+#      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
+#      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
+#      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-ID: ${SPRING_SECURITY_OAUTH2_CLIENT_GOOGLE_CLIENT_ID}
+#      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-SECRET: ${SPRING_SECURITY_OAUTH2_CLIENT_GOOGLE_CLIENT_SECRET}
+#    depends_on:
+#      - mysql
+#      - redis
+
+  user-role-service:
+    container_name: user-role-service
     build:
-      context: .
+      context: ./services/user-role-service
       dockerfile: Dockerfile
+    volumes:
+      - ./services/user-role-service/src:/app
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: ${USER_ROLE_DATASOURCE_URL}
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST}
@@ -17,13 +42,47 @@ services:
       SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
       SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-ID: ${SPRING_SECURITY_OAUTH2_CLIENT_GOOGLE_CLIENT_ID}
       SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT-SECRET: ${SPRING_SECURITY_OAUTH2_CLIENT_GOOGLE_CLIENT_SECRET}
+      EUREKA_SERVER_URL: http://eureka-server:8761
     depends_on:
       - mysql
       - redis
+      - eureka-server
+
+#  payment-userdonated-service:
+#    build:
+#      context: ./payment-userdonated-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8082:8082"
+#    environment:
+#      SPRING_DATASOURCE_URL: ${PAYMENT_USERDONATED_DATASOURCE_URL}
+#      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+#      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+#      SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST}
+#      SPRING_DATA_REDIS_PORT: ${SPRING_DATA_REDIS_PORT}
+#    depends_on:
+#      - mysql
+#      - redis
+#
+#  post-image-service:
+#    build:
+#      context: ./post-image-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8083:8083"
+#    environment:
+#      SPRING_DATASOURCE_URL: ${POST_IMAGE_DATASOURCE_URL}
+#      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+#      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+#      SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST}
+#      SPRING_DATA_REDIS_PORT: ${SPRING_DATA_REDIS_PORT}
+#    depends_on:
+#      - mysql
+#      - redis
 
   mysql:
-    image: mysql:8.0
     container_name: mysql
+    image: mysql:8.0
     ports:
       - "3306:3306"
     environment:
@@ -38,6 +97,14 @@ services:
       ALLOW_EMPTY_PASSWORD: yes
     ports:
       - "6379:6379"
+
+  eureka-server:
+    container_name: eureka-server
+    build:
+      context: ./services/eureka
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
 
 volumes:
   mysql_data:

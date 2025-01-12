@@ -1,0 +1,29 @@
+server:
+  port: 8761 # Ch?y trên c?ng 8761 cho c? API Gateway và Eureka Server
+
+spring:
+  application:
+    name: eureka-api-gateway
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+  instance:
+    hostname: localhost
+
+  server:
+    enable-self-preservation: false
+
+cloud:
+  gateway:
+    routes:
+      - id: user-service
+        uri: lb://USER-SERVICE
+        predicates:
+          - Path=/api/users/**
+      - id: payment-service
+        uri: lb://PAYMENT-SERVICE
+        predicates:
+          - Path=/api/payments/**
